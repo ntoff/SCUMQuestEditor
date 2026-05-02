@@ -20,15 +20,12 @@
             <TabItem Header="Basic Info">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <Grid Margin="20">
-                        <!-- Grid Definition: 2 Columns (Labels, Inputs) -->
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <!-- Rows -->
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
@@ -82,8 +79,7 @@
                         <TextBox x:Name="TxtTimeLimit" Grid.Row="4" Grid.Column="1" Text="0.5" 
                                  Margin="0,0,0,10" TextAlignment="Left" 
                                  TextChanged="TxtInput_TextChanged"
-                                 PreviewTextInput="FloatPreviewTextInput"
-                                 DataObject.Pasting="FloatPasting"/>
+                                 PreviewTextInput="FloatPreviewTextInput" DataObject.Pasting="FloatPasting"/>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
@@ -125,7 +121,7 @@
                         <Label Content="Skills:" HorizontalAlignment="Left" Margin="0,5,0,5"/>
                         <Button Content="Add Skill Reward" Margin="0,0,0,5" Click="BtnAddSkillReward_Click"/>
 
-                        <ListView x:Name="LvSkills" Height="150" Margin="0,0,0,5" BorderBrush="Gray" BorderThickness="1">
+                        <ListView x:Name="LvSkills" Height="150" Margin="0,0,0,5" BorderBrush="Gray" BorderThickness="1" MouseDoubleClick="LvSkills_MouseDoubleClick">
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn Header="Skill" DisplayMemberBinding="{Binding Skill}" Width="150"/>
@@ -140,7 +136,7 @@
                         <Label Content="Trade Deals:" HorizontalAlignment="Left" Margin="0,5,0,5"/>
                         <Button Content="Add Trade Deal" Margin="0,0,0,5" Click="BtnAddTradeDeal_Click"/>
 
-                        <ListView x:Name="LvTradeDeals" Height="150" Margin="0,0,0,5" BorderBrush="Gray" BorderThickness="1">
+                        <ListView x:Name="LvTradeDeals" Height="150" Margin="0,0,0,5" BorderBrush="Gray" BorderThickness="1" MouseDoubleClick="LvTradeDeals_MouseDoubleClick">
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn Header="Item" DisplayMemberBinding="{Binding Item}" Width="120"/>
@@ -172,16 +168,15 @@
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn Header="Type" Width="100" DisplayMemberBinding="{Binding Type}" />
-                                    <GridViewColumn Header="Caption" Width="200" DisplayMemberBinding="{Binding Caption}" />
-                                    <GridViewColumn Header="Sequence" Width="100" DisplayMemberBinding="{Binding Sequence}" />
+                                    <GridViewColumn Header="Caption" Width="200" DisplayMemberBinding="{Binding TrackingCaption}" />
+                                    <GridViewColumn Header="Sequence" Width="100" DisplayMemberBinding="{Binding SequenceIndex}" />
                                     <GridViewColumn Header="Auto Complete" Width="100">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <CheckBox IsChecked="{Binding AutoComplete}" IsEnabled="False" />
+                                                <CheckBox IsChecked="{Binding CanBeAutoCompleted}" IsEnabled="False" />
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
-                                    <GridViewColumn Header="Details" Width="200" DisplayMemberBinding="{Binding Details}" />
                                 </GridView>
                             </ListView.View>
                         </ListView>
@@ -195,9 +190,203 @@
                         <Button Content="Remove Selected" Width="120" Click="BtnRemoveSelectedCondition_Click"/>
                     </StackPanel>
 
-                    <!-- Bottom Section: Instruction Text -->
-                    <TextBlock DockPanel.Dock="Bottom" Text="Double-click on a condition in the list above to edit it." 
+                    <!-- Bottom Section: Condition Editor -->
+                    <DockPanel DockPanel.Dock="Top" Margin="0,10,0,0">
+                        <TextBlock DockPanel.Dock="Bottom" Text="Editing Selected Condition" 
                                HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Margin="0,10,0,0"/>
+
+                        <TabControl x:Name="TabConditionEditor" Margin="0,5,0,0" SelectionChanged="TabConditionEditor_SelectionChanged">
+                            <!-- Common Properties Tab -->
+                            <TabItem Header="Common Properties">
+                                <Grid Margin="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <Label Grid.Row="0" Grid.Column="0" Content="Caption:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
+                                    <TextBox x:Name="EdtCaption" Grid.Row="0" Grid.Column="1" Margin="0,0,0,5" 
+                                             TextChanged="SaveConditionFromEditor"/>
+
+                                    <Label Grid.Row="1" Grid.Column="0" Content="Sequence:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
+                                    <TextBox x:Name="EdtSequence" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5" 
+                                             TextChanged="SaveConditionFromEditor"/>
+
+                                    <Label Grid.Row="2" Grid.Column="0" Content="Auto Complete:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
+                                    <CheckBox x:Name="EdtAutoComplete" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5" 
+                                              IsChecked="False" Checked="SaveConditionFromEditor" Unchecked="SaveConditionFromEditor"/>
+                                </Grid>
+                            </TabItem>
+
+                            <!-- Fetch Properties Tab -->
+                            <TabItem Header="Fetch Properties" x:Name="TabFetchProperties">
+                                <Grid Margin="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <Label Grid.Row="0" Grid.Column="0" Content="Player Keeps Items:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
+                                    <CheckBox x:Name="ChkPlayerKeepsItems" Grid.Row="0" Grid.Column="1" Margin="0,0,0,5" Checked="SaveConditionFromEditor" Unchecked="SaveConditionFromEditor"/>
+
+                                    <Label Grid.Row="1" Grid.Column="0" Content="Disable Purchase:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
+                                    <CheckBox x:Name="ChkDisablePurchase" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5" IsChecked="True" Checked="SaveConditionFromEditor" Unchecked="SaveConditionFromEditor"/>
+
+                                    <Label Grid.Row="2" Grid.Column="0" Content="Required Items:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
+                                    <Button x:Name="BtnEditRequiredItems" Grid.Row="2" Grid.Column="1" Content="Edit Required Items" Margin="0,0,0,5" 
+                                            Click="BtnEditRequiredItems_Click" Height="25"/>
+
+                                    <Label Grid.Row="3" Grid.Column="0" Content="Current Required Items:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
+                                    <ListView x:Name="LvCurrentRequiredItems" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,5" Height="150" BorderBrush="Gray" BorderThickness="1">
+                                        <ListView.View>
+                                            <GridView>
+                                                <GridViewColumn Header="Items" Width="150" DisplayMemberBinding="{Binding ItemName}" />
+                                                <GridViewColumn Header="Quantity" Width="100" DisplayMemberBinding="{Binding Quantity}" />
+                                                <GridViewColumn Header="Properties" Width="150" DisplayMemberBinding="{Binding Properties}" />
+                                            </GridView>
+                                        </ListView.View>
+                                    </ListView>
+
+                                    <TextBlock Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Text="The player must collect the specified items to complete this condition." Foreground="Blue" Margin="0,5,0,0" TextDecorations="Underline" VerticalAlignment="Bottom"/>
+                                </Grid>
+                            </TabItem>
+
+                            <!-- Interaction Properties Tab -->
+                            <TabItem Header="Interaction Properties" x:Name="TabInteractionProperties">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <Grid Margin="10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <!-- Spawn Only Needed -->
+                                        <Label Grid.Row="0" Grid.Column="0" Content="Spawn Only Needed:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
+                                        <CheckBox x:Name="ChkSpawnOnlyNeeded" Grid.Row="0" Grid.Column="1" Margin="0,0,0,5" 
+                                                  IsChecked="True" Checked="SaveConditionFromEditor" Unchecked="SaveConditionFromEditor"/>
+
+                                        <!-- Min Needed -->
+                                        <Label Grid.Row="1" Grid.Column="0" Content="Min Needed:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
+                                        <TextBox x:Name="EdtMinNeeded" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5" Text="1"
+                                                 TextChanged="SaveConditionFromEditor"
+                                                 PreviewTextInput="NumericPreviewTextInput" DataObject.Pasting="NumericPasting"/>
+
+                                        <!-- Max Needed -->
+                                        <Label Grid.Row="2" Grid.Column="0" Content="Max Needed:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
+                                        <TextBox x:Name="EdtMaxNeeded" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5" Text="1"
+                                                 TextChanged="SaveConditionFromEditor"
+                                                 PreviewTextInput="NumericPreviewTextInput" DataObject.Pasting="NumericPasting"/>
+
+                                        <!-- Marker Show Distance -->
+                                        <Label Grid.Row="3" Grid.Column="0" Content="Marker Show Distance:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
+                                        <TextBox x:Name="EdtMarkerDistance" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5" Text="5"
+                                                 TextChanged="SaveConditionFromEditor"
+                                                 PreviewTextInput="FloatPreviewTextInput" DataObject.Pasting="FloatPasting"/>
+
+                                        <!-- Interaction Locations Button -->
+                                        <Label Grid.Row="4" Grid.Column="0" Content="Interaction Locations:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
+                                        <Button x:Name="BtnEditInteractionLocations" Grid.Row="4" Grid.Column="1" Content="Edit Locations" Margin="0,0,0,5" 
+                                                Click="BtnEditInteractionLocations_Click" Height="25"/>
+
+                                        <!-- Info Text -->
+                                        <TextBlock Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" 
+                                                   Text="Use '#GetMeshInfo' in-game to get location data for real objects." 
+                                                   Foreground="Blue" Margin="0,5,0,0" TextDecorations="Underline"/>
+                                    </Grid>
+                                </ScrollViewer>
+                            </TabItem>
+
+                            <!-- Elimination Properties Tab -->
+                            <TabItem Header="Elimination Properties" x:Name="TabEliminationProperties">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <Grid Margin="10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <!-- Target Characters -->
+                                        <Label Grid.Row="0" Grid.Column="0" Content="Target Characters:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
+                                        <Button Grid.Row="0" Grid.Column="1" Content="Edit Targets" Margin="0,0,0,5" Click="BtnEditEliminationTargets_Click"/>
+
+                                        <Label Grid.Row="1" Grid.Column="0" Content="Current Targets:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
+                                        <ListBox Grid.Row="1" Grid.Column="1" x:Name="EdtEliminationTargets" Margin="0,0,0,5" Height="60"/>
+
+                                        <!-- Kill Amount -->
+                                        <Label Grid.Row="2" Grid.Column="0" Content="Amount to Kill:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
+                                        <TextBox x:Name="EdtKillAmount" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5" Text="1" 
+                                            TextChanged="EdtKillAmount_TextChanged"
+                                            PreviewTextInput="NumericPreviewTextInput" DataObject.Pasting="NumericPasting"/>
+
+                                        <!-- Allowed Weapons -->
+                                        <Label Grid.Row="3" Grid.Column="0" Content="Allowed Weapons:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
+                                        <Button Grid.Row="3" Grid.Column="1" Content="Edit Weapons" Margin="0,0,0,5" Click="BtnEditEliminationWeapons_Click"/>
+
+                                        <Label Grid.Row="4" Grid.Column="0" Content="Current Weapons:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
+                                        <ListBox Grid.Row="4" Grid.Column="1" x:Name="EdtAllowedWeapons" Margin="0,0,0,5" Height="60"/>
+                                    </Grid>
+                                </ScrollViewer>
+                            </TabItem>
+
+                            <!-- Map Locations Tab -->
+                            <TabItem Header="Map Locations" x:Name="TabMapLocationsItem">
+                                <Grid Margin="10">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+
+                                    <StackPanel Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Center">
+                                        <Button Content="Edit Map Locations" Width="150" Click="BtnEditMapLocations_Click"/>
+                                    </StackPanel>
+
+                                    <ListView x:Name="TabMapLocations" Grid.Row="1" Margin="0,10,0,0">
+                                        <ListView.View>
+                                            <GridView>
+                                                <GridViewColumn Header="X" Width="80" DisplayMemberBinding="{Binding Location.X}" />
+                                                <GridViewColumn Header="Y" Width="80" DisplayMemberBinding="{Binding Location.Y}" />
+                                                <GridViewColumn Header="Z" Width="80" DisplayMemberBinding="{Binding Location.Z}" />
+                                                <GridViewColumn Header="Size Factor" Width="100" DisplayMemberBinding="{Binding SizeFactor}" />
+                                            </GridView>
+                                        </ListView.View>
+                                    </ListView>
+                                </Grid>
+                            </TabItem>
+                        </TabControl>
+
+                        <StackPanel DockPanel.Dock="Right" Orientation="Vertical" Margin="10,0,0,0">
+                            <Button x:Name="BtnSaveCondition" Content="Update Details" Width="120" Margin="0,0,0,5" 
+                                    Click="BtnSaveCondition_Click"/>
+                        </StackPanel>
+                    </DockPanel>
 
                 </DockPanel>
             </TabItem>
