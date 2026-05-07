@@ -1289,7 +1289,7 @@ namespace TabbedApp
             BindingOperations.ClearBinding(EdtMarkerDistance, TextBox.TextProperty);
 
             EdtCaption.Text = "";
-            EdtSequence.Text = "0";
+            EdtSequence.Text = "0"; // Explicit default
             EdtAutoComplete.IsChecked = false;
             ChkPlayerKeepsItems.IsChecked = false;
             ChkDisablePurchase.IsChecked = true;
@@ -1313,6 +1313,35 @@ namespace TabbedApp
         {
             if (LvConditions.SelectedItem is Condition currentCondition)
             {
+                // Validate and clamp sequence index
+                if (int.TryParse(EdtSequence.Text, out int sequenceIndex))
+                {
+                    if (sequenceIndex < 0)
+                    {
+                        EdtSequence.Text = "0";
+                        MessageBox.Show("Sequence index cannot be negative. Defaulting to 0.",
+                            "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                    else if (sequenceIndex > 10)
+                    {
+                        EdtSequence.Text = "10";
+                        MessageBox.Show("Maximum sequence index is 10. Clamping to 10.",
+                            "Limit Exceeded", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                }
+                else
+                {
+                    EdtSequence.Text = "0";
+                    MessageBox.Show("Invalid sequence number. Defaulting to 0.",
+                        "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                // Update condition properties
+                currentCondition.SequenceIndex = int.Parse(EdtSequence.Text);
+
                 if (currentCondition.Type.Equals("Fetch", StringComparison.OrdinalIgnoreCase) && currentCondition is FetchCondition fetch)
                 {
                     fetch.PlayerKeepsItems = ChkPlayerKeepsItems.IsChecked ?? false;
@@ -1345,7 +1374,7 @@ namespace TabbedApp
             var condition = new EliminationCondition
             {
                 TrackingCaption = "Eliminate Target",
-                SequenceIndex = ConditionsList.Count,
+                SequenceIndex = 0, // Changed: always default to 0
                 CanBeAutoCompleted = false,
                 Amount = 1,
                 TargetCharacters = new List<string>(),
@@ -1360,7 +1389,7 @@ namespace TabbedApp
             var condition = new FetchCondition
             {
                 TrackingCaption = "Fetch Item",
-                SequenceIndex = ConditionsList.Count,
+                SequenceIndex = 0, // Changed: always default to 0
                 CanBeAutoCompleted = false,
                 PlayerKeepsItems = false,
                 DisablePurchase = true,
@@ -1375,7 +1404,7 @@ namespace TabbedApp
             var condition = new InteractionCondition
             {
                 TrackingCaption = "Interact",
-                SequenceIndex = ConditionsList.Count,
+                SequenceIndex = 0, // Changed: always default to 0
                 CanBeAutoCompleted = false,
                 SpawnOnlyNeeded = true,
                 MinNeeded = 1,
