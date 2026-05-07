@@ -14,6 +14,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using Microsoft.Win32;
 
 namespace TabbedApp
 {
@@ -220,7 +221,36 @@ namespace TabbedApp
     {
         public override Condition Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            throw new NotImplementedException("Deserialization not supported for Condition.");
+            // Read the entire JSON object into a JsonElement
+            JsonElement element = JsonSerializer.Deserialize<JsonElement>(ref reader);
+
+            // Get the "Type" property to determine which subclass to instantiate
+            if (!element.TryGetProperty("Type", out JsonElement typeElement) || string.IsNullOrEmpty(typeElement.GetString()))
+            {
+                throw new JsonException("Condition JSON must contain a 'Type' property.");
+            }
+
+            string conditionType = typeElement.GetString();
+
+            // Determine the target type based on the "Type" value
+            Type targetType;
+            switch (conditionType)
+            {
+                case "Elimination":
+                    targetType = typeof(EliminationCondition);
+                    break;
+                case "Fetch":
+                    targetType = typeof(FetchCondition);
+                    break;
+                case "Interaction":
+                    targetType = typeof(InteractionCondition);
+                    break;
+                default:
+                    throw new JsonException($"Unknown condition type: {conditionType}");
+            }
+
+            // Deserialize the JsonElement into the correct subclass
+            return (Condition)JsonSerializer.Deserialize(element.GetRawText(), targetType, options);
         }
 
         public override void Write(Utf8JsonWriter writer, Condition value, JsonSerializerOptions options)
@@ -364,7 +394,7 @@ namespace TabbedApp
             List<string> skills = new List<string>
             {
                 "Archery", "Aviation", "Awareness", "Boxing", "Camouflage", "Cooking", "Demolition",
-                "Driving", "Endurance", "Engineering", "Farming", "Handgun", "Medical", "Melee Weapons",
+                "Driving", "Endurance", "Engineering", "Farming", "Handgun", "Medical", "MeleeWeapons",
                 "Motorcycle", "Rifles", "Running", "Sniping", "Stealth", "Survival", "Tactics", "Thievery"
             };
             foreach (var skill in skills) CbSkill.Items.Add(skill);
@@ -592,10 +622,194 @@ namespace TabbedApp
             }
         }
 
+        private void MenuItem_New_Click(object sender, RoutedEventArgs e)
+        {
+            // Create a new quest
+            CurrentTradeDeal = new TradeDeal
+            {
+                AssociatedNpc = "Armorer",
+                Tier = 1,
+                Title = "New Quest",
+                Description = "Quest description...",
+                TimeLimitHours = 0.5,
+                RewardPool = new List<RewardPool> { new RewardPool() },
+                Conditions = new List<Condition>()
+            };
 
-        private void MenuItem_New_Click(object sender, RoutedEventArgs e) { }
-        private void MenuItem_Open_Click(object sender, RoutedEventArgs e) { }
-        private void MenuItem_Save_Click(object sender, RoutedEventArgs e) { }
+            UpdateControlsFromQuest(CurrentTradeDeal);
+            UpdateJsonPreview();
+        }
+
+        private void MenuItem_Open_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                OpenFileDialog openFileDialog = new OpenFileDialog
+                {
+                    Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+                    Title = "Open Quest File",
+                    DefaultExt = "json",
+                    RestoreDirectory = true
+                };
+
+                bool? result = openFileDialog.ShowDialog();
+                if (result == true)
+                {
+                    string filePath = openFileDialog.FileName;
+                    string jsonContent = File.ReadAllText(filePath);
+
+                    // Deserialize the JSON into our data structure
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true,
+                        Converters = { new ConditionConverter() }
+                    };
+
+                    TradeDeal loadedQuest = JsonSerializer.Deserialize<TradeDeal>(jsonContent, options);
+
+                    if (loadedQuest == null)
+                    {
+                        MessageBox.Show("Failed to load quest file. The file may be corrupted or invalid.");
+                        return;
+                    }
+
+                    // Update all controls with the loaded data
+                    UpdateControlsFromQuest(loadedQuest);
+
+                    // Update the JSON preview window with the loaded JSON
+                    TxtJson.Text = jsonContent;
+
+                    // Update the current trade deal reference to the loaded quest
+                    CurrentTradeDeal = loadedQuest;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading quest file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void MenuItem_Save_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                SaveFileDialog saveFileDialog = new SaveFileDialog
+                {
+                    Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+                    Title = "Save Quest File",
+                    DefaultExt = "json",
+                    FileName = $"{TxtTitle.Text?.Replace(" ", "_") ?? "quest"}.json"
+                };
+
+                bool? result = saveFileDialog.ShowDialog();
+                if (result == true)
+                {
+                    UpdateJsonPreview(); // Ensure all UI data is reflected in the current state
+
+                    var options = new JsonSerializerOptions
+                    {
+                        WriteIndented = true,
+                        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                        Converters = { new ConditionConverter() }
+                    };
+
+                    string json = JsonSerializer.Serialize(CurrentTradeDeal, options);
+                    File.WriteAllText(saveFileDialog.FileName, json);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error saving quest file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void UpdateControlsFromQuest(TradeDeal quest)
+        {
+            // Basic Info Tab
+            // Update NPC selection
+            if (CbNpc != null)
+            {
+                bool npcFound = false;
+                foreach (ComboBoxItem item in CbNpc.Items)
+                {
+                    if (item.Content?.ToString() == quest.AssociatedNpc)
+                    {
+                        CbNpc.SelectedItem = item;
+                        npcFound = true;
+                        break;
+                    }
+                }
+
+                // If NPC wasn't found in the list, add it (for compatibility with future NPC types)
+                if (!npcFound && quest.AssociatedNpc != null)
+                {
+                    ComboBoxItem newItem = new ComboBoxItem { Content = quest.AssociatedNpc };
+                    CbNpc.Items.Add(newItem);
+                    CbNpc.SelectedItem = newItem;
+                }
+            }
+
+            if (TxtTitle != null) TxtTitle.Text = quest.Title;
+            if (TxtTier != null) TxtTier.Text = quest.Tier.ToString();
+            if (TxtDescription != null) TxtDescription.Text = quest.Description;
+            if (TxtTimeLimit != null) TxtTimeLimit.Text = quest.TimeLimitHours.ToString("0.0#");
+
+            // Rewards Tab
+            if (quest.RewardPool != null && quest.RewardPool.Count > 0)
+            {
+                RewardPool reward = quest.RewardPool[0];
+
+                if (TxtNormalReward != null) TxtNormalReward.Text = reward.CurrencyNormal.ToString();
+                if (TxtGoldReward != null) TxtGoldReward.Text = reward.CurrencyGold.ToString();
+                if (TxtFameReward != null) TxtFameReward.Text = reward.Fame.ToString();
+
+                // Update Skills
+                if (LvSkills != null)
+                {
+                    LvSkills.ItemsSource = null;
+                    if (reward.Skills != null && reward.Skills.Count > 0)
+                    {
+                        LvSkills.ItemsSource = reward.Skills;
+                    }
+                    else
+                    {
+                        LvSkills.ItemsSource = null;
+                    }
+                }
+
+                // Update Trade Deals
+                if (LvTradeDeals != null)
+                {
+                    LvTradeDeals.ItemsSource = null;
+                    if (reward.TradeDeals != null && reward.TradeDeals.Count > 0)
+                    {
+                        LvTradeDeals.ItemsSource = reward.TradeDeals;
+                    }
+                    else
+                    {
+                        LvTradeDeals.ItemsSource = null;
+                    }
+                }
+            }
+
+            // Conditions Tab
+            if (ConditionsList != null)
+            {
+                ConditionsList.Clear();
+                if (quest.Conditions != null)
+                {
+                    foreach (var condition in quest.Conditions)
+                    {
+                        ConditionsList.Add(condition);
+                    }
+                }
+            }
+
+            // Update the total rewards display
+            RewardPool currentReward = GetOrCreateCurrentReward();
+            int totalRewards = CalculateTotalRewards(currentReward);
+            if (TxtTotalRewards != null) TxtTotalRewards.Text = $"Total Rewards: {totalRewards}/5";
+        }
 
         private void TxtInput_TextChanged(object sender, TextChangedEventArgs e) { UpdateJsonPreview(); }
         private void CbNpc_SelectionChanged(object sender, SelectionChangedEventArgs e) { UpdateJsonPreview(); }
@@ -758,7 +972,7 @@ namespace TabbedApp
         {
             try
             {
-                RewardPool reward = GetOrCreateCurrentReward();
+                // Update basic info
                 string npc = "Armorer";
                 if (CbNpc?.SelectedItem is ComboBoxItem selectedItem) npc = selectedItem.Content?.ToString() ?? "Armorer";
 
@@ -769,6 +983,15 @@ namespace TabbedApp
                 string description = TxtDescription?.Text ?? "Quest description...";
                 double timeLimit = 0.5;
                 if (!double.TryParse(TxtTimeLimit?.Text ?? "0.5", out timeLimit)) timeLimit = 0.5;
+
+                CurrentTradeDeal.AssociatedNpc = npc;
+                CurrentTradeDeal.Tier = tier;
+                CurrentTradeDeal.Title = title;
+                CurrentTradeDeal.Description = description;
+                CurrentTradeDeal.TimeLimitHours = timeLimit;
+
+                // Update reward pool
+                RewardPool reward = GetOrCreateCurrentReward();
 
                 int currencyNormal = 0;
                 int.TryParse(TxtNormalReward?.Text ?? "0", out currencyNormal);
@@ -782,16 +1005,11 @@ namespace TabbedApp
                 int.TryParse(TxtFameReward?.Text ?? "0", out fame);
                 reward.Fame = fame;
 
+                // Calculate and display total rewards
                 int totalRewards = CalculateTotalRewards(reward);
                 if (TxtTotalRewards != null) TxtTotalRewards.Text = $"Total Rewards: {totalRewards}/5";
 
-                CurrentTradeDeal.AssociatedNpc = npc;
-                CurrentTradeDeal.Tier = tier;
-                CurrentTradeDeal.Title = title;
-                CurrentTradeDeal.Description = description;
-                CurrentTradeDeal.TimeLimitHours = timeLimit;
-                CurrentTradeDeal.RewardPool[0] = reward;
-
+                // Update conditions
                 List<Condition> serializedConditions = new List<Condition>();
                 foreach (var condition in ConditionsList)
                 {
@@ -811,7 +1029,7 @@ namespace TabbedApp
                                 Amount = 1,
                                 TargetCharacters = new List<string>(),
                                 AllowedWeapons = new List<string>(),
-                                LocationsShownOnMap = condition.LocationsShownOnMap // Preserve locations
+                                LocationsShownOnMap = condition.LocationsShownOnMap
                             };
                             serializedConditions.Add(newEliminationCondition);
                         }
@@ -826,7 +1044,7 @@ namespace TabbedApp
                             PlayerKeepsItems = (condition as FetchCondition)?.PlayerKeepsItems ?? false,
                             DisablePurchase = (condition as FetchCondition)?.DisablePurchase ?? true,
                             RequiredItems = (condition as FetchCondition)?.RequiredItems ?? new List<RequiredItem>(),
-                            LocationsShownOnMap = condition.LocationsShownOnMap // Preserve locations
+                            LocationsShownOnMap = condition.LocationsShownOnMap
                         };
                         serializedConditions.Add(fetchCondition);
                     }
@@ -861,12 +1079,14 @@ namespace TabbedApp
                 }
                 CurrentTradeDeal.Conditions = serializedConditions;
 
+                // Serialize to JSON
                 var options = new JsonSerializerOptions
                 {
                     WriteIndented = true,
                     Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
                     Converters = { new ConditionConverter() }
                 };
+
                 string json = JsonSerializer.Serialize(CurrentTradeDeal, options);
                 if (TxtJson != null) TxtJson.Text = json;
             }

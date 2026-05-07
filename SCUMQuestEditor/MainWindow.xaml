@@ -43,7 +43,7 @@
                             <ComboBoxItem Content="Barber" />
                             <ComboBoxItem Content="Bartender" />
                             <ComboBoxItem Content="Doctor" />
-                            <ComboBoxItem Content="General Goods" />
+                            <ComboBoxItem Content="GeneralGoods" />
                             <ComboBoxItem Content="Harbourmaster" />
                             <ComboBoxItem Content="Mechanic" />
                         </ComboBox>
