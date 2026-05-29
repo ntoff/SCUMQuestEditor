@@ -8,9 +8,65 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Dark.xaml" />
+                <materialDesign:BundledTheme BaseTheme="Dark" PrimaryColor="LightBlue" SecondaryColor="Lime" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign3.Defaults.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+                <!-- 1. Compact Label Style -->
+                <Style x:Key="CompactLabel" TargetType="Label" BasedOn="{StaticResource MaterialDesignLabel}">
+                    <Setter Property="FontSize" Value="12" />
+                    <Setter Property="Margin" Value="0,0,10,5" />
+                    <Setter Property="Padding" Value="0" />
+                </Style>
+
+                <!-- 2. Compact TextBox Style -->
+                <Style x:Key="CompactTextBox" TargetType="TextBox" BasedOn="{StaticResource MaterialDesignTextBox}">
+                    <Setter Property="FontSize" Value="12" />
+                    <Setter Property="Padding" Value="2,2,2,2" />
+                    <Setter Property="Margin" Value="0,0,0,5" />
+                </Style>
+
+                <!-- 3. Compact ComboBox Style -->
+                <Style x:Key="CompactComboBox" TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignComboBox}">
+                    <Setter Property="FontSize" Value="12" />
+                    <Setter Property="Padding" Value="2,2,2,2" />
+                    <Setter Property="Margin" Value="0,0,0,5" />
+                </Style>
+
+                <!-- 4. Compact TabItem Header -->
+                <Style x:Key="CompactTabItem" TargetType="TabItem" BasedOn="{StaticResource MaterialDesignTabItem}">
+                    <Setter Property="Padding" Value="0,2,0,2" />
+                    <Setter Property="FontSize" Value="12" />
+                </Style>
+
+                <Style TargetType="Label" BasedOn="{StaticResource MaterialDesignLabel}">
+                    <Setter Property="FontSize" Value="12" />
+                    <Setter Property="Margin" Value="0,0,10,5" />
+                    <Setter Property="Padding" Value="0" />
+                </Style>
+
+                <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignTextBox}">
+                    <Setter Property="FontSize" Value="12" />
+                    <Setter Property="Padding" Value="2,2,2,2" />
+                    <Setter Property="Margin" Value="0,0,0,5" />
+                </Style>
+
+                <Style TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignComboBox}">
+                    <Setter Property="FontSize" Value="12" />
+                    <Setter Property="Padding" Value="2,2,2,2" />
+                    <Setter Property="Margin" Value="0,0,0,5" />
+                </Style>
+
+                <Style TargetType="TabItem" BasedOn="{StaticResource MaterialDesignTabItem}">
+                    <Setter Property="Padding" Value="10,2,10,2" />
+                    <Setter Property="FontSize" Value="12" />
+                </Style>
+
+            <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="Padding" Value="10,5,10,5" />
+                <Setter Property="Margin" Value="0,0,5,5" />
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 
