@@ -45,6 +45,7 @@
                             <ComboBoxItem Content="Doctor" />
                             <ComboBoxItem Content="GeneralGoods" />
                             <ComboBoxItem Content="Harbourmaster" />
+                            <ComboBoxItem Content="Hunter" />
                             <ComboBoxItem Content="Mechanic" />
                         </ComboBox>
 
@@ -192,8 +193,8 @@
 
                     <!-- Bottom Section: Condition Editor -->
                     <DockPanel DockPanel.Dock="Top" Margin="0,10,0,0">
-                        <TextBlock DockPanel.Dock="Bottom" Text="Editing Selected Condition" 
-                               HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Margin="0,10,0,0"/>
+                        <!--<TextBlock DockPanel.Dock="Bottom" Text="Editing Selected Condition" 
+                               HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Margin="0,10,0,0"/> -->
 
                         <TabControl x:Name="TabConditionEditor" Margin="0,5,0,0" SelectionChanged="TabConditionEditor_SelectionChanged">
                             <!-- Common Properties Tab -->
@@ -210,7 +211,7 @@
                                     </Grid.RowDefinitions>
 
                                     <Label Grid.Row="0" Grid.Column="0" Content="Caption:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
-                                    <TextBox x:Name="EdtCaption" Grid.Row="0" Grid.Column="1" Margin="0,0,0,5" 
+                                    <TextBox x:Name="EdtCaption" Grid.Row="0" Grid.Column="1" Margin="0,0,0,5"
                                              TextChanged="SaveConditionFromEditor"/>
 
                                     <Label Grid.Row="1" Grid.Column="0" Content="Sequence:" HorizontalAlignment="Right" Margin="0,0,10,5"/>

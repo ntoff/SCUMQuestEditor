@@ -15,9 +15,12 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using Microsoft.Win32;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace TabbedApp
 {
+
     // Helper classes for the new data structure
     public class SkillReward
     {
@@ -64,16 +67,60 @@ namespace TabbedApp
     }
 
     // Base Condition Class
-    public class Condition
+    public class Condition : INotifyPropertyChanged
     {
-        [JsonPropertyName("TrackingCaption")]
-        public string TrackingCaption { get; set; } = "";
+        public event PropertyChangedEventHandler PropertyChanged;
 
-        [JsonPropertyName("SequenceIndex")]
-        public int SequenceIndex { get; set; } = 0;
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
-        [JsonPropertyName("CanBeAutoCompleted")]
-        public bool CanBeAutoCompleted { get; set; } = false;
+        private string _trackingCaption = "";
+        public string TrackingCaption
+        {
+            get => _trackingCaption;
+            set
+            {
+                if (_trackingCaption != value)
+                {
+                    _trackingCaption = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private int _sequenceIndex = 0;
+        public int SequenceIndex
+        {
+            get => _sequenceIndex;
+            set
+            {
+                // Clamp values (0 to 10)
+                if (value < 0) value = 0;
+                else if (value > 10) value = 10;
+
+                if (_sequenceIndex != value)
+                {
+                    _sequenceIndex = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private bool _canBeAutoCompleted;
+        public bool CanBeAutoCompleted
+        {
+            get => _canBeAutoCompleted;
+            set
+            {
+                if (_canBeAutoCompleted != value)
+                {
+                    _canBeAutoCompleted = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         [JsonPropertyName("Type")]
         public string Type { get; set; } = "";
@@ -624,7 +671,7 @@ namespace TabbedApp
 
         private void MenuItem_New_Click(object sender, RoutedEventArgs e)
         {
-            // Create a new quest
+            // Create a new quest with exact default state
             CurrentTradeDeal = new TradeDeal
             {
                 AssociatedNpc = "Armorer",
@@ -636,9 +683,43 @@ namespace TabbedApp
                 Conditions = new List<Condition>()
             };
 
-            UpdateControlsFromQuest(CurrentTradeDeal);
+            // Update all controls directly to ensure they show correct values
+            if (CbNpc != null)
+            {
+                foreach (ComboBoxItem item in CbNpc.Items)
+                {
+                    if (item.Content?.ToString() == "Armorer")
+                    {
+                        CbNpc.SelectedItem = item;
+                        break;
+                    }
+                }
+            }
+
+            if (TxtTitle != null) TxtTitle.Text = "New Quest";
+            if (TxtTier != null) TxtTier.Text = "1";
+            if (TxtDescription != null) TxtDescription.Text = "Quest description...";
+            if (TxtTimeLimit != null) TxtTimeLimit.Text = "0.5";
+
+            if (TxtNormalReward != null) TxtNormalReward.Text = "0";
+            if (TxtGoldReward != null) TxtGoldReward.Text = "0";
+            if (TxtFameReward != null) TxtFameReward.Text = "0";
+
+            if (LvSkills != null) LvSkills.ItemsSource = null;
+            if (LvTradeDeals != null) LvTradeDeals.ItemsSource = null;
+
+            ConditionsList.Clear();
+            LvConditions.SelectedItem = null;
+
+            // Update total rewards display
+            RewardPool currentReward = GetOrCreateCurrentReward();
+            int totalRewards = CalculateTotalRewards(currentReward);
+            if (TxtTotalRewards != null) TxtTotalRewards.Text = $"Total Rewards: {totalRewards}/5";
+
+            // Update JSON preview with clean state
             UpdateJsonPreview();
         }
+
 
         private void MenuItem_Open_Click(object sender, RoutedEventArgs e)
         {
@@ -749,12 +830,13 @@ namespace TabbedApp
                 }
             }
 
+            // Reset to defaults for new quest
             if (TxtTitle != null) TxtTitle.Text = quest.Title;
             if (TxtTier != null) TxtTier.Text = quest.Tier.ToString();
             if (TxtDescription != null) TxtDescription.Text = quest.Description;
             if (TxtTimeLimit != null) TxtTimeLimit.Text = quest.TimeLimitHours.ToString("0.0#");
 
-            // Rewards Tab
+            // Rewards Tab - Always set to defaults for new quest or read from quest if not new
             if (quest.RewardPool != null && quest.RewardPool.Count > 0)
             {
                 RewardPool reward = quest.RewardPool[0];
@@ -766,7 +848,6 @@ namespace TabbedApp
                 // Update Skills
                 if (LvSkills != null)
                 {
-                    LvSkills.ItemsSource = null;
                     if (reward.Skills != null && reward.Skills.Count > 0)
                     {
                         LvSkills.ItemsSource = reward.Skills;
@@ -780,7 +861,6 @@ namespace TabbedApp
                 // Update Trade Deals
                 if (LvTradeDeals != null)
                 {
-                    LvTradeDeals.ItemsSource = null;
                     if (reward.TradeDeals != null && reward.TradeDeals.Count > 0)
                     {
                         LvTradeDeals.ItemsSource = reward.TradeDeals;
@@ -791,25 +871,26 @@ namespace TabbedApp
                     }
                 }
             }
-
-            // Conditions Tab
-            if (ConditionsList != null)
+            else
             {
-                ConditionsList.Clear();
-                if (quest.Conditions != null)
-                {
-                    foreach (var condition in quest.Conditions)
-                    {
-                        ConditionsList.Add(condition);
-                    }
-                }
+                // Reset to defaults if no reward pool
+                if (TxtNormalReward != null) TxtNormalReward.Text = "0";
+                if (TxtGoldReward != null) TxtGoldReward.Text = "0";
+                if (TxtFameReward != null) TxtFameReward.Text = "0";
+                if (LvSkills != null) LvSkills.ItemsSource = null;
+                if (LvTradeDeals != null) LvTradeDeals.ItemsSource = null;
             }
+
+            // Conditions Tab - ALWAYS clear conditions
+            ConditionsList.Clear();
+            LvConditions.SelectedItem = null;
 
             // Update the total rewards display
             RewardPool currentReward = GetOrCreateCurrentReward();
             int totalRewards = CalculateTotalRewards(currentReward);
             if (TxtTotalRewards != null) TxtTotalRewards.Text = $"Total Rewards: {totalRewards}/5";
         }
+
 
         private void TxtInput_TextChanged(object sender, TextChangedEventArgs e) { UpdateJsonPreview(); }
         private void CbNpc_SelectionChanged(object sender, SelectionChangedEventArgs e) { UpdateJsonPreview(); }
@@ -1147,17 +1228,41 @@ namespace TabbedApp
 
             if (LvConditions.SelectedItem is Condition selectedCondition)
             {
+                // ✅ 1. Clear bindings FIRST to avoid conflicts
+                BindingOperations.ClearAllBindings(EdtCaption);
+                BindingOperations.ClearAllBindings(EdtSequence);
+                BindingOperations.ClearAllBindings(EdtAutoComplete);
+
+                // ✅ 2. SET UP TWO-WAY BINDING with immediate update BEFORE setting text
+                // This ensures the UI reflects the current source value
+                var bindingCaption = new Binding("TrackingCaption")
+                {
+                    Source = selectedCondition,
+                    Mode = BindingMode.TwoWay,
+                    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                };
+                BindingOperations.SetBinding(EdtCaption, TextBox.TextProperty, bindingCaption);
+
+                var bindingSequence = new Binding("SequenceIndex")
+                {
+                    Source = selectedCondition,
+                    Mode = BindingMode.TwoWay,
+                    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                };
+                BindingOperations.SetBinding(EdtSequence, TextBox.TextProperty, bindingSequence);
+
+                var bindingAuto = new Binding("CanBeAutoCompleted")
+                {
+                    Source = selectedCondition,
+                    Mode = BindingMode.TwoWay,
+                    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                };
+                BindingOperations.SetBinding(EdtAutoComplete, CheckBox.IsCheckedProperty, bindingAuto);
+
+                // ✅ 3. NOW set UI text explicitly (optional, but helps if binding hasn't settled)
                 EdtCaption.Text = selectedCondition.TrackingCaption;
-                BindingOperations.SetBinding(EdtCaption, TextBox.TextProperty,
-                    new Binding("TrackingCaption") { Source = selectedCondition, Mode = BindingMode.TwoWay });
-
                 EdtSequence.Text = selectedCondition.SequenceIndex.ToString();
-                BindingOperations.SetBinding(EdtSequence, TextBox.TextProperty,
-                    new Binding("SequenceIndex") { Source = selectedCondition, Mode = BindingMode.TwoWay });
-
                 EdtAutoComplete.IsChecked = selectedCondition.CanBeAutoCompleted;
-                BindingOperations.SetBinding(EdtAutoComplete, CheckBox.IsCheckedProperty,
-                    new Binding("CanBeAutoCompleted") { Source = selectedCondition, Mode = BindingMode.TwoWay });
 
                 string type = selectedCondition.Type.ToLower();
 
@@ -1276,25 +1381,19 @@ namespace TabbedApp
 
         private void ClearConditionEditor()
         {
-            BindingOperations.ClearBinding(EdtCaption, TextBox.TextProperty);
-            BindingOperations.ClearBinding(EdtSequence, TextBox.TextProperty);
-            BindingOperations.ClearBinding(EdtAutoComplete, CheckBox.IsCheckedProperty);
-            BindingOperations.ClearBinding(ChkPlayerKeepsItems, CheckBox.IsCheckedProperty);
-            BindingOperations.ClearBinding(ChkDisablePurchase, CheckBox.IsCheckedProperty);
-            BindingOperations.ClearBinding(EdtKillAmount, TextBox.TextProperty);
+            // ✅ Clear all bindings first
+            BindingOperations.ClearAllBindings(EdtCaption);
+            BindingOperations.ClearAllBindings(EdtSequence);
+            BindingOperations.ClearAllBindings(EdtAutoComplete);
 
-            BindingOperations.ClearBinding(ChkSpawnOnlyNeeded, CheckBox.IsCheckedProperty);
-            BindingOperations.ClearBinding(EdtMinNeeded, TextBox.TextProperty);
-            BindingOperations.ClearBinding(EdtMaxNeeded, TextBox.TextProperty);
-            BindingOperations.ClearBinding(EdtMarkerDistance, TextBox.TextProperty);
-
+            // ✅ Now reset UI text/values
             EdtCaption.Text = "";
-            EdtSequence.Text = "0"; // Explicit default
+            EdtSequence.Text = "0"; // Explicit default (since binding is cleared)
             EdtAutoComplete.IsChecked = false;
+
+            // Reset other condition-type-specific fields
             ChkPlayerKeepsItems.IsChecked = false;
             ChkDisablePurchase.IsChecked = true;
-            EdtKillAmount.Text = "1";
-
             ChkSpawnOnlyNeeded.IsChecked = true;
             EdtMinNeeded.Text = "1";
             EdtMaxNeeded.Text = "1";
@@ -1305,6 +1404,7 @@ namespace TabbedApp
             LvCurrentRequiredItems.ItemsSource = null;
         }
 
+
         private void TabConditionEditor_SelectionChanged(object sender, SelectionChangedEventArgs e) { }
 
         private void BtnSaveCondition_Click(object sender, RoutedEventArgs e) { SaveConditionFromEditor(null, null); }
@@ -1313,35 +1413,14 @@ namespace TabbedApp
         {
             if (LvConditions.SelectedItem is Condition currentCondition)
             {
-                // Validate and clamp sequence index
-                if (int.TryParse(EdtSequence.Text, out int sequenceIndex))
-                {
-                    if (sequenceIndex < 0)
-                    {
-                        EdtSequence.Text = "0";
-                        MessageBox.Show("Sequence index cannot be negative. Defaulting to 0.",
-                            "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        return;
-                    }
-                    else if (sequenceIndex > 10)
-                    {
-                        EdtSequence.Text = "10";
-                        MessageBox.Show("Maximum sequence index is 10. Clamping to 10.",
-                            "Limit Exceeded", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        return;
-                    }
-                }
-                else
-                {
-                    EdtSequence.Text = "0";
-                    MessageBox.Show("Invalid sequence number. Defaulting to 0.",
-                        "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
+                // Force UI to update the source (especially if focus is still in a text box)
+                BindingExpression expr = EdtCaption.GetBindingExpression(TextBox.TextProperty);
+                expr?.UpdateSource();
 
-                // Update condition properties
-                currentCondition.SequenceIndex = int.Parse(EdtSequence.Text);
+                expr = EdtSequence.GetBindingExpression(TextBox.TextProperty);
+                expr?.UpdateSource();
 
+                // ✅ Now update condition-specific properties
                 if (currentCondition.Type.Equals("Fetch", StringComparison.OrdinalIgnoreCase) && currentCondition is FetchCondition fetch)
                 {
                     fetch.PlayerKeepsItems = ChkPlayerKeepsItems.IsChecked ?? false;
@@ -1357,9 +1436,11 @@ namespace TabbedApp
                     int.TryParse(EdtMarkerDistance.Text, out int dist);
                     interaction.WorldMarkerShowDistance = dist;
                 }
-                UpdateJsonPreview();
+
+                UpdateJsonPreview(); // Ensure JSON reflects current state
             }
         }
+
 
         public void AddCondition(Condition newCondition)
         {
