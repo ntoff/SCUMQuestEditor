@@ -13,4 +13,19 @@
     <PackageReference Include="MaterialDesignThemes.MahApps" Version="5.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="_data\EliminationTargets.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="_data\EliminationWeapons.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="_data\FetchItems.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="_data\TradeItems.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
