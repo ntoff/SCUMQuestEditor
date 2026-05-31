@@ -20,14 +20,14 @@
                 </Style>
 
                 <!-- 2. Compact TextBox Style -->
-                <Style x:Key="CompactTextBox" TargetType="TextBox" BasedOn="{StaticResource MaterialDesignTextBox}">
+                <Style x:Key="CompactTextBox" TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
                     <Setter Property="FontSize" Value="12" />
-                    <Setter Property="Padding" Value="2,2,2,2" />
+                    <Setter Property="Padding" Value="5" />
                     <Setter Property="Margin" Value="0,0,0,5" />
                 </Style>
 
                 <!-- 3. Compact ComboBox Style -->
-                <Style x:Key="CompactComboBox" TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignComboBox}">
+                <Style x:Key="CompactComboBox" TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
                     <Setter Property="FontSize" Value="12" />
                     <Setter Property="Padding" Value="2,2,2,2" />
                     <Setter Property="Margin" Value="0,0,0,5" />
@@ -42,31 +42,49 @@
                 <Style TargetType="Label" BasedOn="{StaticResource MaterialDesignLabel}">
                     <Setter Property="FontSize" Value="12" />
                     <Setter Property="Margin" Value="0,0,10,5" />
-                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="Padding" Value="0,5,0,0" />
                 </Style>
 
-                <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignTextBox}">
+                <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
                     <Setter Property="FontSize" Value="12" />
-                    <Setter Property="Padding" Value="2,2,2,2" />
+                    <Setter Property="Padding" Value="5" />
                     <Setter Property="Margin" Value="0,0,0,5" />
                 </Style>
 
-                <Style TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignComboBox}">
+                <Style TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
                     <Setter Property="FontSize" Value="12" />
-                    <Setter Property="Padding" Value="2,2,2,2" />
+                    <Setter Property="Padding" Value="5" />
                     <Setter Property="Margin" Value="0,0,0,5" />
                 </Style>
 
                 <Style TargetType="TabItem" BasedOn="{StaticResource MaterialDesignTabItem}">
-                    <Setter Property="Padding" Value="10,2,10,2" />
+                    <Setter Property="Padding" Value="5" />
                     <Setter Property="FontSize" Value="12" />
                 </Style>
 
+            <!-- 5. Compact Button Style with Reduced Padding -->
             <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
                 <Setter Property="FontSize" Value="12" />
-                <Setter Property="Padding" Value="10,5,10,5" />
+                <Setter Property="Padding" Value="0" />
                 <Setter Property="Margin" Value="0,0,5,5" />
             </Style>
+
+            <!-- 6. LISTBOX/LISTVIEW STYLE -->
+            <!-- This gives the list a slightly lighter background and a clear border -->
+            <Style TargetType="ListView" BasedOn="{StaticResource MaterialDesignListView}">
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Padding" Value="2" />
+            </Style>
+
+            <Style TargetType="CheckBox">
+                <Setter Property="Foreground" Value="White" />
+            </Style>
+
+            <Style TargetType="ListViewItem">
+                <Setter Property="Foreground" Value="White" />
+            </Style>
+
+
         </ResourceDictionary>
     </Application.Resources>
 
