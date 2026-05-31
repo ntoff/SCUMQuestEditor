@@ -9,6 +9,14 @@ namespace SCUMQuestEditor
 {
     public partial class EditRequiredItemsDialog : Window
     {
+        private bool _isEditing = false;
+
+        private void UpdateEditButtonsState()
+        {
+            BtnApply.IsEnabled = _isEditing;
+            BtnCancelEdit.IsEnabled = _isEditing;
+        }
+
         public ObservableCollection<RequiredItem> RequiredItems { get; set; } = new ObservableCollection<RequiredItem>();
         public List<string> AvailableItems { get; set; } = new List<string>();
 
@@ -42,6 +50,7 @@ namespace SCUMQuestEditor
 
             LvRequiredItems.ItemsSource = RequiredItems;
             LvRequiredItems.SelectionMode = SelectionMode.Multiple;
+            UpdateEditButtonsState();
 
             // Validation
             TxtRequiredQty.PreviewTextInput += NumericPreviewTextInput;
@@ -153,6 +162,8 @@ namespace SCUMQuestEditor
                     });
                 }
             }
+            _isEditing = false;
+            UpdateEditButtonsState();
 
             LvRequiredItems.ItemsSource = null;
             LvRequiredItems.ItemsSource = RequiredItems;
@@ -187,32 +198,27 @@ namespace SCUMQuestEditor
                 return;
             }
 
-            RequiredItem firstAddedItem = null;
-
-            foreach (var item in LstAcceptedItems.SelectedItems)
+            // Create a SINGLE RequiredItem containing ALL selected items in its AcceptedItems list
+            var newItem = new RequiredItem
             {
-                var newItem = new RequiredItem
-                {
-                    AcceptedItems = new List<string> { item.ToString() },
-                    RequiredNum = 1
-                };
-                RequiredItems.Add(newItem);
-                if (firstAddedItem == null)
-                {
-                    firstAddedItem = newItem;
-                }
-            }
+                AcceptedItems = LstAcceptedItems.SelectedItems.Cast<object>().Select(s => s.ToString()).ToList(),
+                RequiredNum = 1 // Default value. Change to int.TryParse(TxtRequiredQty.Text, out int q) ? q : 1 if you want it to respect the input field.
+            };
 
+            RequiredItems.Add(newItem);
+
+            // Refresh ListView and select the newly added item
             LvRequiredItems.ItemsSource = null;
             LvRequiredItems.ItemsSource = RequiredItems;
 
-            if (firstAddedItem != null)
+            if (newItem != null)
             {
-                LvRequiredItems.SelectedItem = firstAddedItem;
-                LvRequiredItems.ScrollIntoView(firstAddedItem);
+                LvRequiredItems.SelectedItem = newItem;
+                LvRequiredItems.ScrollIntoView(newItem);
                 LoadSelectedRequiredItemIntoEditor();
             }
         }
+
 
         private void LoadSelectedRequiredItemIntoEditor()
         {
@@ -257,11 +263,14 @@ namespace SCUMQuestEditor
             TxtMinResourcePct.Text = selectedReq.MinAcceptedItemResourceRatio.ToString();
             ChkMinResourceMl.IsChecked = selectedReq.MinAcceptedItemResourceAmount > 0;
             TxtMinResourceMl.Text = selectedReq.MinAcceptedItemResourceAmount.ToString();
+
         }
 
         private void BtnEditSelectedRequiredItem_Click(object sender, RoutedEventArgs e)
         {
             LoadSelectedRequiredItemIntoEditor();
+            _isEditing = true;
+            UpdateEditButtonsState();
         }
 
         private void BtnRemoveSelectedRequiredItem_Click(object sender, RoutedEventArgs e)
@@ -289,6 +298,9 @@ namespace SCUMQuestEditor
 
         private void BtnCancelEdit_Click(object sender, RoutedEventArgs e)
         {
+            _isEditing = false;
+            UpdateEditButtonsState();
+
             ClearInputFields();
             FilterAvailableItems();
         }

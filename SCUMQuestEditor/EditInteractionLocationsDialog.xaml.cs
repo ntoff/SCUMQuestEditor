@@ -143,7 +143,9 @@ namespace SCUMQuestEditor
 
         private void BtnCancelInput_Click(object sender, RoutedEventArgs e)
         {
-            // Do nothing
+            LocationList.ItemsSource = null;
+            LocationList.ItemsSource = Locations;
+            TxtMeshInfoInput.Text = "";
         }
 
         private void BtnOk_Click(object sender, RoutedEventArgs e)
