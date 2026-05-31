@@ -21,6 +21,7 @@
 1H_Improvised_Glass_Shiv
 1H_Improvised_Hammer
 1H_Improvised_metal_knife
+1H_Improvised_Tomahawk
 1H_ImprovisedKnife
 1H_KitchenKnife
 1H_KitchenKnife_02
@@ -33,6 +34,9 @@
 1H_Medieval_Sword
 1H_Metal_Pipe
 1H_Metal_Sword
+1H_Military_Shovel
+1H_Military_Survival_Knife
+1H_Military_Tomahawk
 1H_MK5000_Black
 1H_MK5000_Metal
 1H_N9_Black
@@ -44,6 +48,7 @@
 1H_Scout_Black
 1H_Scout_White
 1H_Shuriken
+1H_SkinningKnife
 1H_Small_Axe
 1H_Stone_Axe
 1H_Stone_Axe_Head
@@ -77,6 +82,7 @@
 2H_Tang_Dao_Black_Dragon
 2H_Tang_Dao_Damascus
 2H_Wooden_Sword
+2H_ZhanMaDao_Sword
 4_pieces_Ear_Necklace
 6_pieces_Ear_Necklace
 Absinthe
@@ -89,6 +95,7 @@ Aeroplane_Repair_Kit
 African_Biltong
 Agaricus_Augustus
 Agaricus_Campestris
+Air_Pump
 Aloe_Vera
 Amanita_Muscaria
 Amanita_Pantherina
@@ -103,6 +110,8 @@ Ammo_Crossbow_Bolt_WoodenMetalTip
 Ammo_Crossbow_Bolt_WoodenStoneTip
 Amur_Fillet
 Animal_skin
+AnimalBaitFeederItem
+AnimalBaitFeederItem_HunterVariant
 Anode_Plate
 Antibiotic_Pill_Single
 Antibiotics_01
@@ -272,6 +281,7 @@ BowSilencer
 BowSilencer_SlipOn
 Boxer_Briefs_01
 BP_HeadLamp
+BP_WeaponCharm_BoneWhistle
 Brake_Oil
 Breathing_Tube_01
 Brick
@@ -467,7 +477,7 @@ Cannabis_Seed_Bag
 Cannabis_Seeds
 Canned_Corn
 Canned_Tuna
-CannedCatfood
+CannedCatFood
 CannedDogFood
 CannedFruitCocktail
 CannedGoulash
@@ -704,6 +714,7 @@ Corn
 Corn_flakes
 Corn_Seed_Bag
 Corn_Seeds
+Cowboys_Boots_01
 Crab_Apple
 Crackers
 Cream
@@ -741,6 +752,7 @@ DialLock_Item
 Diary
 Dildo_Arrow
 Dildo_Spear
+Dinghy_Item
 Dirtbike_Body_Hellrider_Item
 Dirtbike_Body_Item
 Dirtbike_Brakelight_Item
@@ -918,6 +930,11 @@ F_Undershirt_Bra_03
 F_Undershirt_Bra_04
 F_Undershirt_Bra_05
 Faceroll_Smasher
+Fascinator_Hat_01
+Fascinator_Hat_02
+Fascinator_Hat_03
+Fascinator_Hat_04
+Fascinator_Hat_05
 Feather
 Fig
 Fig_Seed_Bag
@@ -1012,6 +1029,11 @@ Ganoderma_Lucidum
 Garlic
 Garlic_Seed_Bag
 Garlic_Seeds
+Garrison_Cap_01
+Garrison_Cap_02
+Garrison_Cap_03
+Garrison_Cap_04
+Garrison_Cap_05
 Gas_Mask_01
 Gas_Mask_02
 Gas_Mask_03
@@ -1105,6 +1127,12 @@ HH_Shoes_04_04
 HH_Shoes_05_01
 HH_Shoes_05_02
 HH_Shoes_05_03
+HH_Wedge_Heels_01_01
+HH_Wedge_Heels_01_02
+HH_Wedge_Heels_01_03
+HH_Wedge_Heels_01_04
+HH_Wedge_Heels_01_05
+HH_Wedge_Heels_01_06
 HighTop_Shoes
 Hiking_Backpack_01_01
 Hiking_Backpack_01_02
@@ -1169,6 +1197,7 @@ Improvised_Gloves
 Improvised_Lockpick
 Improvised_Metal_Chest
 Improvised_Metal_Spear
+Improvised_Motorcycle_Wheel
 Improvised_Plant_rope
 Improvised_Quiver_01
 Improvised_Quiver_02_Event
@@ -1263,6 +1292,14 @@ Ketchup
 KeyCard
 KeyCardBunker_Level01
 KeyCardBunker_Level02
+Keyhole_Shirt_01
+Keyhole_Shirt_02
+Keyhole_Shirt_03
+Keyhole_Shirt_04
+Keyhole_Shirt_05
+Keyhole_Shirt_06
+Keyhole_Shirt_07
+Keyhole_Shirt_08
 Kicmovaca
 Kilt_01
 Kilt_02
@@ -1327,6 +1364,9 @@ Leather_Backpack_02
 Leather_Backpack_03
 Leather_Improvised_Stabproof_Vest
 Leather_Jacket
+Leather_MiniSkirt_01
+Leather_MiniSkirt_02
+Leather_MiniSkirt_03
 Leather_Sheet
 Leather_Shoes
 Leather_Shoes_02
@@ -1382,6 +1422,7 @@ Magazine_AWM
 Magazine_AWP
 Magazine_Block21
 Magazine_CarbonHunter
+Magazine_Clip_SKS
 Magazine_DEagle_357
 Magazine_DEagle_50
 Magazine_HS9
@@ -1398,6 +1439,7 @@ Magazine_RPK
 Magazine_SCAR_DMR
 Magazine_SF19
 Magazine_SVD_Dragunov
+Magazine_TommyGun
 Magazine_UMP45
 Magazine_VHS2
 Magnifying_Glass
@@ -1555,6 +1597,8 @@ MRE_Stew
 MRE_TunaSalad
 Mulberry
 Mustard
+Mutant_Boar_Hooves_Back
+Mutant_Boar_Hooves_front
 Nails
 Nails_Package_Box
 Needle
@@ -1577,10 +1621,12 @@ Orange_Seed_Bag
 Orange_Seeds
 Orata_Fillet
 Organic_Fertilizer
+P17_Bayonet
 Padlock
 Painkillers_01
 Painkillers_02
 PainKillers_03
+PaintSprayer
 Pajama_Pants
 Pajama_Shirt_01
 Pan
@@ -1603,6 +1649,7 @@ Penicillin01
 PenisWarmer_01
 PenisWarmer_02
 PenisWarmer_03
+Penobscot_Bow_40
 Peppers_Seed_Bag
 Peppers_Seeds
 Pesticide
@@ -1670,6 +1717,12 @@ Pumpkin
 Pumpkin_Seed_Bag
 Pumpkin_Seeds
 Puppet_Eye
+Qipao_Dress_01
+Qipao_Dress_02
+Qipao_Dress_03
+Qipao_Dress_04
+Qipao_Dress_05
+Qipao_Dress_06
 Rabbit_Left_Back
 Rabbit_Left_Front
 Rabbit_Mask_01
@@ -1867,6 +1920,17 @@ Shorts_Pants_01_07
 Shorts_Pants_01_08
 Shorts_Pants_01_09
 Shorts_Pants_01_10
+SidecarBike_Brakelight_Item
+SidecarBike_Fender_Front_Item
+SidecarBike_Fender_Rear_Item
+SidecarBike_Fender_Sidecar_Item
+SidecarBike_Headlight_Item
+SidecarBike_Seat_Back_Item
+SidecarBike_Seat_Front_Item
+SidecarBike_Sidecar_Brakelight_Item
+SidecarBike_Sidecar_Headlight_Item
+SidecarBike_Sidecar_WeaponStation_Item
+SidecarBike_Wheel_4x16_Item
 Sign_01
 Sign_02
 Sign_03
@@ -1878,6 +1942,15 @@ Skewer_02
 Skirt_01_01
 Skirt_01_02
 Skirt_01_03
+Skirt_02_01
+Skirt_02_02
+Skirt_02_03
+Skirt_02_04
+Skirt_02_05
+Skirt_02_06
+Skirt_02_07
+Skirt_02_08
+SKS_Bayonet
 Slav_Reviver
 Slavic_Gent
 Sledgehammer
@@ -1955,6 +2028,14 @@ StakePitTrap
 Standing_Torch_01
 Steel_Fork
 Stinging_Nettle
+Stockings_01
+Stockings_02
+Stockings_03
+Stockings_04
+Stockings_05
+Stockings_06
+Stockings_07
+Stockings_08
 Stone
 Stone_Large
 Stone_Small
@@ -2003,6 +2084,7 @@ Tactical_Sweater_05
 Tactical_Sweater_06
 Tactical_Sweater_07
 Tactical_Vest_01
+Takedown_Bow
 Tang_pants_01
 Tang_pants_02
 Tang_pants_03
@@ -2116,6 +2198,7 @@ Underpants_03
 Underpants_04
 Underpants_05
 Undershirt_01
+Utility_Belt_01
 VegetableOil
 Vest_01
 Vest_02
@@ -2123,6 +2206,9 @@ Vest_03
 Vest_04
 Vest_05
 Vinegar
+Vintage_Jail_Cap_01
+Vintage_Jail_Pants_01
+Vintage_Jail_Shirt_01
 Vitamins_01
 Vitamins_02
 Vitamins_03
@@ -2215,7 +2301,7 @@ Weapon_Parts_AWP
 Weapon_Parts_Block21
 Weapon_Parts_Carbon_Hunter
 Weapon_Parts_Deagle_357
-Weapon_Parts_DEagle_50
+Weapon_Parts_Deagle_50
 Weapon_Parts_DT11b
 Weapon_Parts_FlareGun
 Weapon_Parts_HS9
@@ -2245,7 +2331,10 @@ Weapon_Parts_SCAR_L
 Weapon_Parts_SDASS
 Weapon_Parts_Serpent357
 Weapon_Parts_SF19
+Weapon_Parts_SKS
 Weapon_Parts_SVD
+Weapon_Parts_TommyGun
+Weapon_Parts_Trench_Gun
 Weapon_Parts_UMP
 Weapon_Parts_VHS
 Weapon_Parts_VHSBG
@@ -2259,8 +2348,11 @@ Weapon_SCAR_L
 Weapon_SDASS
 Weapon_Serpent357
 Weapon_SF19
+Weapon_SKS
 Weapon_SVD_Dragunov
 Weapon_SVD_Dragunov_Premium
+Weapon_TommyGun
+Weapon_Trench_Gun
 Weapon_UMP45
 Weapon_VHS_BG
 Weapon_VHS2
@@ -2402,6 +2494,10 @@ WoodenBrokenArrowFeathers
 WoodenBrokenArrowMetalTip
 WoodenBrokenArrowStoneTip
 WoodenWeaponRack
+WoodlandHunter_AntlerBackpack_01
+WoodlandHunter_Hat_01
+WoodlandHunter_Poncho_01
+WoodlandHunter_Quiver_01
 Wool_Gloves_01_01
 Wool_Gloves_01_02
 Wool_Gloves_01_03
@@ -2424,6 +2520,7 @@ Working_pants_01_02
 Working_pants_01_03
 Wushu_Spear_Metal
 Wushu_Spear_Wooden
+WW2_German_Helmet_01
 WW_Body_ArmorHeavy_Top_Item
 WW_Body_Back
 WW_Body_Front
@@ -2460,7 +2557,6 @@ WW_Seat_FrontLeft_Item
 WW_Seat_FrontRight_Item
 WW_Wheel_ArmorLight_FrontLeft_Item
 WW_Wheel_ArmorLight_FrontRight_Item
-WW2_German_Helmet_01
 Yeast
 Zombie_01_Head
 Zombie_01_Head_No_teeth
