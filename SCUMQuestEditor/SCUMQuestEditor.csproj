@@ -7,7 +7,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <NuGetAuditMode>all</NuGetAuditMode>
+    <ApplicationIcon>QuestEditor.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="QuestEditor.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="MaterialDesignThemes" Version="5.3.2" />
