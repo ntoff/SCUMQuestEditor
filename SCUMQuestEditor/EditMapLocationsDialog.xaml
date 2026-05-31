@@ -23,11 +23,11 @@
                   Style="{StaticResource MaterialDesignListView}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="X" Width="80" DisplayMemberBinding="{Binding Location.X}" />
-                    <GridViewColumn Header="Y" Width="80" DisplayMemberBinding="{Binding Location.Y}" />
-                    <GridViewColumn Header="Z" Width="80" DisplayMemberBinding="{Binding Location.Z}" />
-                    <GridViewColumn Header="Size Factor" Width="80" DisplayMemberBinding="{Binding SizeFactor}" />
-                    <GridViewColumn Header="Format" Width="150" DisplayMemberBinding="{Binding FormatString}" />
+                    <GridViewColumn Header="X" DisplayMemberBinding="{Binding Location.X}" />
+                    <GridViewColumn Header="Y" DisplayMemberBinding="{Binding Location.Y}" />
+                    <GridViewColumn Header="Z" DisplayMemberBinding="{Binding Location.Z}" />
+                    <GridViewColumn Header="Size Factor" DisplayMemberBinding="{Binding SizeFactor}" />
+                    <GridViewColumn Header="Format" DisplayMemberBinding="{Binding FormatString}" />
                 </GridView>
             </ListView.View>
         </ListView>
@@ -89,11 +89,11 @@
 
         <!-- 5. Action Buttons -->
         <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="10,0,10,5">
-            <Button x:Name="BtnAddUpdate" Content="Add/Update" Width="100" Margin="0,0,5,0" Click="BtnAddUpdate_Click"
+            <Button x:Name="BtnAddUpdate" Content="Add/Update" Margin="0,0,5,0" Click="BtnAddUpdate_Click"
                     Style="{StaticResource MaterialDesignRaisedButton}"/>
-            <Button x:Name="BtnEditSelected" Content="Edit Selected" Width="100" Margin="0,0,5,0" Click="BtnEditSelected_Click"
+            <Button x:Name="BtnEditSelected" Content="Edit Selected" Margin="0,0,5,0" Click="BtnEditSelected_Click"
                     Style="{StaticResource MaterialDesignRaisedButton}"/>
-            <Button x:Name="BtnRemoveSelected" Content="Remove Selected" Width="100" Click="BtnRemoveSelected_Click"
+            <Button x:Name="BtnRemoveSelected" Content="Remove Selected" Click="BtnRemoveSelected_Click"
                     Style="{StaticResource MaterialDesignRaisedButton}"/>
         </StackPanel>
 

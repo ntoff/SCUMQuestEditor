@@ -397,9 +397,9 @@
                                               Style="{StaticResource MaterialDesignListView}" av:ItemsSource="{av:SampleData ItemCount=5}" SelectionChanged="TabMapLocations_SelectionChanged">
                                         <ListView.View>
                                             <GridView>
-                                                <GridViewColumn Header="X" Width="80" DisplayMemberBinding="{Binding Location.X}" />
-                                                <GridViewColumn Header="Y" Width="80" DisplayMemberBinding="{Binding Location.Y}" />
-                                                <GridViewColumn Header="Z" Width="80" DisplayMemberBinding="{Binding Location.Z}" />
+                                                <GridViewColumn Header="X" DisplayMemberBinding="{Binding Location.X}" />
+                                                <GridViewColumn Header="Y" DisplayMemberBinding="{Binding Location.Y}" />
+                                                <GridViewColumn Header="Z" DisplayMemberBinding="{Binding Location.Z}" />
                                                 <GridViewColumn Header="Size Factor" DisplayMemberBinding="{Binding SizeFactor}" />
                                             </GridView>
                                         </ListView.View>
