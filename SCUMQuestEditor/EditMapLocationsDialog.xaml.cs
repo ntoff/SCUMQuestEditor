@@ -47,22 +47,44 @@ namespace SCUMQuestEditor
 
         private void FloatPreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            string currentText = ((TextBox)sender).Text;
-            if (currentText.Contains(".") && e.Text == ".") { e.Handled = true; return; }
-            e.Handled = !Regex.IsMatch(e.Text, @"^\d*\.?\d*$");
+            TextBox textBox = (TextBox)sender;
+
+            // Allow backspace/delete operations
+            if (string.IsNullOrEmpty(e.Text)) return;
+
+            // Simulate the text after insertion at the current caret position
+            string newText = textBox.Text.Insert(textBox.CaretIndex, e.Text);
+
+            // Prevent multiple decimal points
+            if (newText.Contains(".") && e.Text == ".")
+            {
+                e.Handled = true;
+                return;
+            }
+
+            // Allow an optional leading minus sign for negative coordinates
+            bool isNegative = newText.StartsWith("-");
+            string checkString = isNegative ? newText.Substring(1) : newText;
+
+            // Validate that the remaining characters are digits and at most one decimal point
+            e.Handled = !Regex.IsMatch(checkString, @"^\d*\.?\d*$");
         }
+
 
         private void BtnParse_Click(object sender, RoutedEventArgs e)
         {
             string input = TxtLocationString.Text;
-            Regex regex = new Regex(@"\{X=([0-9.-]+)\s+Y=([0-9.-]+)\s+Z=([0-9.-]+)\|");
+
+            Regex regex = new Regex(@"\{X\s*=\s*(-?\d+(?:\.\d+)?)\s+Y\s*=\s*(-?\d+(?:\.\d+)?)\s+Z\s*=\s*(-?\d+(?:\.\d+)?)");
+
             Match match = regex.Match(input);
 
             if (match.Success)
             {
-                double x = double.Parse(match.Groups[1].Value);
-                double y = double.Parse(match.Groups[2].Value);
-                double z = double.Parse(match.Groups[3].Value);
+                // Using InvariantCulture ensures consistent decimal parsing regardless of system locale
+                double x = double.Parse(match.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture);
+                double y = double.Parse(match.Groups[2].Value, System.Globalization.CultureInfo.InvariantCulture);
+                double z = double.Parse(match.Groups[3].Value, System.Globalization.CultureInfo.InvariantCulture);
 
                 TxtX.Text = x.ToString("F4");
                 TxtY.Text = y.ToString("F4");
@@ -71,7 +93,12 @@ namespace SCUMQuestEditor
             }
             else
             {
-                MessageBox.Show("Could not parse location string. Ensure format is {X=... Y=... Z=...|...}", "Parse Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(
+                    "Could not parse location string.\n" +
+                    "Accepted formats:\n" +
+                    "{X=... Y=... Z=...}\n" +
+                    "{X=... Y=... Z=...|P=... R=...}",
+                    "Parse Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -117,6 +144,8 @@ namespace SCUMQuestEditor
                 TxtY.Text = selectedLoc.Location.Y.ToString("F4");
                 TxtZ.Text = selectedLoc.Location.Z.ToString("F4");
                 TxtSizeFactor.Text = selectedLoc.SizeFactor.ToString("F2");
+
+                TxtLocationString.Text = $"{{X={selectedLoc.Location.X} Y={selectedLoc.Location.Y} Z={selectedLoc.Location.Z}}}";
             }
             else
             {

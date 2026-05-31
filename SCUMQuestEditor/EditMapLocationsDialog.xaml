@@ -1,6 +1,7 @@
 <Window x:Class="SCUMQuestEditor.EditMapLocationsDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         Title="Edit Map Locations" Height="500" Width="600"
         WindowStartupLocation="CenterOwner"
         ResizeMode="CanResize"
@@ -37,9 +38,10 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <Label Grid.Column="0" Content="Location String (copy from game):" HorizontalAlignment="Left"/>
+            <Label Grid.Column="0" HorizontalAlignment="Left"/>
             <TextBox x:Name="TxtLocationString" Grid.Column="0" Grid.Row="1" Margin="0,5,0,5" 
                      AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                     materialDesign:HintAssist.Hint="Location String (copy from game):"
                      Style="{StaticResource CompactTextBox}"/>
             <Button x:Name="BtnParse" Grid.Column="1" Content="Parse" Width="75" Margin="10,0,0,0" 
                     Click="BtnParse_Click"
