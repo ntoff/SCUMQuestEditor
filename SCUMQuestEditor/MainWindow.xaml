@@ -313,9 +313,9 @@
                                               Style="{StaticResource MaterialDesignListView}">
                                         <ListView.View>
                                             <GridView>
-                                                <GridViewColumn Header="Items" Width="150" DisplayMemberBinding="{Binding ItemName}" />
-                                                <GridViewColumn Header="Quantity" Width="100" DisplayMemberBinding="{Binding Quantity}" />
-                                                <GridViewColumn Header="Properties" Width="150" DisplayMemberBinding="{Binding Properties}" />
+                                                <GridViewColumn Header="Items" DisplayMemberBinding="{Binding ItemName}" />
+                                                <GridViewColumn Header="Quantity" DisplayMemberBinding="{Binding Quantity}" />
+                                                <GridViewColumn Header="Properties" DisplayMemberBinding="{Binding Properties}" />
                                             </GridView>
                                         </ListView.View>
                                     </ListView>
