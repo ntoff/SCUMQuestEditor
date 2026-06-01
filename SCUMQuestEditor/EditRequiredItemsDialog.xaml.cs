@@ -10,6 +10,42 @@ namespace SCUMQuestEditor
     public partial class EditRequiredItemsDialog : Window
     {
         private bool _isEditing = false;
+        private void LvRequiredItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // If the user deselects the item while in edit mode, cancel the edit
+            if (LvRequiredItems.SelectedItems.Count == 0 && _isEditing)
+            {
+                _isEditing = false;
+                UpdateEditButtonsState();
+                ClearInputFields();
+                FilterAvailableItems();
+            }
+            else if (LvRequiredItems.SelectedItems.Count == 1)
+            {
+                // If a single item is selected, we can potentially edit it
+                // But we only enter edit mode if the user explicitly clicks "Edit Selected"
+                // So we don't auto-load here.
+            }
+        }
+        private void SelectComboBoxItem(ComboBox comboBox, string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                comboBox.SelectedItem = null;
+                return;
+            }
+
+            foreach (ComboBoxItem item in comboBox.Items)
+            {
+                if (item.Content?.ToString() == value)
+                {
+                    comboBox.SelectedItem = item;
+                    return;
+                }
+            }
+            // If not found, leave it null
+            comboBox.SelectedItem = null;
+        }
 
         private void UpdateEditButtonsState()
         {
@@ -69,6 +105,8 @@ namespace SCUMQuestEditor
             DataObject.AddPastingHandler(TxtMinResourcePct, new DataObjectPastingEventHandler(NumericPasting));
             DataObject.AddPastingHandler(TxtMinResourceMl, new DataObjectPastingEventHandler(NumericPasting));
 
+            LvRequiredItems.SelectionChanged += LvRequiredItems_SelectionChanged;
+
             FilterAvailableItems();
         }
 
@@ -110,12 +148,20 @@ namespace SCUMQuestEditor
                 return;
             }
 
-            // Handle multiple selected items in the top list view
-            var selectedReqItems = LvRequiredItems.SelectedItems.Cast<RequiredItem>().ToList();
-
-            if (selectedReqItems.Count > 0)
+            // If we are in edit mode, we MUST have a selected item in the top list
+            if (_isEditing)
             {
-                // Update all selected required items
+                var selectedReqItems = LvRequiredItems.SelectedItems.Cast<RequiredItem>().ToList();
+                if (selectedReqItems.Count == 0)
+                {
+                    // This should not happen if we reset _isEditing on deselection, but as a safeguard
+                    MessageBox.Show("No item selected for editing.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    _isEditing = false;
+                    UpdateEditButtonsState();
+                    return;
+                }
+
+                // Handle multiple selected items in the top list view (bulk edit)
                 foreach (var selectedReqItem in selectedReqItems)
                 {
                     selectedReqItem.AcceptedItems.Clear();
@@ -127,15 +173,15 @@ namespace SCUMQuestEditor
                     selectedReqItem.RequiredNum = qty;
 
                     selectedReqItem.MinAcceptedItemUses = ChkMinUses.IsChecked == true && int.TryParse(TxtMinUses.Text, out int minUses) ? minUses : 0;
-                    selectedReqItem.MinAcceptedItemMass = ChkMinMass.IsChecked == true && double.TryParse(TxtMinMass.Text, out double minMass) ? minMass : 0;
-                    selectedReqItem.MinAcceptedItemHealth = ChkMinHealth.IsChecked == true && double.TryParse(TxtMinHealth.Text, out double minHealth) ? minHealth : 0;
+                    selectedReqItem.MinAcceptedItemMass = ChkMinMass.IsChecked == true && int.TryParse(TxtMinMass.Text, out int minMass) ? minMass : 0;
+                    selectedReqItem.MinAcceptedItemHealth = ChkMinHealth.IsChecked == true && int.TryParse(TxtMinHealth.Text, out int minHealth) ? minHealth : 0;
 
-                    selectedReqItem.MinAcceptedCookLevel = ChkMinCookLevel.IsChecked == true && CmbMinCookLevel.SelectedItem != null ? CmbMinCookLevel.SelectedItem.ToString() : null;
-                    selectedReqItem.MaxAcceptedCookLevel = ChkMaxCookLevel.IsChecked == true && CmbMaxCookLevel.SelectedItem != null ? CmbMaxCookLevel.SelectedItem.ToString() : null;
-                    selectedReqItem.MinAcceptedCookQuality = ChkMinCookQuality.IsChecked == true && CmbMinCookQuality.SelectedItem != null ? CmbMinCookQuality.SelectedItem.ToString() : null;
+                    selectedReqItem.MinAcceptedCookLevel = ChkMinCookLevel.IsChecked == true && CmbMinCookLevel.SelectedItem is ComboBoxItem minCookItem ? minCookItem.Content?.ToString() : null;
+                    selectedReqItem.MaxAcceptedCookLevel = ChkMaxCookLevel.IsChecked == true && CmbMaxCookLevel.SelectedItem is ComboBoxItem maxCookItem ? maxCookItem.Content?.ToString() : null;
+                    selectedReqItem.MinAcceptedCookQuality = ChkMinCookQuality.IsChecked == true && CmbMinCookQuality.SelectedItem is ComboBoxItem qualityItem ? qualityItem.Content?.ToString() : null;
 
-                    selectedReqItem.MinAcceptedItemResourceRatio = ChkMinResourcePct.IsChecked == true && double.TryParse(TxtMinResourcePct.Text, out double minResPct) ? minResPct : 0;
-                    selectedReqItem.MinAcceptedItemResourceAmount = ChkMinResourceMl.IsChecked == true && double.TryParse(TxtMinResourceMl.Text, out double minResMl) ? minResMl : 0;
+                    selectedReqItem.MinAcceptedItemResourceRatio = ChkMinResourcePct.IsChecked == true && int.TryParse(TxtMinResourcePct.Text, out int minResPct) ? minResPct : 0;
+                    selectedReqItem.MinAcceptedItemResourceAmount = ChkMinResourceMl.IsChecked == true && int.TryParse(TxtMinResourceMl.Text, out int minResMl) ? minResMl : 0;
 
                     int.TryParse(TxtRandomQty.Text, out int randomQty);
                     selectedReqItem.RandomAdditionalRequiredNum = randomQty;
@@ -143,25 +189,25 @@ namespace SCUMQuestEditor
             }
             else
             {
-                // Add new items
-                foreach (var item in LstAcceptedItems.SelectedItems)
+                // Add new items as a single RequiredItem with all selected items
+                var newItem = new RequiredItem
                 {
-                    RequiredItems.Add(new RequiredItem
-                    {
-                        AcceptedItems = new List<string> { item.ToString() },
-                        RequiredNum = int.TryParse(TxtRequiredQty.Text, out int q) ? q : 1,
-                        MinAcceptedItemUses = ChkMinUses.IsChecked == true && int.TryParse(TxtMinUses.Text, out int minUses) ? minUses : 0,
-                        MinAcceptedItemMass = ChkMinMass.IsChecked == true && double.TryParse(TxtMinMass.Text, out double minMass) ? minMass : 0,
-                        MinAcceptedItemHealth = ChkMinHealth.IsChecked == true && double.TryParse(TxtMinHealth.Text, out double minHealth) ? minHealth : 0,
-                        MinAcceptedCookLevel = ChkMinCookLevel.IsChecked == true && CmbMinCookLevel.SelectedItem != null ? CmbMinCookLevel.SelectedItem.ToString() : null,
-                        MaxAcceptedCookLevel = ChkMaxCookLevel.IsChecked == true && CmbMaxCookLevel.SelectedItem != null ? CmbMaxCookLevel.SelectedItem.ToString() : null,
-                        MinAcceptedCookQuality = ChkMinCookQuality.IsChecked == true && CmbMinCookQuality.SelectedItem != null ? CmbMinCookQuality.SelectedItem.ToString() : null,
-                        MinAcceptedItemResourceRatio = ChkMinResourcePct.IsChecked == true && double.TryParse(TxtMinResourcePct.Text, out double minResPct) ? minResPct : 0,
-                        MinAcceptedItemResourceAmount = ChkMinResourceMl.IsChecked == true && double.TryParse(TxtMinResourceMl.Text, out double minResMl) ? minResMl : 0,
-                        RandomAdditionalRequiredNum = int.TryParse(TxtRandomQty.Text, out int rq) ? rq : 0
-                    });
-                }
+                    AcceptedItems = LstAcceptedItems.SelectedItems.Cast<object>().Select(s => s.ToString()).ToList(),
+                    RequiredNum = int.TryParse(TxtRequiredQty.Text, out int q) ? q : 1,
+                    MinAcceptedItemUses = ChkMinUses.IsChecked == true && int.TryParse(TxtMinUses.Text, out int minUses) ? minUses : 0,
+                    MinAcceptedItemMass = ChkMinMass.IsChecked == true && int.TryParse(TxtMinMass.Text, out int minMass) ? minMass : 0,
+                    MinAcceptedItemHealth = ChkMinHealth.IsChecked == true && int.TryParse(TxtMinHealth.Text, out int minHealth) ? minHealth : 0,
+                    MinAcceptedCookLevel = ChkMinCookLevel.IsChecked == true && CmbMinCookLevel.SelectedItem != null ? CmbMinCookLevel.SelectedItem.ToString() : null,
+                    MaxAcceptedCookLevel = ChkMaxCookLevel.IsChecked == true && CmbMaxCookLevel.SelectedItem != null ? CmbMaxCookLevel.SelectedItem.ToString() : null,
+                    MinAcceptedCookQuality = ChkMinCookQuality.IsChecked == true && CmbMinCookQuality.SelectedItem != null ? CmbMinCookQuality.SelectedItem.ToString() : null,
+                    MinAcceptedItemResourceRatio = ChkMinResourcePct.IsChecked == true && int.TryParse(TxtMinResourcePct.Text, out int minResPct) ? minResPct : 0,
+                    MinAcceptedItemResourceAmount = ChkMinResourceMl.IsChecked == true && int.TryParse(TxtMinResourceMl.Text, out int minResMl) ? minResMl : 0,
+                    RandomAdditionalRequiredNum = int.TryParse(TxtRandomQty.Text, out int rq) ? rq : 0
+                };
+
+                RequiredItems.Add(newItem);
             }
+
             _isEditing = false;
             UpdateEditButtonsState();
 
@@ -179,7 +225,7 @@ namespace SCUMQuestEditor
             TxtMinUses.Text = "1";
             TxtMinMass.Text = "100";
             TxtMinResourcePct.Text = "50";
-            TxtMinResourceMl.Text = "100.0";
+            TxtMinResourceMl.Text = "100";
             ChkMinHealth.IsChecked = false;
             ChkMinUses.IsChecked = false;
             ChkMinMass.IsChecked = false;
@@ -202,7 +248,16 @@ namespace SCUMQuestEditor
             var newItem = new RequiredItem
             {
                 AcceptedItems = LstAcceptedItems.SelectedItems.Cast<object>().Select(s => s.ToString()).ToList(),
-                RequiredNum = 1 // Default value. Change to int.TryParse(TxtRequiredQty.Text, out int q) ? q : 1 if you want it to respect the input field.
+                RequiredNum = int.TryParse(TxtRequiredQty.Text, out int q) ? q : 1,
+                MinAcceptedItemUses = ChkMinUses.IsChecked == true && int.TryParse(TxtMinUses.Text, out int minUses) ? minUses : 0,
+                MinAcceptedItemMass = ChkMinMass.IsChecked == true && int.TryParse(TxtMinMass.Text, out int minMass) ? minMass : 0,
+                MinAcceptedItemHealth = ChkMinHealth.IsChecked == true && int.TryParse(TxtMinHealth.Text, out int minHealth) ? minHealth : 0,
+                MinAcceptedCookLevel = ChkMinCookLevel.IsChecked == true && CmbMinCookLevel.SelectedItem is ComboBoxItem minCookItem ? minCookItem.Content?.ToString() : null,
+                MaxAcceptedCookLevel = ChkMaxCookLevel.IsChecked == true && CmbMaxCookLevel.SelectedItem is ComboBoxItem maxCookItem ? maxCookItem.Content?.ToString() : null,
+                MinAcceptedCookQuality = ChkMinCookQuality.IsChecked == true && CmbMinCookQuality.SelectedItem is ComboBoxItem qualityItem ? qualityItem.Content?.ToString() : null,
+                MinAcceptedItemResourceRatio = ChkMinResourcePct.IsChecked == true && int.TryParse(TxtMinResourcePct.Text, out int minResPct) ? minResPct : 0,
+                MinAcceptedItemResourceAmount = ChkMinResourceMl.IsChecked == true && int.TryParse(TxtMinResourceMl.Text, out int minResMl) ? minResMl : 0,
+                RandomAdditionalRequiredNum = int.TryParse(TxtRandomQty.Text, out int rq) ? rq : 0
             };
 
             RequiredItems.Add(newItem);
@@ -217,11 +272,13 @@ namespace SCUMQuestEditor
                 LvRequiredItems.ScrollIntoView(newItem);
                 LoadSelectedRequiredItemIntoEditor();
             }
+            ClearInputFields();
         }
 
 
         private void LoadSelectedRequiredItemIntoEditor()
         {
+
             // Load the first selected item if multiple are selected, or the single selected item
             if (LvRequiredItems.SelectedItems.Count == 0) return;
 
@@ -253,11 +310,11 @@ namespace SCUMQuestEditor
             TxtMinMass.Text = selectedReq.MinAcceptedItemMass.ToString();
 
             ChkMinCookLevel.IsChecked = !string.IsNullOrEmpty(selectedReq.MinAcceptedCookLevel);
-            CmbMinCookLevel.SelectedItem = selectedReq.MinAcceptedCookLevel;
+            SelectComboBoxItem(CmbMinCookLevel, selectedReq.MinAcceptedCookLevel);
             ChkMaxCookLevel.IsChecked = !string.IsNullOrEmpty(selectedReq.MaxAcceptedCookLevel);
-            CmbMaxCookLevel.SelectedItem = selectedReq.MaxAcceptedCookLevel;
+            SelectComboBoxItem(CmbMaxCookLevel, selectedReq.MaxAcceptedCookLevel);
             ChkMinCookQuality.IsChecked = !string.IsNullOrEmpty(selectedReq.MinAcceptedCookQuality);
-            CmbMinCookQuality.SelectedItem = selectedReq.MinAcceptedCookQuality;
+            SelectComboBoxItem(CmbMinCookQuality, selectedReq.MinAcceptedCookQuality);
 
             ChkMinResourcePct.IsChecked = selectedReq.MinAcceptedItemResourceRatio > 0;
             TxtMinResourcePct.Text = selectedReq.MinAcceptedItemResourceRatio.ToString();
@@ -268,6 +325,12 @@ namespace SCUMQuestEditor
 
         private void BtnEditSelectedRequiredItem_Click(object sender, RoutedEventArgs e)
         {
+            if (LvRequiredItems.SelectedItems.Count != 1)
+            {
+                MessageBox.Show("Please select exactly one item to edit.", "Selection Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             LoadSelectedRequiredItemIntoEditor();
             _isEditing = true;
             UpdateEditButtonsState();
