@@ -138,24 +138,29 @@
                     <CheckBox x:Name="ChkMinCookLevel" Grid.Row="0" Grid.Column="0" Content="Min Cook Level" Margin="0,8,10,2"/>
                     <ComboBox x:Name="CmbMinCookLevel" Grid.Row="0" Grid.Column="1" Width="100" Margin="10,2,0,2">
                         <ComboBoxItem Content="Raw" />
-                        <ComboBoxItem Content="Medium" />
-                        <ComboBoxItem Content="Well Done" />
+                        <ComboBoxItem Content="Undercooked" />
+                        <ComboBoxItem Content="Cooked" />
+                        <ComboBoxItem Content="Overcooked" />
+                        <ComboBoxItem Content="Burned" />
                     </ComboBox>
 
                     <CheckBox x:Name="ChkMaxCookLevel" Grid.Row="1" Grid.Column="0" Content="Max Cook Level" Margin="0,8,10,2"/>
                     <ComboBox x:Name="CmbMaxCookLevel" Grid.Row="1" Grid.Column="1" Width="100" Margin="10,2,0,2">
                         <ComboBoxItem Content="Raw" />
-                        <ComboBoxItem Content="Medium" />
-                        <ComboBoxItem Content="Well Done" />
+                        <ComboBoxItem Content="Undercooked" />
+                        <ComboBoxItem Content="Cooked" />
+                        <ComboBoxItem Content="Overcooked" />
+                        <ComboBoxItem Content="Burned" />
                     </ComboBox>
 
                     <CheckBox x:Name="ChkMinCookQuality" Grid.Row="2" Grid.Column="0" Content="Min Cook Quality" Margin="0,8,10,2"/>
                     <ComboBox x:Name="CmbMinCookQuality" Grid.Row="2" Grid.Column="1" Width="100" Margin="10,2,0,2">
                         <ComboBoxItem Content="Ruined" />
                         <ComboBoxItem Content="Bad" />
-                        <ComboBoxItem Content="Average" />
+                        <ComboBoxItem Content="Poor" />
                         <ComboBoxItem Content="Good" />
-                        <ComboBoxItem Content="Delicious" />
+                        <ComboBoxItem Content="Excellent" />
+                        <ComboBoxItem Content="Perfect" />
                     </ComboBox>
                 </Grid>
 
@@ -176,7 +181,7 @@
                              Style="{StaticResource CompactTextBox}"/>
 
                     <CheckBox x:Name="ChkMinResourceMl" Grid.Row="1" Grid.Column="0" Content="Min Resource (ml)" Margin="0,8,10,2"/>
-                    <TextBox x:Name="TxtMinResourceMl" Grid.Row="1" Grid.Column="1" Text="100.0" Width="60" Margin="10,2,0,2"
+                    <TextBox x:Name="TxtMinResourceMl" Grid.Row="1" Grid.Column="1" Text="100" Width="60" Margin="10,2,0,2"
                              Style="{StaticResource CompactTextBox}"/>
                 </Grid>
             </StackPanel>
