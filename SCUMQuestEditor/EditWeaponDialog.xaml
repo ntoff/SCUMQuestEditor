@@ -14,6 +14,7 @@
         </Grid.RowDefinitions>
 
         <ListBox x:Name="LstWeapons" Grid.Row="0" Margin="5"
+                 SelectionMode="Multiple"
                  Style="{StaticResource MaterialDesignListBox}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
