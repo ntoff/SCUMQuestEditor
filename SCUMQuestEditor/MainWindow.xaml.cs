@@ -1,10 +1,8 @@
 ﻿#nullable enable
-//using System;
-//using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-//using System.Globalization;
 using System.IO;
-//using System.Linq;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -13,11 +11,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-//using System.Windows.Media;
 using Microsoft.Win32;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-//using System.Windows.Markup;
 
 namespace SCUMQuestEditor
 {
@@ -184,10 +180,35 @@ namespace SCUMQuestEditor
         [JsonPropertyName("AcceptedItems")]
         public List<string> AcceptedItems { get; set; } = new List<string>();
 
+        // Display property for the ListView
+        public string ItemName => string.Join(", ", AcceptedItems);
+
         public string AcceptedItemsDisplay => string.Join(", ", AcceptedItems);
 
         [JsonPropertyName("RequiredNum")]
         public int RequiredNum { get; set; } = 0;
+        
+        // Display property for the ListView
+        public string Quantity => RequiredNum.ToString();
+
+        // Display property for the ListView
+        public string Properties
+        {
+            get
+            {
+                var props = new List<string>();
+                if (MinAcceptedItemUses > 0) props.Add($"Uses>={MinAcceptedItemUses}");
+                if (MinAcceptedItemMass > 0) props.Add($"Mass>={MinAcceptedItemMass}");
+                if (MinAcceptedItemHealth > 0) props.Add($"Health>={MinAcceptedItemHealth}");
+                if (!string.IsNullOrEmpty(MinAcceptedCookLevel)) props.Add($"MinCook>={MinAcceptedCookLevel}");
+                if (!string.IsNullOrEmpty(MaxAcceptedCookLevel)) props.Add($"MaxCook<={MaxAcceptedCookLevel}");
+                if (!string.IsNullOrEmpty(MinAcceptedCookQuality)) props.Add($"CookedQuality>={MinAcceptedCookQuality}");
+                if (MinAcceptedItemResourceRatio > 0) props.Add($"Resource%>={MinAcceptedItemResourceRatio}");
+                if (MinAcceptedItemResourceAmount > 0) props.Add($"Resource>={MinAcceptedItemResourceAmount}");
+                if (RandomAdditionalRequiredNum > 0) props.Add($"Random+={RandomAdditionalRequiredNum}");
+                return string.Join("; ", props);
+            }
+        }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public int MinAcceptedItemUses { get; set; }
@@ -316,10 +337,10 @@ namespace SCUMQuestEditor
                 }
             }
             else if (value is FetchCondition fetch)
-            {   
+            {
                 writer.WriteBoolean("DisablePurchaseOfRequiredItems", fetch.DisablePurchaseOfRequiredItems);
                 writer.WriteBoolean("PlayerKeepsItems", fetch.PlayerKeepsItems);
-                
+
                 if (fetch.RequiredItems != null && fetch.RequiredItems.Count > 0)
                 {
                     writer.WriteStartArray("RequiredItems");
@@ -404,36 +425,10 @@ namespace SCUMQuestEditor
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            //LoadTradeItems();
             LoadFetchItems();
             UpdateJsonPreview();
             InitConditions();
         }
-
-        /*private void LoadTradeItems()
-        {
-            try
-            {
-                string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TradeItems.txt");
-                if (File.Exists(path))
-                {
-                    TradeItems = File.ReadAllLines(path).Where(line => !string.IsNullOrEmpty(line)).ToList();
-
-                    // Assign to the dialog's static property so it can use it
-                    AddTradeDealDialog.AvailableItems = TradeItems;
-                }
-                else
-                {
-                    MessageBox.Show($"TradeItems.txt not found at: {path}", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    AddTradeDealDialog.AvailableItems = new List<string>();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error loading TradeItems.txt: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                AddTradeDealDialog.AvailableItems = new List<string>();
-            }
-        }*/
 
         private void LoadFetchItems()
         {
@@ -868,74 +863,9 @@ namespace SCUMQuestEditor
                 int totalRewards = CalculateTotalRewards(reward);
                 if (TxtTotalRewards != null) TxtTotalRewards.Text = $"Total Rewards: {totalRewards}/5";
 
-                List<Condition> serializedConditions = new List<Condition>();
-                foreach (var condition in ConditionsList)
-                {
-                    if (condition.Type.Equals("Elimination", StringComparison.OrdinalIgnoreCase))
-                    {
-                        if (condition is EliminationCondition eliminationCondition)
-                        {
-                            serializedConditions.Add(eliminationCondition);
-                        }
-                        else
-                        {
-                            var newEliminationCondition = new EliminationCondition
-                            {
-                                TrackingCaption = condition.TrackingCaption,
-                                SequenceIndex = condition.SequenceIndex,
-                                CanBeAutoCompleted = condition.CanBeAutoCompleted,
-                                Amount = 1,
-                                TargetCharacters = new List<string>(),
-                                AllowedWeapons = new List<string>(),
-                                LocationsShownOnMap = condition.LocationsShownOnMap
-                            };
-                            serializedConditions.Add(newEliminationCondition);
-                        }
-                    }
-                    else if (condition.Type.Equals("Fetch", StringComparison.OrdinalIgnoreCase))
-                    {
-                        var fetchCondition = new FetchCondition
-                        {
-                            TrackingCaption = condition.TrackingCaption,
-                            SequenceIndex = condition.SequenceIndex,
-                            CanBeAutoCompleted = condition.CanBeAutoCompleted,
-                            PlayerKeepsItems = (condition as FetchCondition)?.PlayerKeepsItems ?? false,
-                            DisablePurchaseOfRequiredItems = (condition as FetchCondition)?.DisablePurchaseOfRequiredItems ?? true,
-                            RequiredItems = (condition as FetchCondition)?.RequiredItems ?? new List<RequiredItem>(),
-                            LocationsShownOnMap = condition.LocationsShownOnMap
-                        };
-                        serializedConditions.Add(fetchCondition);
-                    }
-                    else if (condition.Type.Equals("Interaction", StringComparison.OrdinalIgnoreCase))
-                    {
-                        InteractionCondition interactionCondition;
-                        if (condition is InteractionCondition existingInteraction)
-                        {
-                            interactionCondition = existingInteraction;
-                        }
-                        else
-                        {
-                            interactionCondition = new InteractionCondition
-                            {
-                                TrackingCaption = condition.TrackingCaption,
-                                SequenceIndex = condition.SequenceIndex,
-                                CanBeAutoCompleted = condition.CanBeAutoCompleted,
-                                SpawnOnlyNeeded = true,
-                                MinNeeded = 1,
-                                MaxNeeded = 1,
-                                WorldMarkerShowDistance = 5,
-                                Locations = new List<InteractionLocation>(),
-                                LocationsShownOnMap = condition.LocationsShownOnMap
-                            };
-                        }
-                        serializedConditions.Add(interactionCondition);
-                    }
-                    else
-                    {
-                        serializedConditions.Add(condition);
-                    }
-                }
-                CurrentTradeDeal.Conditions = serializedConditions;
+                // FIX: Instead of manually mapping conditions, we simply assign the list.
+                // The ConditionConverter handles the polymorphic serialization.
+                CurrentTradeDeal.Conditions = ConditionsList.ToList();
 
                 var options = new JsonSerializerOptions
                 {
