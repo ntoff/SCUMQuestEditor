@@ -45,7 +45,6 @@
             <ComboBoxItem Content="Sniping" />
             <ComboBoxItem Content="Stealth" />
             <ComboBoxItem Content="Survival" />
-            <ComboBoxItem Content="Tactics" />
             <ComboBoxItem Content="Thievery" />
         </ComboBox>
 
