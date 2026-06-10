@@ -24,15 +24,15 @@
                     <GridViewColumn Header="Visible Mesh" Width="200" DisplayMemberBinding="{Binding VisibleMesh}" />
                     <GridViewColumn Header="Fallback Transform" Width="200" DisplayMemberBinding="{Binding FallbackTransform}" />
                     <GridViewColumn Header="Has Anchor" DisplayMemberBinding="{Binding HasAnchor}" />
-                    <GridViewColumn Header="Instance" DisplayMemberBinding="{Binding Instance}" />
+                    <!-- CHANGED: Bind to InstanceDisplay -->
+                    <GridViewColumn Header="Instance" Width="80" DisplayMemberBinding="{Binding InstanceDisplay}" />
                 </GridView>
             </ListView.View>
+
         </ListView>
 
         <!-- 2. Action Buttons -->
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10,5,10,5">
-            <Button x:Name="BtnAdd" Content="Add Location" Margin="0,0,5,0" Click="BtnAddLocation_Click"
-                    Style="{StaticResource MaterialDesignRaisedButton}"/>
             <Button x:Name="BtnEdit" Content="Edit Selected" Margin="0,0,5,0" Click="BtnEditSelectedLocation_Click"
                     Style="{StaticResource MaterialDesignRaisedButton}"/>
             <Button x:Name="BtnRemove" Content="Remove Selected" Click="BtnRemoveSelectedLocation_Click"
@@ -58,7 +58,7 @@
                        TextWrapping="Wrap" Margin="0,5,0,5" Foreground="{DynamicResource MaterialDesignBodyLight}" FontSize="10"/>
 
             <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button x:Name="BtnApply" Content="Apply Edit" Margin="0,0,10,0" Click="BtnApply_Click"
+                <Button x:Name="BtnApply" Content="Apply Edit / Add New" Margin="0,0,10,0" Click="BtnApply_Click"
                         Style="{StaticResource MaterialDesignRaisedButton}"/>
                 <Button x:Name="BtnCancelInput" Content="Cancel Edit" Click="BtnCancelInput_Click"
                         Style="{StaticResource MaterialDesignRaisedButton}"/>

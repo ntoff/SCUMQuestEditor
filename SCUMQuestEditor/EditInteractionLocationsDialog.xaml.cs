@@ -1,7 +1,9 @@
 using System.Collections.ObjectModel;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Controls;
+using System.Collections.Generic;
 
 namespace SCUMQuestEditor
 {
@@ -44,43 +46,52 @@ namespace SCUMQuestEditor
                     PropertyNameCaseInsensitive = true
                 };
 
-                InteractionLocation? location = null;
-                List<InteractionLocation>? locations = null;
+                InteractionLocation? parsedLocation = null;
 
-                location = JsonSerializer.Deserialize<InteractionLocation>(input, options);
+                // Try parsing as a single object first
+                parsedLocation = JsonSerializer.Deserialize<InteractionLocation>(input, options);
 
-                if (location == null)
-                {
-                    locations = JsonSerializer.Deserialize<List<InteractionLocation>>(input, options);
-                }
-
-                if (location != null)
+                if (parsedLocation != null)
                 {
                     if (LocationList.SelectedItem is InteractionLocation selectedLoc)
                     {
-                        selectedLoc.AnchorMesh = location.AnchorMesh;
-                        selectedLoc.FallbackTransform = location.FallbackTransform;
-                        selectedLoc.VisibleMesh = location.VisibleMesh;
-                        selectedLoc.Instance = location.Instance;
+                        // When editing, the input JSON is the source of truth.
+                        // If the JSON doesn't have Instance, parsedLocation.Instance will be null.
+                        // We must update the existing item to reflect this null state.
+
+                        selectedLoc.AnchorMesh = parsedLocation.AnchorMesh;
+                        selectedLoc.FallbackTransform = parsedLocation.FallbackTransform;
+                        selectedLoc.VisibleMesh = parsedLocation.VisibleMesh;
+
+                        // Explicitly set Instance to the parsed value (null if missing in JSON)
+                        selectedLoc.Instance = parsedLocation.Instance;
                     }
                     else
                     {
-                        Locations.Add(location);
-                    }
-                }
-                else if (locations != null)
-                {
-                    foreach (var loc in locations)
-                    {
-                        Locations.Add(loc);
+                        // Adding new location
+                        Locations.Add(parsedLocation);
                     }
                 }
                 else
                 {
-                    MessageBox.Show("Failed to parse the JSON input.", "Parse Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
+                    // Try parsing as a list if single object failed
+                    List<InteractionLocation>? locations = JsonSerializer.Deserialize<List<InteractionLocation>>(input, options);
+
+                    if (locations != null)
+                    {
+                        foreach (var loc in locations)
+                        {
+                            Locations.Add(loc);
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Failed to parse the JSON input.", "Parse Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
                 }
 
+                // Refresh the UI binding
                 LocationList.ItemsSource = null;
                 LocationList.ItemsSource = Locations;
                 TxtMeshInfoInput.Text = "";
@@ -110,8 +121,10 @@ namespace SCUMQuestEditor
             {
                 var options = new JsonSerializerOptions
                 {
-                    WriteIndented = true
+                    WriteIndented = true,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
                 };
+
                 TxtMeshInfoInput.Text = JsonSerializer.Serialize(selectedLoc, options);
                 TxtMeshInfoInput.Focus();
                 TxtMeshInfoInput.SelectionStart = TxtMeshInfoInput.Text.Length;

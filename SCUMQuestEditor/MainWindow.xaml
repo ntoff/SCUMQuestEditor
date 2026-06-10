@@ -60,7 +60,7 @@
                         <Label Grid.Row="1" Grid.Column="0" Content="Quest Title:" 
                             HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,10"/>
                         <TextBox x:Name="TxtTitle" Grid.Row="1" Grid.Column="1" Text="New Quest" 
-                            Margin="0,0,0,5" IsReadOnly="False" 
+                            Margin="0,0,0,5" IsReadOnly="False"
                             TextChanged="TxtInput_TextChanged"/>
 
                         <!-- 3. Tier (1-3) -->
@@ -68,9 +68,9 @@
                                HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,10"/>
                         <TextBox x:Name="TxtTier" Grid.Row="2" Grid.Column="1" Text="1" 
                                  Margin="0,0,0,5" TextAlignment="Left" 
-                                 TextChanged="TxtInput_TextChanged"
                                  PreviewTextInput="NumericPreviewTextInput"
-                                 DataObject.Pasting="NumericPasting"/>
+                                 DataObject.Pasting="NumericPasting"
+                                 TextChanged="TxtInput_TextChanged"/>
 
                         <!-- 4. Quest Description -->
                         <Label Grid.Row="3" Grid.Column="0" Content="Quest Description:" 
@@ -86,8 +86,8 @@
                                HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,10"/>
                         <TextBox x:Name="TxtTimeLimit" Grid.Row="4" Grid.Column="1" Text="0.5" 
                                  Margin="0,0,0,10" TextAlignment="Left" 
-                                 TextChanged="TxtInput_TextChanged"
-                                 PreviewTextInput="FloatPreviewTextInput" DataObject.Pasting="FloatPasting"/>
+                                 PreviewTextInput="FloatPreviewTextInput" DataObject.Pasting="FloatPasting"
+                                 TextChanged="TxtInput_TextChanged"/>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
@@ -111,18 +111,18 @@
 
                             <Label Grid.Row="0" Grid.Column="0" Content="Normal Currency:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
                             <TextBox x:Name="TxtNormalReward" Grid.Row="0" Grid.Column="1" Text="0" Margin="0,0,0,0"
-                                     TextChanged="TxtInput_TextChanged"
-                                     PreviewTextInput="NumericPreviewTextInput" DataObject.Pasting="NumericPasting"/>
+                                     PreviewTextInput="NumericPreviewTextInput" DataObject.Pasting="NumericPasting"
+                                     TextChanged="TxtInput_TextChanged"/>
 
                             <Label Grid.Row="1" Grid.Column="0" Content="Gold Currency:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
                             <TextBox x:Name="TxtGoldReward" Grid.Row="1" Grid.Column="1" Text="0" Margin="0,0,0,0" 
-                                     TextChanged="TxtInput_TextChanged"
-                                     PreviewTextInput="NumericPreviewTextInput" DataObject.Pasting="NumericPasting"/>
+                                     PreviewTextInput="NumericPreviewTextInput" DataObject.Pasting="NumericPasting"
+                                     TextChanged="TxtInput_TextChanged"/>
 
                             <Label Grid.Row="2" Grid.Column="0" Content="Fame:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
                             <TextBox x:Name="TxtFameReward" Grid.Row="2" Grid.Column="1" Text="0" Margin="0,0,0,0" 
-                                     TextChanged="TxtInput_TextChanged"
-                                     PreviewTextInput="NumericPreviewTextInput" DataObject.Pasting="NumericPasting"/>
+                                     PreviewTextInput="NumericPreviewTextInput" DataObject.Pasting="NumericPasting"
+                                     TextChanged="TxtInput_TextChanged"/>
                         </Grid>
 
                         <!-- Skills Section -->
@@ -225,16 +225,14 @@
                                     </Grid.RowDefinitions>
 
                                     <Label Grid.Row="0" Grid.Column="0" Content="Caption:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
-                                    <TextBox x:Name="EdtCaption" Grid.Row="0" Grid.Column="1" Margin="0,0,0,0"
-                                             TextChanged="SaveConditionFromEditor"/>
+                                    <TextBox x:Name="EdtCaption" Grid.Row="0" Grid.Column="1" Margin="0,0,0,0"/>
 
                                     <Label Grid.Row="1" Grid.Column="0" Content="Sequence:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
-                                    <TextBox x:Name="EdtSequence" Grid.Row="1" Grid.Column="1" Margin="0,0,0,0" 
-                                             TextChanged="SaveConditionFromEditor"/>
+                                    <TextBox x:Name="EdtSequence" Grid.Row="1" Grid.Column="1" Margin="0,0,0,0"/>
 
                                     <Label Grid.Row="2" Grid.Column="0" Content="Auto Complete:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
                                     <CheckBox x:Name="EdtAutoComplete" Grid.Row="2" Grid.Column="1" Margin="0,5,0,0" 
-                                              IsChecked="False" Checked="SaveConditionFromEditor" Unchecked="SaveConditionFromEditor"/>
+                                              IsChecked="False"/>
                                 </Grid>
                             </TabItem>
 
@@ -298,10 +296,10 @@
                                     </Grid.RowDefinitions>
 
                                     <Label Grid.Row="0" Grid.Column="0" Content="Player Keeps Items:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
-                                    <CheckBox x:Name="ChkPlayerKeepsItems" Grid.Row="0" Grid.Column="1" Margin="0,5,0,5" Checked="SaveConditionFromEditor" Unchecked="SaveConditionFromEditor"/>
+                                    <CheckBox x:Name="ChkPlayerKeepsItems" Grid.Row="0" Grid.Column="1" Margin="0,5,0,5"/>
 
                                     <Label Grid.Row="1" Grid.Column="0" Content="Disable Purchase:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
-                                    <CheckBox x:Name="ChkDisablePurchase" Grid.Row="1" Grid.Column="1" Margin="0,5,0,5" IsChecked="True" Checked="SaveConditionFromEditor" Unchecked="SaveConditionFromEditor"/>
+                                    <CheckBox x:Name="ChkDisablePurchase" Grid.Row="1" Grid.Column="1" Margin="0,5,0,5" IsChecked="True" />
 
                                     <Label Grid.Row="2" Grid.Column="0" Content="Required Items:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
                                     <Button x:Name="BtnEditRequiredItems" Grid.Row="2" Grid.Column="1" Content="Edit Required Items" Margin="0,0,0,5" 
@@ -344,24 +342,21 @@
                                         <!-- Spawn Only Needed -->
                                         <Label Grid.Row="0" Grid.Column="0" Content="Spawn Only Needed:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
                                         <CheckBox x:Name="ChkSpawnOnlyNeeded" Grid.Row="0" Grid.Column="1" Margin="0,5,0,5" 
-                                                  IsChecked="True" Checked="SaveConditionFromEditor" Unchecked="SaveConditionFromEditor"/>
+                                                  IsChecked="True" />
 
                                         <!-- Min Needed -->
                                         <Label Grid.Row="1" Grid.Column="0" Content="Min Needed:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
                                         <TextBox x:Name="EdtMinNeeded" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5" Text="1"
-                                                 TextChanged="SaveConditionFromEditor"
                                                  PreviewTextInput="NumericPreviewTextInput" DataObject.Pasting="NumericPasting"/>
 
                                         <!-- Max Needed -->
                                         <Label Grid.Row="2" Grid.Column="0" Content="Max Needed:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
                                         <TextBox x:Name="EdtMaxNeeded" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5" Text="1"
-                                                 TextChanged="SaveConditionFromEditor"
                                                  PreviewTextInput="NumericPreviewTextInput" DataObject.Pasting="NumericPasting"/>
 
                                         <!-- Marker Show Distance -->
                                         <Label Grid.Row="3" Grid.Column="0" Content="Marker Show Distance:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
                                         <TextBox x:Name="EdtMarkerDistance" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5" Text="5"
-                                                 TextChanged="SaveConditionFromEditor"
                                                  PreviewTextInput="FloatPreviewTextInput" DataObject.Pasting="FloatPasting"/>
 
                                         <!-- Interaction Locations Button -->

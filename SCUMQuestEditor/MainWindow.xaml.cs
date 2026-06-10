@@ -249,11 +249,18 @@ namespace SCUMQuestEditor
         [JsonPropertyName("VisibleMesh")]
         public string VisibleMesh { get; set; } = "";
 
+        // CHANGED: Make Instance nullable so it can be null if missing in JSON
         [JsonPropertyName("Instance")]
-        public int Instance { get; set; } = 0;
+        public int? Instance { get; set; } = null;
 
+        // NEW: Helper for display purposes
+        [JsonIgnore]
+        public string InstanceDisplay => Instance.HasValue ? Instance.Value.ToString() : "N/A";
+
+        [JsonIgnore]
         public bool HasAnchor => !string.IsNullOrEmpty(AnchorMesh);
     }
+
 
     public class InteractionCondition : Condition
     {
@@ -369,10 +376,6 @@ namespace SCUMQuestEditor
             }
             else if (value is InteractionCondition interaction)
             {
-                writer.WriteBoolean("SpawnOnlyNeeded", interaction.SpawnOnlyNeeded);
-                writer.WriteNumber("MinNeeded", interaction.MinNeeded);
-                writer.WriteNumber("MaxNeeded", interaction.MaxNeeded);
-                writer.WriteNumber("WorldMarkerShowDistance", interaction.WorldMarkerShowDistance);
 
                 if (interaction.Locations != null && interaction.Locations.Count > 0)
                 {
@@ -383,11 +386,19 @@ namespace SCUMQuestEditor
                         writer.WriteString("AnchorMesh", loc.AnchorMesh);
                         writer.WriteString("FallbackTransform", loc.FallbackTransform);
                         writer.WriteString("VisibleMesh", loc.VisibleMesh);
-                        writer.WriteNumber("Instance", loc.Instance);
+                        if (loc.Instance.HasValue)
+                        {
+                            writer.WriteNumber("Instance", loc.Instance.Value);
+                        }
                         writer.WriteEndObject();
                     }
                     writer.WriteEndArray();
                 }
+                
+                writer.WriteNumber("MinNeeded", interaction.MinNeeded);
+                writer.WriteNumber("MaxNeeded", interaction.MaxNeeded);
+                writer.WriteBoolean("SpawnOnlyNeeded", interaction.SpawnOnlyNeeded);
+                writer.WriteNumber("WorldMarkerShowDistance", interaction.WorldMarkerShowDistance);
             }
 
             if (value.LocationsShownOnMap != null && value.LocationsShownOnMap.Count > 0)
