@@ -2,3 +2,4 @@
 *.exe
 SCUMQuestEditor/bin
 SCUMQuestEditor/obj
+SCUMQuestEditor/Properties/*
