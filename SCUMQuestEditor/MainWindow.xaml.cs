@@ -64,9 +64,9 @@ namespace SCUMQuestEditor
 
     public class Condition : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
@@ -288,35 +288,44 @@ namespace SCUMQuestEditor
 
     public class ConditionConverter : JsonConverter<Condition>
     {
-        public override Condition Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override Condition? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            // Deserialize to JsonElement
             JsonElement element = JsonSerializer.Deserialize<JsonElement>(ref reader);
 
-            if (!element.TryGetProperty("Type", out JsonElement typeElement) || string.IsNullOrEmpty(typeElement.GetString()))
+            // Get 'Type' property
+            if (!element.TryGetProperty("Type", out JsonElement typeElement))
             {
                 throw new JsonException("Condition JSON must contain a 'Type' property.");
             }
 
-            string conditionType = typeElement.GetString();
-
-            Type targetType;
-            switch (conditionType)
+            string? conditionType = typeElement.GetString();
+            if (string.IsNullOrEmpty(conditionType))
             {
-                case "Elimination":
-                    targetType = typeof(EliminationCondition);
-                    break;
-                case "Fetch":
-                    targetType = typeof(FetchCondition);
-                    break;
-                case "Interaction":
-                    targetType = typeof(InteractionCondition);
-                    break;
-                default:
-                    throw new JsonException($"Unknown condition type: {conditionType}");
+                throw new JsonException("Condition 'Type' property is missing or empty.");
             }
 
-            return (Condition)JsonSerializer.Deserialize(element.GetRawText(), targetType, options);
+            // Map type string to concrete Type
+            Type targetType = conditionType switch
+            {
+                "Elimination" => typeof(EliminationCondition),
+                "Fetch" => typeof(FetchCondition),
+                "Interaction" => typeof(InteractionCondition),
+                _ => throw new JsonException($"Unknown condition type: {conditionType}")
+            };
+
+            // Deserialize to concrete type — returns object?
+            var result = JsonSerializer.Deserialize(element.GetRawText(), targetType, options);
+
+            // Ensure result is of the expected type and non-null
+            if (result is not Condition condition)
+            {
+                throw new JsonException($"Deserialized object is not a Condition (got {result?.GetType()?.Name ?? "null"}).");
+            }
+
+            return condition;
         }
+
 
         public override void Write(Utf8JsonWriter writer, Condition value, JsonSerializerOptions options)
         {
@@ -535,7 +544,7 @@ namespace SCUMQuestEditor
                         Converters = { new ConditionConverter() }
                     };
 
-                    TradeDeal loadedQuest = JsonSerializer.Deserialize<TradeDeal>(jsonContent, options);
+                    TradeDeal? loadedQuest = JsonSerializer.Deserialize<TradeDeal>(jsonContent, options);
 
                     if (loadedQuest == null)
                     {
@@ -938,7 +947,7 @@ namespace SCUMQuestEditor
 
         private ObservableCollection<Condition> ConditionsList { get; set; } = new ObservableCollection<Condition>();
 
-        private ListCollectionView conditionsView;
+        private ListCollectionView? conditionsView;
 
         private void InitConditions()
         {
@@ -1448,12 +1457,18 @@ namespace SCUMQuestEditor
 
         private void Btn_MouseEnter(object sender, RoutedEventArgs e)
         {
-            (sender as Button).Background = new SolidColorBrush(Color.FromArgb(255, 50, 50, 50));
+            if (sender is Button button)
+            {
+                button.Background = new SolidColorBrush(Color.FromArgb(255, 50, 50, 50));
+            }
         }
 
         private void Btn_MouseLeave(object sender, RoutedEventArgs e)
         {
-            (sender as Button).Background = Brushes.Transparent;
+            if (sender is Button button)
+            {
+                button.Background = Brushes.Transparent;
+            }
         }
 
     }
