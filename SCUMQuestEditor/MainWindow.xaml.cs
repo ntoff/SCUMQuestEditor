@@ -1,8 +1,11 @@
 ﻿#nullable enable
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -11,9 +14,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using Microsoft.Win32;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using System.Windows.Media;
 
 namespace SCUMQuestEditor
 {
@@ -187,7 +188,7 @@ namespace SCUMQuestEditor
 
         [JsonPropertyName("RequiredNum")]
         public int RequiredNum { get; set; } = 0;
-        
+
         // Display property for the ListView
         public string Quantity => RequiredNum.ToString();
 
@@ -394,7 +395,7 @@ namespace SCUMQuestEditor
                     }
                     writer.WriteEndArray();
                 }
-                
+
                 writer.WriteNumber("MinNeeded", interaction.MinNeeded);
                 writer.WriteNumber("MaxNeeded", interaction.MaxNeeded);
                 writer.WriteBoolean("SpawnOnlyNeeded", interaction.SpawnOnlyNeeded);
@@ -874,9 +875,15 @@ namespace SCUMQuestEditor
                 int totalRewards = CalculateTotalRewards(reward);
                 if (TxtTotalRewards != null) TxtTotalRewards.Text = $"Total Rewards: {totalRewards}/5";
 
-                // FIX: Instead of manually mapping conditions, we simply assign the list.
-                // The ConditionConverter handles the polymorphic serialization.
-                CurrentTradeDeal.Conditions = ConditionsList.ToList();
+                // Use the sorted view if available, otherwise the raw list
+                if (conditionsView != null)
+                {
+                    CurrentTradeDeal.Conditions = conditionsView.Cast<Condition>().ToList();
+                }
+                else
+                {
+                    CurrentTradeDeal.Conditions = ConditionsList.ToList();
+                }
 
                 var options = new JsonSerializerOptions
                 {
@@ -893,6 +900,7 @@ namespace SCUMQuestEditor
                 if (TxtJson != null) TxtJson.Text = $"Error generating JSON: {ex.Message}";
             }
         }
+
 
         private void NumericPreviewTextInput(object sender, TextCompositionEventArgs e) { e.Handled = !Regex.IsMatch(e.Text, @"^\d*$"); }
         private void NumericPasting(object sender, DataObjectPastingEventArgs e)
@@ -930,17 +938,42 @@ namespace SCUMQuestEditor
 
         private ObservableCollection<Condition> ConditionsList { get; set; } = new ObservableCollection<Condition>();
 
+        private ListCollectionView conditionsView;
+
         private void InitConditions()
         {
             LvConditions.ItemsSource = ConditionsList;
+
+            // Create a ListCollectionView to manage sorting
+            conditionsView = new ListCollectionView(ConditionsList);
+            LvConditions.ItemsSource = conditionsView;
+
             LvConditions.SelectionChanged += LvConditions_SelectionChanged;
             UpdateConditionTabsState();
         }
 
+        private void SortBySequence(object sender, RoutedEventArgs e)
+        {
+            if (conditionsView == null) return;
+
+            conditionsView.SortDescriptions.Clear();
+            conditionsView.SortDescriptions.Add(new SortDescription("SequenceIndex", ListSortDirection.Ascending));
+            UpdateJsonPreview();
+        }
+        private void SortByCaption(object sender, RoutedEventArgs e)
+        {
+            if (conditionsView == null) return;
+
+            conditionsView.SortDescriptions.Clear();
+            conditionsView.SortDescriptions.Add(new SortDescription("TrackingCaption", ListSortDirection.Ascending));
+            UpdateJsonPreview();
+        }
+
+
         private void LvConditions_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             UpdateConditionTabsState();
-            ClearConditionEditor();
+            //ClearConditionEditor(); //I remember this fixing something, but can't remember what. It causes issues though and resets stuff to default.
             TabConditionEditor.SelectedIndex = 0;
 
             if (LvConditions.SelectedItem is Condition selectedCondition)
@@ -983,6 +1016,25 @@ namespace SCUMQuestEditor
                 {
                     if (selectedCondition is FetchCondition fetchCondition)
                     {
+                        BindingOperations.ClearAllBindings(ChkPlayerKeepsItems);
+                        BindingOperations.ClearAllBindings(ChkDisablePurchase);
+
+                        var bindingPlayerKeeps = new Binding("PlayerKeepsItems")
+                        {
+                            Source = fetchCondition,
+                            Mode = BindingMode.TwoWay,
+                            UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                        };
+                        BindingOperations.SetBinding(ChkPlayerKeepsItems, CheckBox.IsCheckedProperty, bindingPlayerKeeps);
+
+                        var bindingDisablePurchase = new Binding("DisablePurchaseOfRequiredItems")
+                        {
+                            Source = fetchCondition,
+                            Mode = BindingMode.TwoWay,
+                            UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                        };
+                        BindingOperations.SetBinding(ChkDisablePurchase, CheckBox.IsCheckedProperty, bindingDisablePurchase);
+
                         ChkPlayerKeepsItems.IsChecked = fetchCondition.PlayerKeepsItems;
                         ChkDisablePurchase.IsChecked = fetchCondition.DisablePurchaseOfRequiredItems;
                         LvCurrentRequiredItems.ItemsSource = fetchCondition.RequiredItems;
@@ -993,17 +1045,47 @@ namespace SCUMQuestEditor
                 {
                     if (selectedCondition is InteractionCondition interactionCondition)
                     {
+                        BindingOperations.ClearAllBindings(ChkSpawnOnlyNeeded);
+                        BindingOperations.ClearAllBindings(EdtMinNeeded);
+                        BindingOperations.ClearAllBindings(EdtMaxNeeded);
+                        BindingOperations.ClearAllBindings(EdtMarkerDistance);
+
+                        var bindingSpawnOnly = new Binding("SpawnOnlyNeeded")
+                        {
+                            Source = interactionCondition,
+                            Mode = BindingMode.TwoWay,
+                            UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                        };
+                        BindingOperations.SetBinding(ChkSpawnOnlyNeeded, CheckBox.IsCheckedProperty, bindingSpawnOnly);
+
+                        var bindingMin = new Binding("MinNeeded")
+                        {
+                            Source = interactionCondition,
+                            Mode = BindingMode.TwoWay,
+                            UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                        };
+                        BindingOperations.SetBinding(EdtMinNeeded, TextBox.TextProperty, bindingMin);
+
+                        var bindingMax = new Binding("MaxNeeded")
+                        {
+                            Source = interactionCondition,
+                            Mode = BindingMode.TwoWay,
+                            UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                        };
+                        BindingOperations.SetBinding(EdtMaxNeeded, TextBox.TextProperty, bindingMax);
+
+                        var bindingDistance = new Binding("WorldMarkerShowDistance")
+                        {
+                            Source = interactionCondition,
+                            Mode = BindingMode.TwoWay,
+                            UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                        };
+                        BindingOperations.SetBinding(EdtMarkerDistance, TextBox.TextProperty, bindingDistance);
+
                         ChkSpawnOnlyNeeded.IsChecked = interactionCondition.SpawnOnlyNeeded;
                         EdtMinNeeded.Text = interactionCondition.MinNeeded.ToString();
                         EdtMaxNeeded.Text = interactionCondition.MaxNeeded.ToString();
                         EdtMarkerDistance.Text = interactionCondition.WorldMarkerShowDistance.ToString();
-                    }
-                    else
-                    {
-                        ChkSpawnOnlyNeeded.IsChecked = true;
-                        EdtMinNeeded.Text = "1";
-                        EdtMaxNeeded.Text = "1";
-                        EdtMarkerDistance.Text = "5";
                     }
                 }
 
@@ -1131,13 +1213,10 @@ namespace SCUMQuestEditor
                 }
                 else if (currentCondition.Type.Equals("Interaction", StringComparison.OrdinalIgnoreCase) && currentCondition is InteractionCondition interaction)
                 {
-                    interaction.SpawnOnlyNeeded = ChkSpawnOnlyNeeded.IsChecked ?? true;
-                    int.TryParse(EdtMinNeeded.Text, out int min);
-                    interaction.MinNeeded = min;
-                    int.TryParse(EdtMaxNeeded.Text, out int max);
-                    interaction.MaxNeeded = max;
-                    int.TryParse(EdtMarkerDistance.Text, out int dist);
-                    interaction.WorldMarkerShowDistance = dist;
+                    // Two-way binding now handles the updates automatically.
+                    // We only need to ensure the source is updated if the binding hasn't triggered yet.
+                    // However, since we set UpdateSourceTrigger to PropertyChanged, it should be fine.
+                    // We can explicitly update sources if needed, but typically not required.
                 }
 
                 UpdateJsonPreview();
@@ -1338,6 +1417,43 @@ namespace SCUMQuestEditor
         private void TabMapLocations_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
+        }
+        private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this.DragMove();
+        }
+
+        private void TitleBar_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this.ContextMenu.IsOpen = true; // Optional: Add a ContextMenu to the Window for minimize/restore/close
+        }
+
+        private void BtnMinimize_Click(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+
+        private void BtnMaximize_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.WindowState == WindowState.Maximized)
+                this.WindowState = WindowState.Normal;
+            else
+                this.WindowState = WindowState.Maximized;
+        }
+
+        private void BtnClose_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void Btn_MouseEnter(object sender, RoutedEventArgs e)
+        {
+            (sender as Button).Background = new SolidColorBrush(Color.FromArgb(255, 50, 50, 50));
+        }
+
+        private void Btn_MouseLeave(object sender, RoutedEventArgs e)
+        {
+            (sender as Button).Background = Brushes.Transparent;
         }
 
     }
