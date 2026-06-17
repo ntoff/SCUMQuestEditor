@@ -18,14 +18,15 @@
 
         <!-- 1. ListView -->
         <ListView x:Name="LocationList" Grid.Row="0" Margin="5"
-                  Style="{StaticResource MaterialDesignListView}">
+                  Style="{StaticResource MaterialDesignListView}"
+                  BorderBrush="{DynamicResource MaterialDesignDivider}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Visible Mesh" Width="200" DisplayMemberBinding="{Binding VisibleMesh}" />
-                    <GridViewColumn Header="Fallback Transform" Width="200" DisplayMemberBinding="{Binding FallbackTransform}" />
+                    <GridViewColumn Header="Visible Mesh" DisplayMemberBinding="{Binding VisibleMesh}" />
+                    <GridViewColumn Header="Fallback Transform" DisplayMemberBinding="{Binding FallbackTransform}" />
                     <GridViewColumn Header="Has Anchor" DisplayMemberBinding="{Binding HasAnchor}" />
                     <!-- CHANGED: Bind to InstanceDisplay -->
-                    <GridViewColumn Header="Instance" Width="80" DisplayMemberBinding="{Binding InstanceDisplay}" />
+                    <GridViewColumn Header="Instance" DisplayMemberBinding="{Binding InstanceDisplay}" />
                 </GridView>
             </ListView.View>
 
