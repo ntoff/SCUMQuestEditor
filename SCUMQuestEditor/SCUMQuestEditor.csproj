@@ -5,13 +5,14 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UseWPF>true</UseWPF>
+    <UseWPF>True</UseWPF>
     <NuGetAuditMode>all</NuGetAuditMode>
-    <ApplicationIcon>QuestEditor.ico</ApplicationIcon>
+    <ApplicationIcon>ICON\icon.ico</ApplicationIcon>
+    <UseWindowsForms>False</UseWindowsForms>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="QuestEditor.ico" />
+    <Content Include="ICON\icon.ico" />
   </ItemGroup>
 
   <ItemGroup>
