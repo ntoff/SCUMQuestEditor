@@ -112,7 +112,6 @@ Amur_Fillet
 Animal_Lure
 Animal_skin
 AnimalBaitFeederItem
-AnimalBaitFeederItem_HunterVariant
 Anode_Plate
 Antibiotic_Pill_Single
 Antibiotics_01
