@@ -656,6 +656,9 @@ namespace SCUMQuestEditor
                         LvTradeDeals.ItemsSource = null;
                     }
                 }
+
+                int totalRewards = CalculateTotalRewards(reward);
+                if (TxtTotalRewards != null) TxtTotalRewards.Text = $"Total Rewards: {totalRewards}/5";
             }
             else
             {
@@ -681,10 +684,8 @@ namespace SCUMQuestEditor
             // --- FIX END ---
 
             LvConditions.SelectedItem = null;
+            
 
-            RewardPool currentReward = GetOrCreateCurrentReward();
-            int totalRewards = CalculateTotalRewards(currentReward);
-            if (TxtTotalRewards != null) TxtTotalRewards.Text = $"Total Rewards: {totalRewards}/5";
         }
 
 
@@ -1429,7 +1430,8 @@ namespace SCUMQuestEditor
         }
         private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            this.DragMove();
+            if (e.ButtonState == MouseButtonState.Pressed)
+                DragMove();
         }
 
         private void TitleBar_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -1437,12 +1439,12 @@ namespace SCUMQuestEditor
             this.ContextMenu.IsOpen = true; // Optional: Add a ContextMenu to the Window for minimize/restore/close
         }
 
-        private void BtnMinimize_Click(object sender, RoutedEventArgs e)
+        private void MinimizeWindow_Click(object sender, RoutedEventArgs e)
         {
             this.WindowState = WindowState.Minimized;
         }
 
-        private void BtnMaximize_Click(object sender, RoutedEventArgs e)
+        private void MaximizeRestoreWindow_Click(object sender, RoutedEventArgs e)
         {
             if (this.WindowState == WindowState.Maximized)
                 this.WindowState = WindowState.Normal;
@@ -1450,7 +1452,7 @@ namespace SCUMQuestEditor
                 this.WindowState = WindowState.Maximized;
         }
 
-        private void BtnClose_Click(object sender, RoutedEventArgs e)
+        private void MenuItem_Exit_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
         }
