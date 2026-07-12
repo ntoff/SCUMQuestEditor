@@ -35,8 +35,5 @@
     </None>
   </ItemGroup>
 
-  <Target Name="ZipOutput" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
-    <Exec Command="powershell -Command &quot;$p = Split-Path '$(OutDir)' -Parent; Compress-Archive -Path '$(OutDir)*' -DestinationPath (Join-Path $p '$(ProjectName)_$(Configuration).zip') -Force&quot;" />
-  </Target>
-  
+    
 </Project>
