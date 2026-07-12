@@ -14,11 +14,13 @@
         </Grid.RowDefinitions>
 
         <ListBox x:Name="LstWeapons" Grid.Row="0" Margin="5"
-                 SelectionMode="Multiple"
-                 Style="{StaticResource MaterialDesignListBox}">
+         SelectionMode="Multiple"
+         Style="{StaticResource MaterialDesignListBox}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <CheckBox Content="{Binding}" IsChecked="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}"/>
+                    <CheckBox IsChecked="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}">
+                        <TextBlock Text="{Binding}" />
+                    </CheckBox>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
