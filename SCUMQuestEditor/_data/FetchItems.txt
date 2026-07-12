@@ -109,6 +109,7 @@ Ammo_Crossbow_Bolt_Wooden
 Ammo_Crossbow_Bolt_WoodenMetalTip
 Ammo_Crossbow_Bolt_WoodenStoneTip
 Amur_Fillet
+Animal_Lure
 Animal_skin
 AnimalBaitFeederItem
 AnimalBaitFeederItem_HunterVariant
@@ -136,6 +137,7 @@ Armor_Tactical_Vest_01_02
 Armor_Tactical_Vest_01_03
 Armor_Tactical_Vest_01_04
 Armor_Tactical_Vest_01_05
+Aromatic_Bait_Paste_Lure
 Aspirin
 AtropineInjection
 BabyFood
