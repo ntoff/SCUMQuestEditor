@@ -5,3 +5,4 @@ SCUMQuestEditor/obj
 SCUMQuestEditor/Properties/*
 SCUMQuestEditor/_data/items.json
 SCUMQuestEditor/_data/jsonify.ps1
+packages/*.*
