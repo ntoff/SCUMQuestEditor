@@ -437,6 +437,7 @@ namespace SCUMQuestEditor
         public static List<string> TradeItems { get; private set; } = new List<string> { "Default Item" };
         public static List<string> FetchItems { get; private set; } = new List<string>();
         public const int MaxKillAmount = 1000000000;
+        private string? _currentFilePath;
 
         public MainWindow()
         {
@@ -474,6 +475,7 @@ namespace SCUMQuestEditor
 
         private void MenuItem_New_Click(object sender, RoutedEventArgs e)
         {
+            _currentFilePath = null;
             CurrentTradeDeal = new TradeDeal
             {
                 AssociatedNpc = "Armorer",
@@ -552,6 +554,7 @@ namespace SCUMQuestEditor
                         return;
                     }
 
+                    _currentFilePath = filePath;
                     UpdateControlsFromQuest(loadedQuest);
                     TxtJson.Text = jsonContent;
                     CurrentTradeDeal = loadedQuest;
@@ -567,11 +570,20 @@ namespace SCUMQuestEditor
         {
             try
             {
-                string npc = CurrentTradeDeal?.AssociatedNpc ?? "Armorer";
-                string tier = CurrentTradeDeal?.Tier.ToString() ?? "1";
-                string traderCode = GetTraderCode(npc);
-                string title = TxtTitle?.Text?.Replace(" ", "_") ?? "quest";
-                string fileName = $"T{tier}_{traderCode}_{title}.json";
+                string fileName;
+
+                if (!string.IsNullOrEmpty(_currentFilePath))
+                {
+                    fileName = Path.GetFileName(_currentFilePath);
+                }
+                else
+                {
+                    string npc = CurrentTradeDeal?.AssociatedNpc ?? "Armorer";
+                    string tier = CurrentTradeDeal?.Tier.ToString() ?? "1";
+                    string traderCode = GetTraderCode(npc);
+                    string title = TxtTitle?.Text?.Replace(" ", "_") ?? "quest";
+                    fileName = $"T{tier}_{traderCode}_{title}.json";
+                }
 
                 SaveFileDialog saveFileDialog = new SaveFileDialog
                 {
@@ -595,6 +607,7 @@ namespace SCUMQuestEditor
 
                     string json = JsonSerializer.Serialize(CurrentTradeDeal, options);
                     File.WriteAllText(saveFileDialog.FileName, json);
+                    _currentFilePath = saveFileDialog.FileName;
                 }
             }
             catch (Exception ex)
