@@ -1,7 +1,7 @@
 <Window x:Class="SCUMQuestEditor.AddSkillRewardDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Add Skill Reward" Height="180" Width="350"
+        Title="Add Skill Reward" Height="160" Width="350"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
         Background="{DynamicResource MaterialDesignPaper}"
