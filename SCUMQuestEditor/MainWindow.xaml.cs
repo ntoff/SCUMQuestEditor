@@ -567,12 +567,18 @@ namespace SCUMQuestEditor
         {
             try
             {
+                string npc = CurrentTradeDeal?.AssociatedNpc ?? "Armorer";
+                string tier = CurrentTradeDeal?.Tier.ToString() ?? "1";
+                string traderCode = GetTraderCode(npc);
+                string title = TxtTitle?.Text?.Replace(" ", "_") ?? "quest";
+                string fileName = $"T{tier}_{traderCode}_{title}.json";
+
                 SaveFileDialog saveFileDialog = new SaveFileDialog
                 {
                     Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
                     Title = "Save Quest File",
                     DefaultExt = "json",
-                    FileName = $"{TxtTitle.Text?.Replace(" ", "_") ?? "quest"}.json"
+                    FileName = fileName
                 };
 
                 bool? result = saveFileDialog.ShowDialog();
@@ -595,6 +601,23 @@ namespace SCUMQuestEditor
             {
                 MessageBox.Show($"Error saving quest file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private string GetTraderCode(string npc)
+        {
+            return npc switch
+            {
+                "Armorer" => "AR",
+                "Banker" => "BK",
+                "Barber" => "BA",
+                "Bartender" => "BT",
+                "Doctor" => "DC",
+                "GeneralGoods" => "GG",
+                "Harbourmaster" => "HM",
+                "Hunter" => "HT",
+                "Mechanic" => "MC",
+                _ => "AR"
+            };
         }
 
         private void UpdateControlsFromQuest(TradeDeal quest)
