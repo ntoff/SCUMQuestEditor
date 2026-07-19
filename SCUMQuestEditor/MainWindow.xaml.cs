@@ -674,6 +674,18 @@ namespace SCUMQuestEditor
             };
         }
 
+        private void FileNameFormat_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new FilenameFormatDialog(_settings.FileNameFormat);
+            dialog.ShowDialog();
+
+            if (dialog.IsOkClicked)
+            {
+                _settings.FileNameFormat = dialog.NewFormat;
+                SaveSettings();
+            }
+        }
+
         private string GenerateFileName()
         {
             string npc = CurrentTradeDeal?.AssociatedNpc ?? "Armorer";

@@ -1,0 +1,37 @@
+<Window x:Class="SCUMQuestEditor.FilenameFormatDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="Filename Format Settings" Height="265" Width="450"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="{DynamicResource MaterialDesignPaper}"
+        Foreground="{DynamicResource MaterialDesignBody}">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBox x:Name="TxtFormat" Grid.Row="0" Margin="0,0,0,20" Padding="5" 
+                  Style="{StaticResource MaterialDesignTextBox}"
+                  materialDesign:HintAssist.Hint="T{tier}_{trader}_{title}"
+                  FontFamily="Consolas"/>
+
+        <StackPanel Grid.Row="1" Margin="0,0,0,20">
+            <TextBlock Text="Available placeholders:" FontWeight="Bold" Margin="0,0,0,10"/>
+            <TextBlock Text="{}{tier} - Quest tier (1, 2, 3)" Margin="0,0,0,4"/>
+            <TextBlock Text="{}{trader} - Trader code (AR, BK, BA, BT, DC, GG, HM, HT, MC)" Margin="0,0,0,4"/>
+            <TextBlock Text="{}{title} - Quest title (spaces replaced with underscores)" Margin="0,0,0,4"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="BtnOk" Content="OK" Width="75" Height="25" Margin="0,0,10,0"
+                    Click="BtnOk_Click" Style="{StaticResource MaterialDesignRaisedButton}"/>
+            <Button x:Name="BtnCancel" Content="Cancel" Width="75" Height="25"
+                    Click="BtnCancel_Click" Style="{StaticResource MaterialDesignRaisedButton}"/>
+        </StackPanel>
+    </Grid>
+</Window>

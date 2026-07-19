@@ -77,7 +77,10 @@
                     <Separator />
                     <MenuItem Header="E_xit" Click="MenuItem_Exit_Click" />
                 </MenuItem>
-            </Menu>
+            <MenuItem Header="_Settings" Foreground="{DynamicResource MaterialDesignBody}">
+                <MenuItem Header="Filename Formattin_g" Click="FileNameFormat_Click" />
+            </MenuItem>
+        </Menu>
 
             <!-- Tab Control - Standard style, not NavigationRail -->
             <TabControl Margin="8" Background="{DynamicResource MaterialDesignPaper}">
