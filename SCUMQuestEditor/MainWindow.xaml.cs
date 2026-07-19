@@ -62,6 +62,11 @@ namespace SCUMQuestEditor
         public List<Condition> Conditions { get; set; } = new List<Condition>();
     }
 
+    public class AppSettings
+    {
+        public string FileNameFormat { get; set; } = "T{tier}_{trader}_{title}";
+    }
+
     public class Condition : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -437,6 +442,7 @@ namespace SCUMQuestEditor
         public static List<string> TradeItems { get; private set; } = new List<string> { "Default Item" };
         public static List<string> FetchItems { get; private set; } = new List<string>();
         public const int MaxKillAmount = 1000000000;
+        private static AppSettings _settings = new AppSettings();
         private string? _currentFilePath;
 
         public MainWindow()
@@ -447,9 +453,48 @@ namespace SCUMQuestEditor
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            LoadSettings();
             LoadFetchItems();
             UpdateJsonPreview();
             InitConditions();
+        }
+
+        private void LoadSettings()
+        {
+            try
+            {
+                string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "_data\\settings.json");
+                if (File.Exists(path))
+                {
+                    string json = File.ReadAllText(path);
+                    _settings = JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
+                }
+            }
+            catch
+            {
+                _settings = new AppSettings();
+            }
+        }
+
+        private void SaveSettings()
+        {
+            try
+            {
+                string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "_data\\settings.json");
+                string directory = Path.GetDirectoryName(path);
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                var options = new JsonSerializerOptions { WriteIndented = true };
+                string json = JsonSerializer.Serialize(_settings, options);
+                File.WriteAllText(path, json);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error saving settings: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void LoadFetchItems()
@@ -578,11 +623,7 @@ namespace SCUMQuestEditor
                 }
                 else
                 {
-                    string npc = CurrentTradeDeal?.AssociatedNpc ?? "Armorer";
-                    string tier = CurrentTradeDeal?.Tier.ToString() ?? "1";
-                    string traderCode = GetTraderCode(npc);
-                    string title = TxtTitle?.Text?.Replace(" ", "_") ?? "quest";
-                    fileName = $"T{tier}_{traderCode}_{title}.json";
+                    fileName = GenerateFileName();
                 }
 
                 SaveFileDialog saveFileDialog = new SaveFileDialog
@@ -631,6 +672,21 @@ namespace SCUMQuestEditor
                 "Mechanic" => "MC",
                 _ => "AR"
             };
+        }
+
+        private string GenerateFileName()
+        {
+            string npc = CurrentTradeDeal?.AssociatedNpc ?? "Armorer";
+            int tier = CurrentTradeDeal?.Tier ?? 1;
+            string title = TxtTitle?.Text?.Replace(" ", "_") ?? "quest";
+            string traderCode = GetTraderCode(npc);
+
+            string format = _settings.FileNameFormat;
+            format = format.Replace("{tier}", tier.ToString());
+            format = format.Replace("{trader}", traderCode);
+            format = format.Replace("{title}", title);
+
+            return format + ".json";
         }
 
         private void UpdateControlsFromQuest(TradeDeal quest)
