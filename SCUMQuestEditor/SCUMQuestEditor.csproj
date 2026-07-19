@@ -38,7 +38,16 @@
     </ItemGroup>
 
   <Target Name="SetBuildDate" BeforeTargets="CoreCompile">
-    <Exec Command="powershell -Command &quot;$date = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'; (Get-Content BuildInfo.cs) -replace '__BUILD_DATE__', $date | Set-Content BuildInfo.cs&quot;" />
+    <Exec Command="powershell -ExecutionPolicy Bypass -File &quot;$(ProjectDir)Scripts\UpdateBuildInfo.ps1&quot;" />
+  </Target>
+
+  <Target Name="ZipPublishOutput" AfterTargets="Publish">
+    <PropertyGroup>
+      <ZipTimestamp>$([System.DateTime]::Now.ToString('yyyyMMdd_HHmm'))</ZipTimestamp>
+      <ZipFileName>SCUMQuestEditor_$(ZipTimestamp).zip</ZipFileName>
+      <PkgDir>$(ProjectDir)..\packages</PkgDir>
+    </PropertyGroup>
+    <Exec Command="powershell -ExecutionPolicy Bypass -Command &quot;New-Item -ItemType Directory -Path '$(PkgDir)' -Force -ErrorAction SilentlyContinue; Compress-Archive -Path '$(PublishDir)*' -DestinationPath '$(PkgDir)\$(ZipFileName)' -Force&quot;" />
   </Target>
   
 </Project>
