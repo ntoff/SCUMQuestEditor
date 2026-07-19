@@ -677,6 +677,7 @@ namespace SCUMQuestEditor
         private void FileNameFormat_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new FilenameFormatDialog(_settings.FileNameFormat);
+            dialog.Owner = this;
             dialog.ShowDialog();
 
             if (dialog.IsOkClicked)
@@ -689,6 +690,7 @@ namespace SCUMQuestEditor
         private void About_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new AboutDialog();
+            dialog.Owner = this;
             dialog.ShowDialog();
         }
 
