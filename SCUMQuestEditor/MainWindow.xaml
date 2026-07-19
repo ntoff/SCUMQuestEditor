@@ -80,6 +80,9 @@
             <MenuItem Header="_Settings" Foreground="{DynamicResource MaterialDesignBody}">
                 <MenuItem Header="Filename Formattin_g" Click="FileNameFormat_Click" />
             </MenuItem>
+            <MenuItem Header="_Help" Foreground="{DynamicResource MaterialDesignBody}">
+                <MenuItem Header="_About" Click="About_Click" />
+            </MenuItem>
         </Menu>
 
             <!-- Tab Control - Standard style, not NavigationRail -->

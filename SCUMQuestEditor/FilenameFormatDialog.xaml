@@ -21,10 +21,10 @@
                   FontFamily="Consolas"/>
 
         <StackPanel Grid.Row="1" Margin="0,0,0,20">
-            <TextBlock Text="Available placeholders:" FontWeight="Bold" Margin="0,0,0,10"/>
-            <TextBlock Text="{}{tier} - Quest tier (1, 2, 3)" Margin="0,0,0,4"/>
-            <TextBlock Text="{}{trader} - Trader code (AR, BK, BA, BT, DC, GG, HM, HT, MC)" Margin="0,0,0,4"/>
-            <TextBlock Text="{}{title} - Quest title (spaces replaced with underscores)" Margin="0,0,0,4"/>
+            <TextBlock Foreground="{DynamicResource MaterialDesignBodyLight}" Text="Available placeholders:" FontWeight="Bold" Margin="0,0,0,10"/>
+            <TextBlock Foreground="{DynamicResource MaterialDesignBodyLight}" Text="{}{tier} - Quest tier (1, 2, 3)" Margin="0,0,0,4"/>
+            <TextBlock Foreground="{DynamicResource MaterialDesignBodyLight}" Text="{}{trader} - Trader code (AR, BK, BA, BT, DC, GG, HM, HT, MC)" Margin="0,0,0,4"/>
+            <TextBlock Foreground="{DynamicResource MaterialDesignBodyLight}" Text="{}{title} - Quest title (spaces replaced with underscores)" Margin="0,0,0,4"/>
         </StackPanel>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">

@@ -686,6 +686,12 @@ namespace SCUMQuestEditor
             }
         }
 
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new AboutDialog();
+            dialog.ShowDialog();
+        }
+
         private string GenerateFileName()
         {
             string npc = CurrentTradeDeal?.AssociatedNpc ?? "Armorer";

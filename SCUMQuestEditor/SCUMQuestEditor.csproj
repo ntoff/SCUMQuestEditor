@@ -12,7 +12,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="ICON\icon.ico" />
+    <Content Include="ICON\icon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -33,7 +35,10 @@
     <None Update="_data\TradeItems.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
+    </ItemGroup>
 
-    
+  <Target Name="SetBuildDate" BeforeTargets="CoreCompile">
+    <Exec Command="powershell -Command &quot;$date = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'; (Get-Content BuildInfo.cs) -replace '__BUILD_DATE__', $date | Set-Content BuildInfo.cs&quot;" />
+  </Target>
+  
 </Project>
