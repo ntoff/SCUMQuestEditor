@@ -536,7 +536,7 @@ namespace SCUMQuestEditor
             {
                 foreach (ComboBoxItem item in CbNpc.Items)
                 {
-                    if (item.Content?.ToString() == "Armorer")
+                    if (item.Tag?.ToString() == "Armorer")
                     {
                         CbNpc.SelectedItem = item;
                         break;
@@ -669,6 +669,7 @@ namespace SCUMQuestEditor
                 "GeneralGoods" => "GG",
                 "Harbourmaster" => "HM",
                 "Hunter" => "HT",
+                "MasterHunter" => "MH",
                 "Mechanic" => "MC",
                 _ => "AR"
             };
@@ -716,7 +717,7 @@ namespace SCUMQuestEditor
                 bool npcFound = false;
                 foreach (ComboBoxItem item in CbNpc.Items)
                 {
-                    if (item.Content?.ToString() == quest.AssociatedNpc)
+                    if (item.Tag?.ToString() == quest.AssociatedNpc)
                     {
                         CbNpc.SelectedItem = item;
                         npcFound = true;
@@ -964,7 +965,7 @@ namespace SCUMQuestEditor
             try
             {
                 string npc = "Armorer";
-                if (CbNpc?.SelectedItem is ComboBoxItem selectedItem) npc = selectedItem.Content?.ToString() ?? "Armorer";
+                if (CbNpc?.SelectedItem is ComboBoxItem selectedItem) npc = selectedItem.Tag?.ToString() ?? "Armorer";
 
                 int tier = 1;
                 if (!int.TryParse(TxtTier?.Text ?? "1", out tier)) tier = 1;

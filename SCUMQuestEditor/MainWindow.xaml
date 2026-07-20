@@ -110,15 +110,16 @@
                                HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,10"/>
                             <ComboBox x:Name="CbNpc" Grid.Row="0" Grid.Column="1" Margin="0,0,0,5" SelectedIndex="0" 
                                   SelectionChanged="CbNpc_SelectionChanged">
-                                <ComboBoxItem Content="Armorer" />
-                                <ComboBoxItem Content="Banker" />
-                                <ComboBoxItem Content="Barber" />
-                                <ComboBoxItem Content="Bartender" />
-                                <ComboBoxItem Content="Doctor" />
-                                <ComboBoxItem Content="GeneralGoods" />
-                                <ComboBoxItem Content="Harbourmaster" />
-                                <ComboBoxItem Content="Hunter" />
-                                <ComboBoxItem Content="Mechanic" />
+                                <ComboBoxItem Content="Armorer" Tag="Armorer" />
+                                <ComboBoxItem Content="Banker" Tag="Banker" />
+                                <ComboBoxItem Content="Barber" Tag="Barber" />
+                                <ComboBoxItem Content="Bartender" Tag="Bartender" />
+                                <ComboBoxItem Content="Doctor" Tag="Doctor" />
+                                <ComboBoxItem Content="General Goods" Tag="GeneralGoods" />
+                                <ComboBoxItem Content="Harbourmaster" Tag="Harbourmaster" />
+                                <ComboBoxItem Content="Hunter" Tag="Hunter" />
+                                <ComboBoxItem Content="Master Hunter" Tag="MasterHunter" />
+                                <ComboBoxItem Content="Mechanic" Tag="Mechanic" />
                             </ComboBox>
 
                             <!-- 1. Quest Title -->
