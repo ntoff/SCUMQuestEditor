@@ -26,7 +26,7 @@ Get-Content $logPath | ForEach-Object {
     }
 }
 
-$cleanItems = $items | Sort-Object -Unique
+$cleanItems = $items | Sort-Object { [regex]::Replace($_, '\d+', { $args[0].Value.PadLeft(20, '0') }) } -Unique
 
 if ($outputPath) {
     $cleanItems | Set-Content $outputPath -Encoding UTF8

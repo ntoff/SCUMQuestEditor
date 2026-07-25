@@ -1,1 +1,1 @@
-Get-Content "listitems.txt", "cookingdishes.txt" | Sort-Object -Unique | Set-Content "FetchItems.txt"
+Get-Content "listitems.txt", "cookingdishes.txt" | Sort-Object { [regex]::Replace($_, '\d+', { $args[0].Value.PadLeft(20, '0') }) } -Unique | Set-Content "FetchItems.txt"
