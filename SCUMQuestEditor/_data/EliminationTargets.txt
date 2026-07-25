@@ -33,13 +33,11 @@ BP_Bear
 BP_Boar
 BP_Boar_Mutant
 BP_Chicken
-BP_Crow
 BP_Deer
 BP_Deer_Mutant
 BP_Donkey
 BP_Goat
 BP_Horse
 BP_Rabbit
-BP_Seagull
 BP_Wolf
 BP_Wolf_Mutant
