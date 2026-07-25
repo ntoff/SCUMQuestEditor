@@ -1,0 +1,1 @@
+Get-Content "listitems.txt", "cookingdishes.txt" | Sort-Object -Unique | Set-Content "FetchItems.txt"
