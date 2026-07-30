@@ -1,0 +1,1 @@
+dotnet publish SCUMQuestEditor.sln -c Release -p:PublishProfile=FolderProfile 2>&1
