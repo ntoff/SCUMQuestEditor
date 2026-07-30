@@ -1,7 +1,7 @@
-namespace SCUMQuestEditor
+﻿namespace SCUMQuestEditor
 {
     public static class BuildInfo
     {
-        public const string BuildDate = "2026-07-19 20:32:56";
+        public const string BuildDate = "2026-07-30 12:27:46";
     }
 }

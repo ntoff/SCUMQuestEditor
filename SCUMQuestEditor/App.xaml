@@ -8,82 +8,156 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <materialDesign:BundledTheme BaseTheme="Dark" PrimaryColor="LightBlue" SecondaryColor="Lime" />
+                <materialDesign:BundledTheme BaseTheme="Dark" PrimaryColor="Indigo" SecondaryColor="Green" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign3.Defaults.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-                <!-- 1. Compact Label Style -->
-                <Style x:Key="CompactLabel" TargetType="Label" BasedOn="{StaticResource MaterialDesignLabel}">
-                    <Setter Property="FontSize" Value="12" />
-                    <Setter Property="Margin" Value="0,0,10,5" />
-                    <Setter Property="Padding" Value="0" />
-                </Style>
-
-                <!-- 2. Compact TextBox Style -->
-                <Style x:Key="CompactTextBox" TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
-                    <Setter Property="FontSize" Value="12" />
-                    <Setter Property="Padding" Value="5" />
-                    <Setter Property="Margin" Value="0,0,0,5" />
-                </Style>
-
-                <!-- 3. Compact ComboBox Style -->
-                <Style x:Key="CompactComboBox" TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
-                    <Setter Property="FontSize" Value="12" />
-                    <Setter Property="Padding" Value="2,2,2,2" />
-                    <Setter Property="Margin" Value="0,0,0,5" />
-                </Style>
-
-                <!-- 4. Compact TabItem Header -->
-                <Style x:Key="CompactTabItem" TargetType="TabItem" BasedOn="{StaticResource MaterialDesignTabItem}">
-                    <Setter Property="Padding" Value="0,2,0,2" />
-                    <Setter Property="FontSize" Value="12" />
-                </Style>
-
-                <Style TargetType="Label" BasedOn="{StaticResource MaterialDesignLabel}">
-                    <Setter Property="FontSize" Value="12" />
-                    <Setter Property="Margin" Value="0,0,10,5" />
-                    <Setter Property="Padding" Value="0,5,0,0" />
-                </Style>
-
-                <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
-                    <Setter Property="FontSize" Value="12" />
-                    <Setter Property="Padding" Value="5" />
-                    <Setter Property="Margin" Value="0,0,0,5" />
-                </Style>
-
-                <Style TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
-                    <Setter Property="FontSize" Value="12" />
-                    <Setter Property="Padding" Value="5" />
-                    <Setter Property="Margin" Value="0,0,0,5" />
-                </Style>
-
-                <Style TargetType="TabItem" BasedOn="{StaticResource MaterialDesignTabItem}">
-                    <Setter Property="Padding" Value="5" />
-                    <Setter Property="FontSize" Value="12" />
-                </Style>
-
-            <!-- 5. Compact Button Style with Reduced Padding -->
-            <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
-                <Setter Property="FontSize" Value="12" />
-                <Setter Property="Padding" Value="0" />
-                <Setter Property="Margin" Value="0,0,5,5" />
+            <!-- Card-style container -->
+            <Style x:Key="CardStyle" TargetType="Border">
+                <Setter Property="Background" Value="{DynamicResource MaterialDesignCardBackground}"/>
+                <Setter Property="CornerRadius" Value="8"/>
+                <Setter Property="Padding" Value="16"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignDivider}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
             </Style>
 
-            <!-- 6. LISTBOX/LISTVIEW STYLE -->
-            <!-- This gives the list a slightly lighter background and a clear border -->
+            <!-- Refined Label Style -->
+            <Style x:Key="CompactLabel" TargetType="Label" BasedOn="{StaticResource MaterialDesignLabel}">
+                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="Margin" Value="0,0,12,6"/>
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBodyLight}"/>
+            </Style>
+
+            <!-- Refined TextBox Style -->
+            <Style x:Key="CompactTextBox" TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="Padding" Value="8"/>
+                <Setter Property="Margin" Value="0,0,0,8"/>
+            </Style>
+
+            <!-- Refined ComboBox Style -->
+            <Style x:Key="CompactComboBox" TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="Padding" Value="8"/>
+                <Setter Property="Margin" Value="0,0,0,8"/>
+            </Style>
+
+            <!-- Refined TabItem Header -->
+            <Style x:Key="CompactTabItem" TargetType="TabItem" BasedOn="{StaticResource MaterialDesignTabItem}">
+                <Setter Property="Padding" Value="16,10"/>
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBodyLight}"/>
+            </Style>
+
+            <!-- Default Label -->
+            <Style TargetType="Label" BasedOn="{StaticResource MaterialDesignLabel}">
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="Margin" Value="0,0,12,6"/>
+                <Setter Property="Padding" Value="0,5,0,0"/>
+                <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBodyLight}"/>
+            </Style>
+
+            <!-- Default TextBox -->
+            <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="Padding" Value="8"/>
+                <Setter Property="Margin" Value="0,0,0,8"/>
+            </Style>
+
+            <!-- Default ComboBox -->
+            <Style TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="Padding" Value="8"/>
+                <Setter Property="Margin" Value="0,0,0,8"/>
+            </Style>
+
+            <!-- Default TabItem -->
+            <Style TargetType="TabItem" BasedOn="{StaticResource MaterialDesignTabItem}">
+                <Setter Property="Padding" Value="16,10"/>
+                <Setter Property="FontSize" Value="13"/>
+            </Style>
+
+            <!-- Modern Button Style -->
+            <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="Margin" Value="0,0,8,8"/>
+                <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="6"/>
+            </Style>
+
+            <!-- Primary Action Button -->
+            <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="Margin" Value="0,0,8,8"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="6"/>
+            </Style>
+
+            <!-- Subtle Button -->
+            <Style x:Key="SubtleButton" TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="Margin" Value="0,0,8,8"/>
+                <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="6"/>
+            </Style>
+
+            <!-- Refined ListView -->
             <Style TargetType="ListView" BasedOn="{StaticResource MaterialDesignListView}">
-                <Setter Property="BorderThickness" Value="1" />
-                <Setter Property="Padding" Value="2" />
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignDivider}"/>
+                <Setter Property="Padding" Value="2"/>
+                <Setter Property="Background" Value="Transparent"/>
+            </Style>
+
+            <!-- Refined ListBox -->
+            <Style TargetType="ListBox" BasedOn="{StaticResource MaterialDesignListBox}">
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignDivider}"/>
             </Style>
 
             <Style TargetType="CheckBox">
-                <Setter Property="Foreground" Value="White" />
+                <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
             </Style>
 
             <Style TargetType="ListViewItem">
-                <Setter Property="Foreground" Value="White" />
+                <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
+                <Setter Property="Padding" Value="4"/>
             </Style>
 
+            <!-- Refined Menu -->
+            <Style TargetType="MenuItem">
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="Padding" Value="12,4"/>
+                <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
+            </Style>
+
+            <!-- Compact Column Header -->
+            <Style x:Key="CompactColumnHeader" TargetType="GridViewColumnHeader">
+                <Setter Property="Height" Value="40"/>
+                <Setter Property="Padding" Value="12,0"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBodyLight}"/>
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignDivider}"/>
+                <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="GridViewColumnHeader">
+                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                                <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- Divider -->
+            <Style x:Key="DividerStyle" TargetType="Separator">
+                <Setter Property="Background" Value="{DynamicResource MaterialDesignDivider}"/>
+            </Style>
 
         </ResourceDictionary>
     </Application.Resources>

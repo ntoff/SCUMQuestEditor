@@ -2,197 +2,210 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        Title="Edit Required Items" Height="750" Width="850"
+        Title="Edit Required Items" Height="800" Width="900"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
-        Background="{DynamicResource MaterialDesignPaper}"
+        Background="{DynamicResource MaterialDesignBackground}"
         Foreground="{DynamicResource MaterialDesignBody}">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <Border Background="{DynamicResource MaterialDesignPaper}" CornerRadius="12">
+        <Border.BorderBrush>
+            <SolidColorBrush Color="{DynamicResource MaterialDesignDividerColor}"/>
+        </Border.BorderBrush>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <!-- 1. Top ListView -->
-        <ListView x:Name="LvRequiredItems" Grid.Row="0" Margin="5"
-                  Style="{StaticResource MaterialDesignListView}"
-                  SelectionMode="Multiple">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="Accepted Items" Width="250" DisplayMemberBinding="{Binding AcceptedItemsDisplay}" />
-                    <GridViewColumn Header="Required Num" DisplayMemberBinding="{Binding RequiredNum}" />
-                </GridView>
-            </ListView.View>
-        </ListView>
+            <!-- Top ListView -->
+            <Border Grid.Row="0" Style="{StaticResource CardStyle}" Margin="8,8,8,4" Padding="0">
+                <ListView x:Name="LvRequiredItems" Margin="4"
+                          SelectionMode="Multiple" BorderThickness="0" Background="Transparent">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Accepted Items" Width="280" DisplayMemberBinding="{Binding AcceptedItemsDisplay}" />
+                            <GridViewColumn Header="Required Num" Width="100" DisplayMemberBinding="{Binding RequiredNum}" />
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Border>
 
-        <!-- 2. Buttons -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5,5,5,5">
-            <Button x:Name="BtnEdit" Content="Edit Selected" Margin="0,0,5,0" Click="BtnEditSelectedRequiredItem_Click"
-                    Style="{StaticResource MaterialDesignRaisedButton}"/>
-            <Button x:Name="BtnRemove" Content="Remove Selected" Click="BtnRemoveSelectedRequiredItem_Click"
-                    Style="{StaticResource MaterialDesignRaisedButton}"/>
-        </StackPanel>
+            <!-- Buttons -->
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="8,8,8,8">
+                <Button x:Name="BtnEdit" Content="Edit Selected" Margin="0,0,6,0" Click="BtnEditSelectedRequiredItem_Click"
+                        Style="{StaticResource PrimaryButton}"/>
+                <Button x:Name="BtnRemove" Content="Remove Selected" Click="BtnRemoveSelectedRequiredItem_Click"
+                        Style="{StaticResource SubtleButton}"/>
+            </StackPanel>
 
-        <!-- 3. Input Area -->
-        <Grid Grid.Row="2" Margin="5,5,5,5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="220"/>
-                <ColumnDefinition Width="250"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+            <!-- Input Area -->
+            <Grid Grid.Row="2" Margin="8,8,8,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="240"/>
+                    <ColumnDefinition Width="280"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-            <!-- Left Column: List -->
-            <Grid Grid.Column="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Button Grid.Row="0" x:Name="BtnAdd" Content="Add Selected Items" Margin="0,0,5,10" Click="BtnAddRequiredItem_Click"
-                    Style="{StaticResource MaterialDesignRaisedButton}"/>
+                <!-- Left Column: List -->
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Button Grid.Row="0" x:Name="BtnAdd" Content="Add Selected Items" Margin="0,0,6,10" Click="BtnAddRequiredItem_Click"
+                        Style="{StaticResource PrimaryButton}"/>
 
-                <!-- CHANGED: SelectionMode set to Multiple -->
-                <ListBox x:Name="LstAcceptedItems" Grid.Row="1" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch"
-                         Style="{StaticResource MaterialDesignListBox}"
-                         SelectionMode="Multiple">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <CheckBox IsChecked="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}">
-                                <TextBlock Text="{Binding}" />
-                            </CheckBox>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                    <Border Grid.Row="1" Style="{StaticResource CardStyle}" Padding="0" Margin="0,0,6,0">
+                        <ListBox x:Name="LstAcceptedItems" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch"
+                                 Style="{StaticResource MaterialDesignListBox}" SelectionMode="Multiple">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <CheckBox IsChecked="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}">
+                                        <TextBlock Text="{Binding}" />
+                                    </CheckBox>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Border>
+                </Grid>
+
+                <!-- Middle Column: Inputs -->
+                <Border Grid.Column="1" Style="{StaticResource CardStyle}" Margin="6,0,6,0" Padding="12">
+                    <StackPanel>
+                        <TextBox x:Name="TxtSearch" Margin="0,0,0,8" Height="36" Padding="8"
+                                 Text="" Style="{StaticResource CompactTextBox}"
+                                 materialDesign:HintAssist.Hint="Type to search items..."
+                                 TextChanged="TxtSearch_TextChanged"/>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                            <Label Content="Required:" HorizontalAlignment="Right" Margin="0,0,8,0" Style="{StaticResource CompactLabel}"/>
+                            <TextBox x:Name="TxtRequiredQty" Text="1" Width="70"
+                                     Style="{StaticResource CompactTextBox}"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                            <Label Content="Random:" HorizontalAlignment="Right" Margin="0,0,8,0" Style="{StaticResource CompactLabel}"/>
+                            <TextBox x:Name="TxtRandomQty" Text="0" Width="70"
+                                     Style="{StaticResource CompactTextBox}"/>
+                        </StackPanel>
+
+                        <TextBlock Text="Item Condition" Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                   FontSize="13" FontWeight="SemiBold" Margin="0,10,0,6"/>
+
+                        <Grid Margin="0,0,0,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <CheckBox x:Name="ChkMinHealth" Grid.Row="0" Grid.Column="0" Content="Min Health %" Margin="0,8,12,2"/>
+                            <TextBox x:Name="TxtMinHealth" Grid.Row="0" Grid.Column="1" Text="50" Width="70" Margin="12,2,0,2"
+                                     Style="{StaticResource CompactTextBox}"/>
+
+                            <CheckBox x:Name="ChkMinUses" Grid.Row="1" Grid.Column="0" Content="Min Uses" Margin="0,8,12,2"/>
+                            <TextBox x:Name="TxtMinUses" Grid.Row="1" Grid.Column="1" Text="1" Width="70" Margin="12,2,0,2"
+                                     Style="{StaticResource CompactTextBox}"/>
+
+                            <CheckBox x:Name="ChkMinMass" Grid.Row="2" Grid.Column="0" Content="Min Mass (g)" Margin="0,8,12,2"/>
+                            <TextBox x:Name="TxtMinMass" Grid.Row="2" Grid.Column="1" Text="100" Width="70" Margin="12,2,0,2"
+                                     Style="{StaticResource CompactTextBox}"/>
+                        </Grid>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                            <Button x:Name="BtnApply" Content="Apply" Margin="0,0,8,0" Click="BtnApply_Click"
+                                    Style="{StaticResource PrimaryButton}"/>
+                            <Button x:Name="BtnCancelEdit" Content="Cancel" Click="BtnCancelEdit_Click"
+                                    Style="{StaticResource SubtleButton}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Right Column: Properties -->
+                <Border Grid.Column="2" Style="{StaticResource CardStyle}" Margin="6,0,0,0" Padding="12">
+                    <StackPanel>
+                        <TextBlock Text="Cooking Properties" Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                   FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
+
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <CheckBox x:Name="ChkMinCookLevel" Grid.Row="0" Grid.Column="0" Content="Min Cook Level" Margin="0,8,12,2"/>
+                            <ComboBox x:Name="CmbMinCookLevel" Grid.Row="0" Grid.Column="1" Width="110" Margin="12,2,0,2">
+                                <ComboBoxItem Content="Raw" />
+                                <ComboBoxItem Content="Undercooked" />
+                                <ComboBoxItem Content="Cooked" />
+                                <ComboBoxItem Content="Overcooked" />
+                                <ComboBoxItem Content="Burned" />
+                            </ComboBox>
+
+                            <CheckBox x:Name="ChkMaxCookLevel" Grid.Row="1" Grid.Column="0" Content="Max Cook Level" Margin="0,8,12,2"/>
+                            <ComboBox x:Name="CmbMaxCookLevel" Grid.Row="1" Grid.Column="1" Width="110" Margin="12,2,0,2">
+                                <ComboBoxItem Content="Raw" />
+                                <ComboBoxItem Content="Undercooked" />
+                                <ComboBoxItem Content="Cooked" />
+                                <ComboBoxItem Content="Overcooked" />
+                                <ComboBoxItem Content="Burned" />
+                            </ComboBox>
+
+                            <CheckBox x:Name="ChkMinCookQuality" Grid.Row="2" Grid.Column="0" Content="Min Cook Quality" Margin="0,8,12,2"/>
+                            <ComboBox x:Name="CmbMinCookQuality" Grid.Row="2" Grid.Column="1" Width="110" Margin="12,2,0,2">
+                                <ComboBoxItem Content="Ruined" />
+                                <ComboBoxItem Content="Bad" />
+                                <ComboBoxItem Content="Poor" />
+                                <ComboBoxItem Content="Good" />
+                                <ComboBoxItem Content="Excellent" />
+                                <ComboBoxItem Content="Perfect" />
+                            </ComboBox>
+                        </Grid>
+
+                        <TextBlock Text="Resource Properties" Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                   FontSize="13" FontWeight="SemiBold" Margin="0,10,0,6"/>
+
+                        <Grid Margin="0,0,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <CheckBox x:Name="ChkMinResourcePct" Grid.Row="0" Grid.Column="0" Content="Min Resource (%)" Margin="0,8,12,2"/>
+                            <TextBox x:Name="TxtMinResourcePct" Grid.Row="0" Grid.Column="1" Text="50" Width="70" Margin="12,2,0,2"
+                                     Style="{StaticResource CompactTextBox}"/>
+
+                            <CheckBox x:Name="ChkMinResourceMl" Grid.Row="1" Grid.Column="0" Content="Min Resource (ml)" Margin="0,8,12,2"/>
+                            <TextBox x:Name="TxtMinResourceMl" Grid.Row="1" Grid.Column="1" Text="100" Width="70" Margin="12,2,0,2"
+                                     Style="{StaticResource CompactTextBox}"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
             </Grid>
 
-            <!-- Middle Column: Inputs -->
-            <StackPanel Grid.Column="1" Margin="5,0,5,0">
-                <TextBox x:Name="TxtSearch" Margin="0,0,0,5" Height="35" Padding="5" 
-                         Text="" Style="{StaticResource CompactTextBox}"
-                         materialDesign:HintAssist.Hint="Type to search items..."
-                         TextChanged="TxtSearch_TextChanged"/>
-
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                    <Label Content="Required:" HorizontalAlignment="Right" Margin="0,0,5,0"/>
-                    <TextBox x:Name="TxtRequiredQty" Text="1" Width="60" 
-                             Style="{StaticResource CompactTextBox}"/>
-                </StackPanel>
-
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                    <Label Content="Random:" HorizontalAlignment="Right" Margin="0,0,5,0"/>
-                    <TextBox x:Name="TxtRandomQty" Text="0" Width="60" 
-                             Style="{StaticResource CompactTextBox}"/>
-                </StackPanel>
-
-                <Label Content="Item Condition:" Margin="0,10,0,5"/>
-
-                <Grid Margin="0,0,0,5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
-                    <CheckBox x:Name="ChkMinHealth" Grid.Row="0" Grid.Column="0" Content="Min Health %" Margin="0,8,10,2"/>
-                    <TextBox x:Name="TxtMinHealth" Grid.Row="0" Grid.Column="1" Text="50" Width="60" Margin="10,2,0,2"
-                             Style="{StaticResource CompactTextBox}"/>
-
-                    <CheckBox x:Name="ChkMinUses" Grid.Row="1" Grid.Column="0" Content="Min Uses" Margin="0,8,10,2"/>
-                    <TextBox x:Name="TxtMinUses" Grid.Row="1" Grid.Column="1" Text="1" Width="60" Margin="10,2,0,2"
-                             Style="{StaticResource CompactTextBox}"/>
-
-                    <CheckBox x:Name="ChkMinMass" Grid.Row="2" Grid.Column="0" Content="Min Mass (g)" Margin="0,8,10,2"/>
-                    <TextBox x:Name="TxtMinMass" Grid.Row="2" Grid.Column="1" Text="100" Width="60" Margin="10,2,0,2"
-                             Style="{StaticResource CompactTextBox}"/>
-                </Grid>
-
-                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                    <Button x:Name="BtnApply" Content="Apply Edit" Margin="0,0,10,0" Click="BtnApply_Click"
-                            Style="{StaticResource MaterialDesignRaisedButton}"/>
-                    <Button x:Name="BtnCancelEdit" Content="Cancel Edit" Click="BtnCancelEdit_Click"
-                            Style="{StaticResource MaterialDesignRaisedButton}"/>
-                </StackPanel>
-            </StackPanel>
-
-            <!-- Right Column: Properties -->
-            <StackPanel Grid.Column="2" Margin="5,0,0,0">
-                <Label Content="Cooking Properties:" Margin="0,0,0,5"/>
-
-                <Grid Margin="0,0,0,5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
-                    <CheckBox x:Name="ChkMinCookLevel" Grid.Row="0" Grid.Column="0" Content="Min Cook Level" Margin="0,8,10,2"/>
-                    <ComboBox x:Name="CmbMinCookLevel" Grid.Row="0" Grid.Column="1" Width="100" Margin="10,2,0,2">
-                        <ComboBoxItem Content="Raw" />
-                        <ComboBoxItem Content="Undercooked" />
-                        <ComboBoxItem Content="Cooked" />
-                        <ComboBoxItem Content="Overcooked" />
-                        <ComboBoxItem Content="Burned" />
-                    </ComboBox>
-
-                    <CheckBox x:Name="ChkMaxCookLevel" Grid.Row="1" Grid.Column="0" Content="Max Cook Level" Margin="0,8,10,2"/>
-                    <ComboBox x:Name="CmbMaxCookLevel" Grid.Row="1" Grid.Column="1" Width="100" Margin="10,2,0,2">
-                        <ComboBoxItem Content="Raw" />
-                        <ComboBoxItem Content="Undercooked" />
-                        <ComboBoxItem Content="Cooked" />
-                        <ComboBoxItem Content="Overcooked" />
-                        <ComboBoxItem Content="Burned" />
-                    </ComboBox>
-
-                    <CheckBox x:Name="ChkMinCookQuality" Grid.Row="2" Grid.Column="0" Content="Min Cook Quality" Margin="0,8,10,2"/>
-                    <ComboBox x:Name="CmbMinCookQuality" Grid.Row="2" Grid.Column="1" Width="100" Margin="10,2,0,2">
-                        <ComboBoxItem Content="Ruined" />
-                        <ComboBoxItem Content="Bad" />
-                        <ComboBoxItem Content="Poor" />
-                        <ComboBoxItem Content="Good" />
-                        <ComboBoxItem Content="Excellent" />
-                        <ComboBoxItem Content="Perfect" />
-                    </ComboBox>
-                </Grid>
-
-                <Label Content="Resource Properties:" Margin="0,10,0,5"/>
-
-                <Grid Margin="0,0,0,5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
-                    <CheckBox x:Name="ChkMinResourcePct" Grid.Row="0" Grid.Column="0" Content="Min Resource (%)" Margin="0,8,10,2"/>
-                    <TextBox x:Name="TxtMinResourcePct" Grid.Row="0" Grid.Column="1" Text="50" Width="60" Margin="10,2,0,2"
-                             Style="{StaticResource CompactTextBox}"/>
-
-                    <CheckBox x:Name="ChkMinResourceMl" Grid.Row="1" Grid.Column="0" Content="Min Resource (ml)" Margin="0,8,10,2"/>
-                    <TextBox x:Name="TxtMinResourceMl" Grid.Row="1" Grid.Column="1" Text="100" Width="60" Margin="10,2,0,2"
-                             Style="{StaticResource CompactTextBox}"/>
-                </Grid>
+            <!-- OK/Cancel -->
+            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="8,8,8,8">
+                <Button x:Name="BtnOk" Content="OK" Margin="0,0,10,0" Click="BtnOk_Click"
+                        Style="{StaticResource PrimaryButton}"/>
+                <Button x:Name="BtnCancel" Content="Cancel" Click="BtnCancel_Click"
+                        Style="{StaticResource SubtleButton}"/>
             </StackPanel>
         </Grid>
-
-        <!-- 4. OK/Cancel -->
-        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5,5,5,5">
-            <Button x:Name="BtnOk" Content="OK" Width="75" Height="25" Margin="0,0,10,0" Click="BtnOk_Click"
-                    Style="{StaticResource MaterialDesignRaisedButton}"/>
-            <Button x:Name="BtnCancel" Content="Cancel" Width="75" Height="25" Click="BtnCancel_Click"
-                    Style="{StaticResource MaterialDesignRaisedButton}"/>
-        </StackPanel>
-    </Grid>
+    </Border>
 </Window>

@@ -2,265 +2,336 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:av="http://schemas.microsoft.com/expression/blend/2008" 
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:av="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         mc:Ignorable="av"
-        Title="SCUM Quest Editor" Height="830" Width="950"
+        Title="SCUM Quest Editor" Height="860" Width="1000"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
-        Background="{DynamicResource MaterialDesignPaper}"
+        Background="{DynamicResource MaterialDesignBackground}"
         Foreground="{DynamicResource MaterialDesignBody}">
 
-        <shell:WindowChrome.WindowChrome>
-            <shell:WindowChrome
-                    ResizeBorderThickness="5"
-                    CaptionHeight="0"
-                    CornerRadius="18,18,18,18"
-                    GlassFrameThickness="0" />
-        </shell:WindowChrome.WindowChrome>
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome
+                ResizeBorderThickness="5"
+                CaptionHeight="0"
+                CornerRadius="12,12,12,12"
+                GlassFrameThickness="0" />
+    </shell:WindowChrome.WindowChrome>
 
-        <DockPanel>
-            <!-- titlebar replacement -->
-        <Grid DockPanel.Dock="Top" Height="30" 
-                MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+    <DockPanel>
+        <!-- Custom Title Bar -->
+        <Border DockPanel.Dock="Top" Height="36" Background="{DynamicResource MaterialDesignPaper}">
+            <Border.BorderBrush>
+                <SolidColorBrush Color="{DynamicResource MaterialDesignDividerColor}"/>
+            </Border.BorderBrush>
+            <Grid MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-            
+
+                <Border Background="{DynamicResource PrimaryHueMidBrush}" Padding="10,0" Margin="0,0,10,0">
+                    <TextBlock Text="SQE" Foreground="White" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+
                 <TextBlock Text="SCUM Quest Editor"
                            VerticalAlignment="Center"
                            Margin="12,0,0,0"
-                           Foreground="White"
-                           FontSize="16"/>
+                           Foreground="{DynamicResource MaterialDesignBody}"
+                           FontSize="13" FontWeight="Medium"
+                           Grid.Column="1"/>
 
-                <Button Grid.Column="3" 
-                        Width="30" Height="30"
-                        Background="Transparent"
-                        Foreground="Red"
-                        Click="MenuItem_Exit_Click"
-                        ToolTip="Close"
-                        BorderThickness="0"
-                        Padding="0"
-                        Margin="0,0,10,0"
-                        Cursor="Hand">
-
-                    <materialDesign:ButtonAssist.CornerRadius>4</materialDesign:ButtonAssist.CornerRadius>
-
-                    <Path Data="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
-                        Stretch="Uniform" 
-                        Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
-                        Width="15" Height="15">
-                    </Path>
-
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#CC0000"/>
-                                    <Setter Property="Foreground" Value="White"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
+                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button x:Name="BtnClose" Grid.Column="2"
+                            Width="36" Height="36"
+                            Margin="0,0,0,0"
+                            Cursor="Hand"
+                            Click="MenuItem_Exit_Click">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="btnBorder" Background="Transparent" Padding="6">
+                                                <Path x:Name="IconPath" Data="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
+                                                      Stretch="Uniform"
+                                                      Fill="White"
+                                                      Width="16" Height="16"
+                                                      HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="btnBorder" Property="Background" Value="#E53935"/>
+                                                    <Setter TargetName="IconPath" Property="Fill" Value="White"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
             </Grid>
-            
-            <!-- Menu Bar -->
-            <Menu DockPanel.Dock="Top" Background="{DynamicResource MaterialDesignPaper}">
+        </Border>
+
+        <!-- Menu Bar -->
+        <Border DockPanel.Dock="Top" Background="{DynamicResource MaterialDesignPaper}" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource MaterialDesignDivider}">
+            <Menu Background="Transparent">
                 <MenuItem Header="_File" Foreground="{DynamicResource MaterialDesignBody}">
                     <MenuItem Header="_New" Click="MenuItem_New_Click" />
                     <MenuItem Header="_Open" Click="MenuItem_Open_Click" />
-                    <Separator />
+                    <Separator Style="{StaticResource DividerStyle}"/>
                     <MenuItem Header="_Save" Click="MenuItem_Save_Click" />
-                    <Separator />
+                    <Separator Style="{StaticResource DividerStyle}"/>
                     <MenuItem Header="E_xit" Click="MenuItem_Exit_Click" />
                 </MenuItem>
-            <MenuItem Header="_Settings" Foreground="{DynamicResource MaterialDesignBody}">
-                <MenuItem Header="Filename Formattin_g" Click="FileNameFormat_Click" />
-            </MenuItem>
-            <MenuItem Header="_Help" Foreground="{DynamicResource MaterialDesignBody}">
-                <MenuItem Header="_About" Click="About_Click" />
-            </MenuItem>
-        </Menu>
+                <MenuItem Header="_Settings" Foreground="{DynamicResource MaterialDesignBody}">
+                    <MenuItem Header="Filename Formattin_g" Click="FileNameFormat_Click" />
+                </MenuItem>
+                <MenuItem Header="_Help" Foreground="{DynamicResource MaterialDesignBody}">
+                    <MenuItem Header="_About" Click="About_Click" />
+                </MenuItem>
+            </Menu>
+        </Border>
 
-            <!-- Tab Control - Standard style, not NavigationRail -->
-            <TabControl Margin="8" Background="{DynamicResource MaterialDesignPaper}">
+        <!-- Main Content Area -->
+        <Border Margin="12" CornerRadius="10" Background="{DynamicResource MaterialDesignPaper}">
+
+            <TabControl Margin="0" Background="Transparent" BorderThickness="1" BorderBrush="{DynamicResource MaterialDesignDivider}">
 
                 <!-- TAB 1: Basic Info -->
-                <TabItem Header="Basic Info">
+                <TabItem Header="Basic Info" Style="{StaticResource CompactTabItem}">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <Grid Margin="20">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
+                        <StackPanel Margin="20">
 
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
+                            <!-- Quest Info Card -->
+                            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
 
-                            <!-- 2. Associated NPC -->
-                            <Label Grid.Row="0" Grid.Column="0" Content="Associated NPC:" 
-                               HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,10"/>
-                            <ComboBox x:Name="CbNpc" Grid.Row="0" Grid.Column="1" Margin="0,0,0,5" SelectedIndex="0" 
-                                  SelectionChanged="CbNpc_SelectionChanged">
-                                <ComboBoxItem Content="Armorer" Tag="Armorer" />
-                                <ComboBoxItem Content="Banker" Tag="Banker" />
-                                <ComboBoxItem Content="Barber" Tag="Barber" />
-                                <ComboBoxItem Content="Bartender" Tag="Bartender" />
-                                <ComboBoxItem Content="Doctor" Tag="Doctor" />
-                                <ComboBoxItem Content="General Goods" Tag="GeneralGoods" />
-                                <ComboBoxItem Content="Harbourmaster" Tag="Harbourmaster" />
-                                <ComboBoxItem Content="Hunter" Tag="Hunter" />
-                                <ComboBoxItem Content="Master Hunter" Tag="MasterHunter" />
-                                <ComboBoxItem Content="Mechanic" Tag="Mechanic" />
-                            </ComboBox>
+                                    <!-- Associated NPC -->
+                                    <Label Grid.Row="0" Grid.Column="0" Content="Associated NPC:"
+                                       HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,8"
+                                       Style="{StaticResource CompactLabel}"/>
+                                    <ComboBox x:Name="CbNpc" Grid.Row="0" Grid.Column="1" Margin="0,0,0,8" SelectedIndex="0"
+                                          SelectionChanged="CbNpc_SelectionChanged"
+                                          Style="{StaticResource CompactComboBox}">
+                                        <ComboBoxItem Content="Armorer" Tag="Armorer" />
+                                        <ComboBoxItem Content="Banker" Tag="Banker" />
+                                        <ComboBoxItem Content="Barber" Tag="Barber" />
+                                        <ComboBoxItem Content="Bartender" Tag="Bartender" />
+                                        <ComboBoxItem Content="Doctor" Tag="Doctor" />
+                                        <ComboBoxItem Content="General Goods" Tag="GeneralGoods" />
+                                        <ComboBoxItem Content="Harbourmaster" Tag="Harbourmaster" />
+                                        <ComboBoxItem Content="Hunter" Tag="Hunter" />
+                                        <ComboBoxItem Content="Master Hunter" Tag="MasterHunter" />
+                                        <ComboBoxItem Content="Mechanic" Tag="Mechanic" />
+                                    </ComboBox>
 
-                            <!-- 1. Quest Title -->
-                            <Label Grid.Row="1" Grid.Column="0" Content="Quest Title:" 
-                            HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,10"/>
-                            <TextBox x:Name="TxtTitle" Grid.Row="1" Grid.Column="1" Text="New Quest" 
-                            Margin="0,0,0,5" IsReadOnly="False"
-                            TextChanged="TxtInput_TextChanged"/>
+                                    <!-- Quest Title -->
+                                    <Label Grid.Row="1" Grid.Column="0" Content="Quest Title:"
+                                    HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,8"
+                                    Style="{StaticResource CompactLabel}"/>
+                                    <TextBox x:Name="TxtTitle" Grid.Row="1" Grid.Column="1" Text="New Quest"
+                                    Margin="0,0,0,8" IsReadOnly="False"
+                                    TextChanged="TxtInput_TextChanged"
+                                    Style="{StaticResource CompactTextBox}"/>
 
-                            <!-- 3. Tier (1-3) -->
-                            <Label Grid.Row="2" Grid.Column="0" Content="Tier (1-3):" 
-                               HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,10"/>
-                            <TextBox x:Name="TxtTier" Grid.Row="2" Grid.Column="1" Text="1" 
-                                 Margin="0,0,0,5" TextAlignment="Left" 
-                                 PreviewTextInput="NumericPreviewTextInput"
-                                 DataObject.Pasting="NumericPasting"
-                                 TextChanged="TxtInput_TextChanged"/>
+                                    <!-- Tier -->
+                                    <Label Grid.Row="2" Grid.Column="0" Content="Tier (1-3):"
+                                       HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,8"
+                                       Style="{StaticResource CompactLabel}"/>
+                                    <TextBox x:Name="TxtTier" Grid.Row="2" Grid.Column="1" Text="1"
+                                         Margin="0,0,0,8" TextAlignment="Left"
+                                         PreviewTextInput="NumericPreviewTextInput"
+                                         DataObject.Pasting="NumericPasting"
+                                         TextChanged="TxtInput_TextChanged"
+                                         Style="{StaticResource CompactTextBox}"/>
 
-                            <!-- 4. Quest Description -->
-                            <Label Grid.Row="3" Grid.Column="0" Content="Quest Description:" 
-                               HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,10"/>
-                            <TextBox x:Name="TxtDescription" Grid.Row="3" Grid.Column="1" 
-                                 Text="Quest description..." 
-                                 Margin="0,0,0,5" Height="80" AcceptsReturn="True" 
-                                 TextWrapping="Wrap" IsReadOnly="False"
-                                 TextChanged="TxtInput_TextChanged"/>
+                                    <!-- Quest Description -->
+                                    <Label Grid.Row="3" Grid.Column="0" Content="Quest Description:"
+                                       HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,12,8"
+                                       Style="{StaticResource CompactLabel}"/>
+                                    <TextBox x:Name="TxtDescription" Grid.Row="3" Grid.Column="1"
+                                         Text="Quest description..."
+                                         Margin="0,0,0,8" Height="80" AcceptsReturn="True"
+                                         TextWrapping="Wrap" IsReadOnly="False"
+                                         TextChanged="TxtInput_TextChanged"
+                                         Style="{StaticResource CompactTextBox}"/>
 
-                            <!-- 5. Time Limit (hours) -->
-                            <Label Grid.Row="4" Grid.Column="0" Content="Time Limit (hours):" 
-                               HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,10"/>
-                            <TextBox x:Name="TxtTimeLimit" Grid.Row="4" Grid.Column="1" Text="0.5" 
-                                 Margin="0,0,0,10" TextAlignment="Left" 
-                                 PreviewTextInput="FloatPreviewTextInput" DataObject.Pasting="FloatPasting"
-                                 TextChanged="TxtInput_TextChanged"/>
-                        </Grid>
-                    </ScrollViewer>
-                </TabItem>
-
-                <!-- TAB 2: Rewards -->
-                <TabItem Header="Rewards">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <StackPanel Margin="10">
-
-                            <!-- Currency Section -->
-                            <Grid Margin="0,0,0,10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-
-                                <Label Grid.Row="0" Grid.Column="0" Content="Normal Currency:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
-                                <TextBox x:Name="TxtNormalReward" Grid.Row="0" Grid.Column="1" Text="0" Margin="0,0,0,0"
-                                     PreviewTextInput="NumericPreviewTextInput" DataObject.Pasting="NumericPasting"
-                                     TextChanged="TxtInput_TextChanged"/>
-
-                                <Label Grid.Row="1" Grid.Column="0" Content="Gold Currency:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
-                                <TextBox x:Name="TxtGoldReward" Grid.Row="1" Grid.Column="1" Text="0" Margin="0,0,0,0" 
-                                     PreviewTextInput="NumericPreviewTextInput" DataObject.Pasting="NumericPasting"
-                                     TextChanged="TxtInput_TextChanged"/>
-
-                                <Label Grid.Row="2" Grid.Column="0" Content="Fame:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
-                                <TextBox x:Name="TxtFameReward" Grid.Row="2" Grid.Column="1" Text="0" Margin="0,0,0,0" 
-                                     PreviewTextInput="NumericPreviewTextInput" DataObject.Pasting="NumericPasting"
-                                     TextChanged="TxtInput_TextChanged"/>
-                            </Grid>
-
-                            <!-- Skills Section -->
-                            <Label Content="Skills:" HorizontalAlignment="Left" Margin="0,5,0,5"/>
-                            <Button Content="Add Skill Reward" Margin="0,0,0,5" Click="BtnAddSkillReward_Click"
-                                Style="{StaticResource MaterialDesignRaisedButton}"/>
-
-                            <ListView x:Name="LvSkills" Height="150" Margin="0,0,0,5"
-                                  MouseDoubleClick="LvSkills_MouseDoubleClick" FontSize="12">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Header="Skill" DisplayMemberBinding="{Binding Skill}"/>
-                                        <GridViewColumn Header="Experience" DisplayMemberBinding="{Binding Experience}"/>
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
-
-                            <Button Content="Remove Selected Skill" Margin="0,0,0,10" Click="BtnRemoveSelectedSkill_Click"
-                                Style="{StaticResource MaterialDesignRaisedButton}"/>
-
-                            <!-- Trade Deals Section -->
-                            <Label Content="Trade Deals:" HorizontalAlignment="Left" Margin="0,5,0,5"/>
-                            <Button Content="Add Trade Deal" Margin="0,0,0,5" Click="BtnAddTradeDeal_Click"
-                                Style="{StaticResource MaterialDesignRaisedButton}"/>
-
-                            <ListView x:Name="LvTradeDeals" Height="150" Margin="0,0,0,5"
-                                  MouseDoubleClick="LvTradeDeals_MouseDoubleClick" FontSize="12">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Header="Item" DisplayMemberBinding="{Binding Item}" />
-                                        <GridViewColumn Header="Price" DisplayMemberBinding="{Binding Price}" />
-                                        <GridViewColumn Header="Amount" DisplayMemberBinding="{Binding Amount}" />
-                                        <GridViewColumn Header="Fame" DisplayMemberBinding="{Binding Fame}" />
-                                        <GridViewColumn Header="Allow Excluded" DisplayMemberBinding="{Binding AllowExcluded}" />
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
-
-                            <Button Content="Remove Selected Trade Deal" Margin="0,0,0,10" Click="BtnRemoveSelectedTradeDeal_Click"
-                                Style="{StaticResource MaterialDesignRaisedButton}"/>
-
-                            <!-- Total Rewards -->
-                            <TextBlock x:Name="TxtTotalRewards" Text="Total Rewards: 0/5" 
-                                   HorizontalAlignment="Right" Margin="0,10,0,0" FontWeight="Bold"/>
+                                    <!-- Time Limit -->
+                                    <Label Grid.Row="4" Grid.Column="0" Content="Time Limit (hours):"
+                                       HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,8"
+                                       Style="{StaticResource CompactLabel}"/>
+                                    <TextBox x:Name="TxtTimeLimit" Grid.Row="4" Grid.Column="1" Text="0.5"
+                                         Margin="0,0,0,8" TextAlignment="Left"
+                                         PreviewTextInput="FloatPreviewTextInput" DataObject.Pasting="FloatPasting"
+                                         TextChanged="TxtInput_TextChanged"
+                                         Style="{StaticResource CompactTextBox}"/>
+                                </Grid>
+                            </Border>
 
                         </StackPanel>
                     </ScrollViewer>
                 </TabItem>
 
+                <!-- TAB 2: Rewards -->
+                <TabItem Header="Rewards" Style="{StaticResource CompactTabItem}">
+                    <DockPanel Margin="8">
+                        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+                            <!-- Total Rewards -->
+                            <Border Style="{StaticResource CardStyle}" Padding="12,8">
+                                <TextBlock x:Name="TxtTotalRewards" Text="Total Rewards: 0/5"
+                                   FontSize="13" FontWeight="SemiBold"/>
+                            </Border>
+                        </StackPanel>
+                        
+                        <TabControl Background="Transparent" BorderThickness="0">
+                            <TabItem Header="Currency" Style="{StaticResource CompactTabItem}">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <Border Style="{StaticResource CardStyle}" Margin="4">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+
+                                            <Label Grid.Row="0" Grid.Column="0" Content="Normal Currency:" HorizontalAlignment="Right" Margin="0,0,12,6" Style="{StaticResource CompactLabel}"/>
+                                            <TextBox x:Name="TxtNormalReward" Grid.Row="0" Grid.Column="1" Text="0" Margin="0,0,0,8"
+                                                 PreviewTextInput="NumericPreviewTextInput" DataObject.Pasting="NumericPasting"
+                                                 TextChanged="TxtInput_TextChanged"
+                                                 Style="{StaticResource CompactTextBox}"/>
+
+                                            <Label Grid.Row="1" Grid.Column="0" Content="Gold Currency:" HorizontalAlignment="Right" Margin="0,0,12,6" Style="{StaticResource CompactLabel}"/>
+                                            <TextBox x:Name="TxtGoldReward" Grid.Row="1" Grid.Column="1" Text="0" Margin="0,0,0,8"
+                                                 PreviewTextInput="NumericPreviewTextInput" DataObject.Pasting="NumericPasting"
+                                                 TextChanged="TxtInput_TextChanged"
+                                                 Style="{StaticResource CompactTextBox}"/>
+
+                                            <Label Grid.Row="2" Grid.Column="0" Content="Fame:" HorizontalAlignment="Right" Margin="0,0,12,6" Style="{StaticResource CompactLabel}"/>
+                                            <TextBox x:Name="TxtFameReward" Grid.Row="2" Grid.Column="1" Text="0" Margin="0,0,0,8"
+                                                 PreviewTextInput="NumericPreviewTextInput" DataObject.Pasting="NumericPasting"
+                                                 TextChanged="TxtInput_TextChanged"
+                                                 Style="{StaticResource CompactTextBox}"/>
+                                        </Grid>
+                                    </Border>
+                                </ScrollViewer>
+                            </TabItem>
+
+                            <TabItem Header="Skills" Style="{StaticResource CompactTabItem}">
+                                <Grid Margin="4">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Text="Skills" Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                              FontSize="14" FontWeight="Medium" Margin="0,0,0,8"/>
+                                    <Button Grid.Row="1" Content="Add Skill Reward" Margin="0,0,0,8" Click="BtnAddSkillReward_Click"
+                                        Style="{StaticResource PrimaryButton}"/>
+                                    <Border Grid.Row="2" Style="{StaticResource CardStyle}" Padding="0" MinWidth="650">
+                                        <ListView x:Name="LvSkills" Margin="4"
+                                          MouseDoubleClick="LvSkills_MouseDoubleClick" FontSize="13"
+                                          BorderThickness="0" Background="Transparent"
+                                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                          HorizontalContentAlignment="Stretch"
+                                          VerticalAlignment="Stretch">
+                                        <ListView.View>
+                                            <GridView ColumnHeaderContainerStyle="{StaticResource CompactColumnHeader}">
+                                                <GridViewColumn Header="Skill" DisplayMemberBinding="{Binding Skill}"/>
+                                                <GridViewColumn Header="Experience" DisplayMemberBinding="{Binding Experience}" Width="140"/>
+                                            </GridView>
+                                        </ListView.View>
+                                    </ListView>
+                                    </Border>
+                                    <Button Grid.Row="3" Content="Remove Selected Skill" Margin="0,0,0,16" Click="BtnRemoveSelectedSkill_Click"
+                                        Style="{StaticResource SubtleButton}"/>
+                                </Grid>
+                            </TabItem>
+
+                            <TabItem Header="Trade Deals" Style="{StaticResource CompactTabItem}">
+                                <Grid Margin="4">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Text="Trade Deals" Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                              FontSize="14" FontWeight="Medium" Margin="0,0,0,8"/>
+                                    <Button Grid.Row="1" Content="Add Trade Deal" Margin="0,0,0,8" Click="BtnAddTradeDeal_Click"
+                                        Style="{StaticResource PrimaryButton}"/>
+                                    <Border Grid.Row="2" Style="{StaticResource CardStyle}" Padding="0" MinWidth="650">
+                                        <ListView x:Name="LvTradeDeals" Margin="4"
+                                          MouseDoubleClick="LvTradeDeals_MouseDoubleClick" FontSize="13"
+                                          BorderThickness="0" Background="Transparent"
+                                          HorizontalContentAlignment="Stretch"
+                                          VerticalAlignment="Stretch">
+                                        <ListView.View>
+                                            <GridView ColumnHeaderContainerStyle="{StaticResource CompactColumnHeader}">
+                                                <GridViewColumn Header="Item" DisplayMemberBinding="{Binding Item}"/>
+                                                <GridViewColumn Header="Price" DisplayMemberBinding="{Binding Price}" Width="120"/>
+                                                <GridViewColumn Header="Amount" DisplayMemberBinding="{Binding Amount}" Width="120"/>
+                                                <GridViewColumn Header="Fame" DisplayMemberBinding="{Binding Fame}" Width="120"/>
+                                                <GridViewColumn Header="Allow Excluded" DisplayMemberBinding="{Binding AllowExcluded}"/>
+                                            </GridView>
+                                        </ListView.View>
+                                    </ListView>
+                                    </Border>
+                                    <Button Grid.Row="3" Content="Remove Selected Trade Deal" Margin="0,0,0,16" Click="BtnRemoveSelectedTradeDeal_Click"
+                                        Style="{StaticResource SubtleButton}"/>
+                                </Grid>
+                            </TabItem>
+                        </TabControl>
+                    </DockPanel>
+                </TabItem>
+
                 <!-- TAB 3: Conditions -->
-                <TabItem Header="Conditions">
-                    <DockPanel Margin="10">
+                <TabItem Header="Conditions" Style="{StaticResource CompactTabItem}">
+                    <DockPanel Margin="8">
 
                         <!-- Top Section: ListView -->
-                        <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="1" Margin="0,0,0,10">
-                            <ListView x:Name="LvConditions" BorderThickness="0" SelectionMode="Single" Height="180" FontSize="12">
+                        <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="1" CornerRadius="8" Margin="0,0,0,12" Padding="0" HorizontalAlignment="Stretch">
+                            <ListView x:Name="LvConditions" BorderThickness="0" SelectionMode="Single" Height="180" FontSize="13" Background="Transparent" HorizontalAlignment="Stretch">
                                 <ListView.View>
-                                    <GridView>
+                                    <GridView ColumnHeaderContainerStyle="{StaticResource CompactColumnHeader}">
                                         <!-- Type Column -->
-                                        <GridViewColumn Header="Type" DisplayMemberBinding="{Binding Type}" />
+                                        <GridViewColumn Header="Type" DisplayMemberBinding="{Binding Type}" Width="110"/>
 
                                         <!-- Caption Column with Sort Button -->
-                                        <GridViewColumn>
+                                        <GridViewColumn Width="200">
                                             <GridViewColumn.Header>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBlock Text="Caption" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                                    <Button Content="Sort A-Z" Width="30" Height="20" FontSize="8" 
-                                                        Click="SortByCaption" 
-                                                        Background="{DynamicResource MaterialDesignPaper}" 
-                                                        Foreground="{DynamicResource MaterialDesignBody}"
-                                                        BorderBrush="{DynamicResource MaterialDesignDivider}"/>
-                                                </StackPanel>
+                                                <Border Background="{DynamicResource MaterialDesignPaper}" Padding="4">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Caption" VerticalAlignment="Center" Foreground="{DynamicResource MaterialDesignBodyLight}" Margin="0,0,8,0"/>
+                                                        <Button Content="Sort A-Z" Padding="10,2" FontSize="10" Height="20"
+                                                            Click="SortByCaption"
+                                                            Background="{DynamicResource MaterialDesignDivider}"
+                                                            BorderThickness="0"
+                                                            materialDesign:ButtonAssist.CornerRadius="4"/>
+                                                    </StackPanel>
+                                                </Border>
                                             </GridViewColumn.Header>
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
@@ -270,16 +341,18 @@
                                         </GridViewColumn>
 
                                         <!-- Sequence Column with Sort Button -->
-                                        <GridViewColumn>
+                                        <GridViewColumn Width="140">
                                             <GridViewColumn.Header>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBlock Text="Sequence" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                                    <Button Content="Sort" Width="30" Height="20" FontSize="8" 
-                                                        Click="SortBySequence" 
-                                                        Background="{DynamicResource MaterialDesignPaper}" 
-                                                        Foreground="{DynamicResource MaterialDesignBody}"
-                                                        BorderBrush="{DynamicResource MaterialDesignDivider}"/>
-                                                </StackPanel>
+                                                <Border Background="{DynamicResource MaterialDesignPaper}" Padding="4">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Sequence" VerticalAlignment="Center" Foreground="{DynamicResource MaterialDesignBodyLight}" Margin="0,0,8,0"/>
+                                                        <Button Content="Sort" Padding="10,2" FontSize="10" Height="20"
+                                                            Click="SortBySequence"
+                                                            Background="{DynamicResource MaterialDesignDivider}"
+                                                            BorderThickness="0"
+                                                            materialDesign:ButtonAssist.CornerRadius="4"/>
+                                                    </StackPanel>
+                                                </Border>
                                             </GridViewColumn.Header>
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
@@ -289,7 +362,7 @@
                                         </GridViewColumn>
 
                                         <!-- Auto Complete Column -->
-                                        <GridViewColumn Header="Auto Complete">
+                                        <GridViewColumn Header="Auto Complete" Width="Auto">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <CheckBox IsChecked="{Binding CanBeAutoCompleted}" IsEnabled="False"/>
@@ -304,134 +377,95 @@
 
                         <!-- Middle Section: Buttons -->
                         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
-                            <Button Content="Add Elimination" Margin="0,0,5,0" Click="BtnAddElimination_Click"
-                                Style="{StaticResource MaterialDesignRaisedButton}"/>
-                            <Button Content="Add Fetch Condition" Margin="0,0,5,0" Click="BtnAddFetchCondition_Click"
-                                Style="{StaticResource MaterialDesignRaisedButton}"/>
-                            <Button Content="Add Interaction"  Margin="0,0,5,0" Click="BtnAddInteraction_Click"
-                                Style="{StaticResource MaterialDesignRaisedButton}"/>
+                            <Button Content="Add Elimination" Margin="0,0,6,0" Click="BtnAddElimination_Click"
+                                Style="{StaticResource PrimaryButton}"/>
+                            <Button Content="Add Fetch" Margin="0,0,6,0" Click="BtnAddFetchCondition_Click"
+                                Style="{StaticResource PrimaryButton}"/>
+                            <Button Content="Add Interaction" Margin="0,0,6,0" Click="BtnAddInteraction_Click"
+                                Style="{StaticResource PrimaryButton}"/>
                             <Button Content="Remove Selected" Click="BtnRemoveSelectedCondition_Click"
-                                Style="{StaticResource MaterialDesignRaisedButton}"/>
+                                Style="{StaticResource SubtleButton}"/>
                         </StackPanel>
 
                         <!-- Bottom Section: Condition Editor -->
                         <DockPanel DockPanel.Dock="Top" Margin="0,10,0,0">
-                            <TabControl x:Name="TabConditionEditor" Margin="0,5,0,0" SelectionChanged="TabConditionEditor_SelectionChanged">
+                            <TabControl x:Name="TabConditionEditor" Margin="0" SelectionChanged="TabConditionEditor_SelectionChanged" BorderThickness="1" BorderBrush="{DynamicResource MaterialDesignDivider}">
                                 <!-- Common Properties Tab -->
-                                <TabItem Header="Common Properties">
-                                    <Grid Margin="10">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
+                                <TabItem Header="Common" Style="{StaticResource CompactTabItem}">
+                                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                        <Border Style="{StaticResource CardStyle}" Margin="4">
+                                            <Grid Margin="4">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
 
-                                        <Label Grid.Row="0" Grid.Column="0" Content="Caption:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
-                                        <TextBox x:Name="EdtCaption" Grid.Row="0" Grid.Column="1" Margin="0,0,0,0"/>
+                                                <Label Grid.Row="0" Grid.Column="0" Content="Caption:" HorizontalAlignment="Right" Margin="0,0,12,6" Style="{StaticResource CompactLabel}"/>
+                                                <TextBox x:Name="EdtCaption" Grid.Row="0" Grid.Column="1" Margin="0,0,0,8" Style="{StaticResource CompactTextBox}"/>
 
-                                        <Label Grid.Row="1" Grid.Column="0" Content="Sequence:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
-                                        <TextBox x:Name="EdtSequence" Grid.Row="1" Grid.Column="1" Margin="0,0,0,0"/>
+                                                <Label Grid.Row="1" Grid.Column="0" Content="Sequence:" HorizontalAlignment="Right" Margin="0,0,12,6" Style="{StaticResource CompactLabel}"/>
+                                                <TextBox x:Name="EdtSequence" Grid.Row="1" Grid.Column="1" Margin="0,0,0,8" Style="{StaticResource CompactTextBox}"/>
 
-                                        <Label Grid.Row="2" Grid.Column="0" Content="Auto Complete:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
-                                        <CheckBox x:Name="EdtAutoComplete" Grid.Row="2" Grid.Column="1" Margin="0,5,0,0" 
-                                              IsChecked="False"/>
-                                    </Grid>
+                                                <Label Grid.Row="2" Grid.Column="0" Content="Auto Complete:" HorizontalAlignment="Right" Margin="0,0,12,6" Style="{StaticResource CompactLabel}"/>
+                                                <CheckBox x:Name="EdtAutoComplete" Grid.Row="2" Grid.Column="1" Margin="0,5,0,0"
+                                                      IsChecked="False"/>
+                                            </Grid>
+                                        </Border>
+                                    </ScrollViewer>
                                 </TabItem>
 
                                 <!-- Elimination Properties Tab -->
-                                <TabItem Header="Elimination Properties" x:Name="TabEliminationProperties">
+                                <TabItem Header="Elimination" x:Name="TabEliminationProperties" Style="{StaticResource CompactTabItem}">
                                     <ScrollViewer VerticalScrollBarVisibility="Auto">
-                                        <Grid Margin="10">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                            </Grid.RowDefinitions>
+                                        <Border Style="{StaticResource CardStyle}" Margin="4">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
 
-                                            <!-- Target Characters -->
-                                            <Label Grid.Row="0" Grid.Column="0" Content="Target Characters:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
-                                            <Button Grid.Row="0" Grid.Column="1" Content="Edit Targets" Margin="0,0,0,5" Click="BtnEditEliminationTargets_Click"
-                                            Style="{StaticResource MaterialDesignRaisedButton}"/>
+                                                <Label Grid.Row="0" Grid.Column="0" Content="Target Characters:" HorizontalAlignment="Right" Margin="0,0,12,6" Style="{StaticResource CompactLabel}"/>
+                                                <Button Grid.Row="0" Grid.Column="1" Content="Edit Targets" Margin="0,0,0,8" Click="BtnEditEliminationTargets_Click"
+                                                Style="{StaticResource PrimaryButton}"/>
 
-                                            <Label Grid.Row="1" Grid.Column="0" Content="Current Targets:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
-                                            <ListBox Grid.Row="1" Grid.Column="1" x:Name="EdtEliminationTargets" Margin="0,0,0,5" Height="120"
-                                            Style="{StaticResource MaterialDesignListBox}"/>
+                                                <Label Grid.Row="1" Grid.Column="0" Content="Current Targets:" HorizontalAlignment="Right" Margin="0,0,12,6" Style="{StaticResource CompactLabel}"/>
+                                                <ListBox Grid.Row="1" Grid.Column="1" x:Name="EdtEliminationTargets" Margin="0,0,0,8" Height="100"
+                                                Style="{StaticResource MaterialDesignListBox}"/>
 
-                                            <!-- Kill Amount -->
-                                            <Label Grid.Row="2" Grid.Column="0" Content="Amount to Kill:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
-                                            <TextBox x:Name="EdtKillAmount" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5" Text="1" 
-                                            TextChanged="EdtKillAmount_TextChanged"
-                                            PreviewTextInput="NumericPreviewTextInput" DataObject.Pasting="NumericPasting"/>
+                                                <Label Grid.Row="2" Grid.Column="0" Content="Amount to Kill:" HorizontalAlignment="Right" Margin="0,0,12,6" Style="{StaticResource CompactLabel}"/>
+                                                <TextBox x:Name="EdtKillAmount" Grid.Row="2" Grid.Column="1" Margin="0,0,0,8" Text="1"
+                                                TextChanged="EdtKillAmount_TextChanged"
+                                                PreviewTextInput="NumericPreviewTextInput" DataObject.Pasting="NumericPasting"
+                                                Style="{StaticResource CompactTextBox}"/>
 
-                                            <!-- Allowed Weapons -->
-                                            <Label Grid.Row="3" Grid.Column="0" Content="Allowed Weapons:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
-                                            <Button Grid.Row="3" Grid.Column="1" Content="Edit Weapons" Margin="0,0,0,5" Click="BtnEditEliminationWeapons_Click"
-                                            Style="{StaticResource MaterialDesignRaisedButton}"/>
+                                                <Label Grid.Row="3" Grid.Column="0" Content="Allowed Weapons:" HorizontalAlignment="Right" Margin="0,0,12,6" Style="{StaticResource CompactLabel}"/>
+                                                <Button Grid.Row="3" Grid.Column="1" Content="Edit Weapons" Margin="0,0,0,8" Click="BtnEditEliminationWeapons_Click"
+                                                Style="{StaticResource PrimaryButton}"/>
 
-                                            <Label Grid.Row="4" Grid.Column="0" Content="Current Weapons:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
-                                            <ListBox Grid.Row="4" Grid.Column="1" x:Name="EdtAllowedWeapons" Margin="0,0,0,5" Height="120"
-                                            Style="{StaticResource MaterialDesignListBox}"/>
-                                        </Grid>
+                                                <Label Grid.Row="4" Grid.Column="0" Content="Current Weapons:" HorizontalAlignment="Right" Margin="0,0,12,6" Style="{StaticResource CompactLabel}"/>
+                                                <ListBox Grid.Row="4" Grid.Column="1" x:Name="EdtAllowedWeapons" Margin="0,0,0,8" Height="100"
+                                                Style="{StaticResource MaterialDesignListBox}"/>
+                                            </Grid>
+                                        </Border>
                                     </ScrollViewer>
                                 </TabItem>
 
                                 <!-- Fetch Properties Tab -->
-                                <TabItem Header="Fetch Properties" x:Name="TabFetchProperties">
-                                    <Grid Margin="10">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="*"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-
-                                        <Label Grid.Row="0" Grid.Column="0" Content="Player Keeps Items:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
-                                        <CheckBox x:Name="ChkPlayerKeepsItems" Grid.Row="0" Grid.Column="1" Margin="0,5,0,5"/>
-
-                                        <Label Grid.Row="1" Grid.Column="0" Content="Disable Purchase:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
-                                        <CheckBox x:Name="ChkDisablePurchase" Grid.Row="1" Grid.Column="1" Margin="0,5,0,5" IsChecked="True" />
-
-                                        <Label Grid.Row="2" Grid.Column="0" Content="Required Items:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
-                                        <Button x:Name="BtnEditRequiredItems" Grid.Row="2" Grid.Column="1" Content="Edit Required Items" Margin="0,0,0,5" 
-                                            Click="BtnEditRequiredItems_Click" Height="25"
-                                            Style="{StaticResource MaterialDesignRaisedButton}"/>
-
-                                        <Label Grid.Row="3" Grid.Column="0" Content="Current Required Items:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
-                                        <ListView x:Name="LvCurrentRequiredItems" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,5" Height="150" 
-                                              Style="{StaticResource MaterialDesignListView}">
-                                            <ListView.View>
-                                                <GridView>
-                                                    <GridViewColumn Header="Items" DisplayMemberBinding="{Binding ItemName}" />
-                                                    <GridViewColumn Header="Quantity" DisplayMemberBinding="{Binding Quantity}" />
-                                                    <GridViewColumn Header="Properties" DisplayMemberBinding="{Binding Properties}" />
-                                                </GridView>
-                                            </ListView.View>
-                                        </ListView>
-
-                                        <TextBlock Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Text="The player must collect the specified items to complete this condition." Foreground="{DynamicResource MaterialDesignBody}" Margin="0,5,0,0" TextDecorations="Underline" VerticalAlignment="Bottom"/>
-                                    </Grid>
-                                </TabItem>
-
-                                <!-- Interaction Properties Tab -->
-                                <TabItem Header="Interaction Properties" x:Name="TabInteractionProperties">
-                                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                                        <Grid Margin="10">
+                                <TabItem Header="Fetch" x:Name="TabFetchProperties" Style="{StaticResource CompactTabItem}">
+                                    <Border Style="{StaticResource CardStyle}" Margin="4" Padding="12">
+                                        <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="*"/>
@@ -441,50 +475,98 @@
                                                 <RowDefinition Height="Auto"/>
                                                 <RowDefinition Height="Auto"/>
                                                 <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="*"/>
                                                 <RowDefinition Height="Auto"/>
                                             </Grid.RowDefinitions>
 
-                                            <!-- Spawn Only Needed -->
-                                            <Label Grid.Row="0" Grid.Column="0" Content="Spawn Only Needed:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
-                                            <CheckBox x:Name="ChkSpawnOnlyNeeded" Grid.Row="0" Grid.Column="1" Margin="0,5,0,5" 
-                                                  IsChecked="True" />
+                                            <Label Grid.Row="0" Grid.Column="0" Content="Player Keeps Items:" HorizontalAlignment="Right" Margin="0,0,12,6" Style="{StaticResource CompactLabel}"/>
+                                            <CheckBox x:Name="ChkPlayerKeepsItems" Grid.Row="0" Grid.Column="1" Margin="0,5,0,8"/>
 
-                                            <!-- Min Needed -->
-                                            <Label Grid.Row="1" Grid.Column="0" Content="Min Needed:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
-                                            <TextBox x:Name="EdtMinNeeded" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5" Text="1"
-                                                 PreviewTextInput="NumericPreviewTextInput" DataObject.Pasting="NumericPasting"/>
+                                            <Label Grid.Row="1" Grid.Column="0" Content="Disable Purchase:" HorizontalAlignment="Right" Margin="0,0,12,6" Style="{StaticResource CompactLabel}"/>
+                                            <CheckBox x:Name="ChkDisablePurchase" Grid.Row="1" Grid.Column="1" Margin="0,5,0,8" IsChecked="True"/>
 
-                                            <!-- Max Needed -->
-                                            <Label Grid.Row="2" Grid.Column="0" Content="Max Needed:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
-                                            <TextBox x:Name="EdtMaxNeeded" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5" Text="1"
-                                                 PreviewTextInput="NumericPreviewTextInput" DataObject.Pasting="NumericPasting"/>
+                                            <Label Grid.Row="2" Grid.Column="0" Content="Required Items:" HorizontalAlignment="Right" Margin="0,0,12,6" Style="{StaticResource CompactLabel}"/>
+                                            <Button x:Name="BtnEditRequiredItems" Grid.Row="2" Grid.Column="1" Content="Edit Required Items" Margin="0,0,0,8"
+                                                Click="BtnEditRequiredItems_Click" Height="36"
+                                                Style="{StaticResource PrimaryButton}"/>
 
-                                            <!-- Marker Show Distance -->
-                                            <Label Grid.Row="3" Grid.Column="0" Content="Marker Show Distance:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
-                                            <TextBox x:Name="EdtMarkerDistance" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5" Text="5"
-                                                 ToolTip="Marker distance for multiplayer seems limited to 30m maximum draw distance." 
-                                                 PreviewTextInput="FloatPreviewTextInput" DataObject.Pasting="FloatPasting"/>
+                                            <Label Grid.Row="3" Grid.Column="0" Content="Current Required Items:" HorizontalAlignment="Right" Margin="0,0,12,6" Style="{StaticResource CompactLabel}"/>
+                                            <ListView x:Name="LvCurrentRequiredItems" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,8" Height="140"
+                                                  Style="{StaticResource MaterialDesignListView}" BorderThickness="0" Background="Transparent">
+                                                <ListView.View>
+                                                    <GridView>
+                                                        <GridViewColumn Header="Items" DisplayMemberBinding="{Binding ItemName}" />
+                                                        <GridViewColumn Header="Quantity" DisplayMemberBinding="{Binding Quantity}" />
+                                                        <GridViewColumn Header="Properties" DisplayMemberBinding="{Binding Properties}" />
+                                                    </GridView>
+                                                </ListView.View>
+                                            </ListView>
 
-                                            <!-- Interaction Locations Button -->
-                                            <Label Grid.Row="4" Grid.Column="0" Content="Interaction Locations:" HorizontalAlignment="Right" Margin="0,0,10,5"/>
-                                            <Button x:Name="BtnEditInteractionLocations" Grid.Row="4" Grid.Column="1" Content="Edit Locations" Margin="0,0,0,5" 
-                                                Click="BtnEditInteractionLocations_Click" Height="25"
-                                                Style="{StaticResource MaterialDesignRaisedButton}"/>
-
-                                            <!-- Info Text -->
-                                            <TextBlock Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" 
-                                                   Text="Use '#GetMeshInfo' in-game to get location data for real objects." 
-                                                   Foreground="{DynamicResource MaterialDesignBody}" Margin="0,5,0,0" TextDecorations="Underline"/>
+                                            <TextBlock Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
+                                                   Text="The player must collect the specified items to complete this condition."
+                                                   Foreground="{DynamicResource MaterialDesignBodyLight}" Margin="0,5,0,0" TextDecorations="Underline"
+                                                   VerticalAlignment="Bottom" FontSize="11"/>
                                         </Grid>
+                                    </Border>
+                                </TabItem>
+
+                                <!-- Interaction Properties Tab -->
+                                <TabItem Header="Interaction" x:Name="TabInteractionProperties" Style="{StaticResource CompactTabItem}">
+                                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                        <Border Style="{StaticResource CardStyle}" Margin="4">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
+
+                                                <Label Grid.Row="0" Grid.Column="0" Content="Spawn Only Needed:" HorizontalAlignment="Right" Margin="0,0,12,6" Style="{StaticResource CompactLabel}"/>
+                                                <CheckBox x:Name="ChkSpawnOnlyNeeded" Grid.Row="0" Grid.Column="1" Margin="0,5,0,8"
+                                                      IsChecked="True" />
+
+                                                <Label Grid.Row="1" Grid.Column="0" Content="Min Needed:" HorizontalAlignment="Right" Margin="0,0,12,6" Style="{StaticResource CompactLabel}"/>
+                                                <TextBox x:Name="EdtMinNeeded" Grid.Row="1" Grid.Column="1" Margin="0,0,0,8" Text="1"
+                                                     PreviewTextInput="NumericPreviewTextInput" DataObject.Pasting="NumericPasting"
+                                                     Style="{StaticResource CompactTextBox}"/>
+
+                                                <Label Grid.Row="2" Grid.Column="0" Content="Max Needed:" HorizontalAlignment="Right" Margin="0,0,12,6" Style="{StaticResource CompactLabel}"/>
+                                                <TextBox x:Name="EdtMaxNeeded" Grid.Row="2" Grid.Column="1" Margin="0,0,0,8" Text="1"
+                                                     PreviewTextInput="NumericPreviewTextInput" DataObject.Pasting="NumericPasting"
+                                                     Style="{StaticResource CompactTextBox}"/>
+
+                                                <Label Grid.Row="3" Grid.Column="0" Content="Marker Show Distance:" HorizontalAlignment="Right" Margin="0,0,12,6" Style="{StaticResource CompactLabel}"/>
+                                                <TextBox x:Name="EdtMarkerDistance" Grid.Row="3" Grid.Column="1" Margin="0,0,0,8" Text="5"
+                                                     ToolTip="Marker distance for multiplayer seems limited to 30m maximum draw distance."
+                                                     PreviewTextInput="FloatPreviewTextInput" DataObject.Pasting="FloatPasting"
+                                                     Style="{StaticResource CompactTextBox}"/>
+
+                                                <Label Grid.Row="4" Grid.Column="0" Content="Interaction Locations:" HorizontalAlignment="Right" Margin="0,0,12,6" Style="{StaticResource CompactLabel}"/>
+                                                <Button x:Name="BtnEditInteractionLocations" Grid.Row="4" Grid.Column="1" Content="Edit Locations" Margin="0,0,0,8"
+                                                    Click="BtnEditInteractionLocations_Click" Height="36"
+                                                    Style="{StaticResource PrimaryButton}"/>
+
+                                                <TextBlock Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
+                                                       Text="Use '#GetMeshInfo' in-game to get location data for real objects."
+                                                       Foreground="{DynamicResource MaterialDesignBodyLight}" Margin="0,5,0,0" TextDecorations="Underline"
+                                                       FontSize="11"/>
+                                            </Grid>
+                                        </Border>
                                     </ScrollViewer>
                                 </TabItem>
 
 
 
                                 <!-- Map Locations Tab -->
-                                <TabItem Header="Map Locations" x:Name="TabMapLocationsItem">
-                                    <Grid Margin="10">
+                                <TabItem Header="Map Locations" x:Name="TabMapLocationsItem" Style="{StaticResource CompactTabItem}">
+                                    <Grid Margin="4">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="*"/>
@@ -492,11 +574,11 @@
 
                                         <StackPanel Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Center">
                                             <Button Content="Edit Map Locations" Click="BtnEditMapLocations_Click"
-                                                Style="{StaticResource MaterialDesignRaisedButton}"/>
+                                                Style="{StaticResource PrimaryButton}"/>
                                         </StackPanel>
 
-                                        <ListView x:Name="TabMapLocations" Grid.Row="1" Margin="0,10,0,0"
-                                              Style="{StaticResource MaterialDesignListView}" av:ItemsSource="{av:SampleData ItemCount=5}" SelectionChanged="TabMapLocations_SelectionChanged">
+                                        <ListView x:Name="TabMapLocations" Grid.Row="1" Margin="4"
+                                              Style="{StaticResource MaterialDesignListView}" BorderThickness="0" Background="Transparent" av:ItemsSource="{av:SampleData ItemCount=5}" SelectionChanged="TabMapLocations_SelectionChanged">
                                             <ListView.View>
                                                 <GridView>
                                                     <GridViewColumn Header="X" DisplayMemberBinding="{Binding Location.X}" />
@@ -511,9 +593,9 @@
                             </TabControl>
 
                             <StackPanel DockPanel.Dock="Right" Orientation="Vertical" Margin="10,0,0,0">
-                                <Button x:Name="BtnSaveCondition" Content="Update Details" Margin="0,0,0,5" 
+                                <Button x:Name="BtnSaveCondition" Content="Update Details" Margin="0,0,0,5"
                                     Click="BtnSaveCondition_Click"
-                                    Style="{StaticResource MaterialDesignRaisedButton}" FontSize="14"/>
+                                    Style="{StaticResource PrimaryButton}" FontSize="14"/>
                             </StackPanel>
                         </DockPanel>
 
@@ -521,15 +603,19 @@
                 </TabItem>
 
                 <!-- TAB 4: JSON Preview -->
-                <TabItem Header="JSON Preview">
-                    <TextBox x:Name="TxtJson" Margin="8" 
-                         Text="" 
-                         TextWrapping="Wrap" 
-                         IsReadOnly="True" 
-                         VerticalScrollBarVisibility="Auto"
-                         VerticalAlignment="Top"
-                         Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                <TabItem Header="JSON Preview" Style="{StaticResource CompactTabItem}">
+                    <Border Style="{StaticResource CardStyle}" Margin="4" Padding="0">
+                        <TextBox x:Name="TxtJson" Margin="8"
+                             Text=""
+                             TextWrapping="Wrap"
+                             IsReadOnly="True"
+                             VerticalScrollBarVisibility="Auto"
+                             VerticalAlignment="Top"
+                             Style="{StaticResource MaterialDesignTextBox}"
+                             BorderThickness="0" Background="Transparent"/>
+                    </Border>
                 </TabItem>
             </TabControl>
-        </DockPanel>
+        </Border>
+    </DockPanel>
 </Window>
