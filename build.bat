@@ -1,0 +1,1 @@
+dotnet build SCUMQuestEditor.sln 2>&1
