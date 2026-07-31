@@ -20,6 +20,7 @@
                 <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignDivider}"/>
                 <Setter Property="BorderThickness" Value="1"/>
                 <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="VerticalAlignment" Value="Stretch"/>
             </Style>
 
             <!-- Refined Label Style -->
@@ -147,7 +148,7 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="GridViewColumnHeader">
                             <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
-                                <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                                <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="{TemplateBinding Padding}" SnapsToDevicePixels="True"/>
                             </Border>
                         </ControlTemplate>
                     </Setter.Value>
@@ -158,6 +159,10 @@
             <Style x:Key="DividerStyle" TargetType="Separator">
                 <Setter Property="Background" Value="{DynamicResource MaterialDesignDivider}"/>
             </Style>
+
+            <!-- Converters -->
+            <local:ConditionsIndexEqualsConverter x:Key="ConditionsIndexEqualsConverter" />
+            <local:ConditionsIndexLessThanConverter x:Key="ConditionsIndexLessThanConverter" />
 
         </ResourceDictionary>
     </Application.Resources>

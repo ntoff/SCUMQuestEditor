@@ -8,11 +8,7 @@
         Background="{DynamicResource MaterialDesignBackground}"
         Foreground="{DynamicResource MaterialDesignBody}">
 
-    <Border Background="{DynamicResource MaterialDesignPaper}" CornerRadius="12">
-        <Border.BorderBrush>
-            <SolidColorBrush Color="{DynamicResource MaterialDesignDividerColor}"/>
-        </Border.BorderBrush>
-        <Grid>
+    <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -50,5 +46,4 @@
                         Style="{StaticResource SubtleButton}"/>
             </StackPanel>
         </Grid>
-    </Border>
 </Window>

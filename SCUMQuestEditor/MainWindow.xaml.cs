@@ -455,6 +455,10 @@ namespace SCUMQuestEditor
         {
             LoadSettings();
             LoadFetchItems();
+            CbTier.Items.Add("1");
+            CbTier.Items.Add("2");
+            CbTier.Items.Add("3");
+            CbTier.SelectedIndex = 0;
             UpdateJsonPreview();
             InitConditions();
         }
@@ -545,7 +549,7 @@ namespace SCUMQuestEditor
             }
 
             if (TxtTitle != null) TxtTitle.Text = "New Quest";
-            if (TxtTier != null) TxtTier.Text = "1";
+            CbTier.SelectedIndex = 0;
             if (TxtDescription != null) TxtDescription.Text = "Quest description...";
             if (TxtTimeLimit != null) TxtTimeLimit.Text = "0.5";
 
@@ -557,6 +561,8 @@ namespace SCUMQuestEditor
             if (LvTradeDeals != null) LvTradeDeals.ItemsSource = null;
 
             ConditionsList.Clear();
+            LvConditions.ItemsSource = null;
+            LvConditions.ItemsSource = conditionsView;
             LvConditions.SelectedItem = null;
 
             RewardPool currentReward = GetOrCreateCurrentReward();
@@ -719,7 +725,9 @@ namespace SCUMQuestEditor
                 {
                     if (item.Tag?.ToString() == quest.AssociatedNpc)
                     {
+                        CbNpc.SelectionChanged -= CbNpc_SelectionChanged;
                         CbNpc.SelectedItem = item;
+                        CbNpc.SelectionChanged += CbNpc_SelectionChanged;
                         npcFound = true;
                         break;
                     }
@@ -729,14 +737,26 @@ namespace SCUMQuestEditor
                 {
                     ComboBoxItem newItem = new ComboBoxItem { Content = quest.AssociatedNpc };
                     CbNpc.Items.Add(newItem);
+                    CbNpc.SelectionChanged -= CbNpc_SelectionChanged;
                     CbNpc.SelectedItem = newItem;
+                    CbNpc.SelectionChanged += CbNpc_SelectionChanged;
                 }
             }
 
+            TxtTitle.TextChanged -= TxtInput_TextChanged;
+            TxtDescription.TextChanged -= TxtInput_TextChanged;
+            TxtTimeLimit.TextChanged -= TxtInput_TextChanged;
+            CbTier.SelectionChanged -= CbTier_SelectionChanged;
+
             if (TxtTitle != null) TxtTitle.Text = quest.Title;
-            if (TxtTier != null) TxtTier.Text = quest.Tier.ToString();
+            CbTier.SelectedIndex = quest.Tier - 1;
             if (TxtDescription != null) TxtDescription.Text = quest.Description;
             if (TxtTimeLimit != null) TxtTimeLimit.Text = quest.TimeLimitHours.ToString("0.0#");
+
+            TxtTitle.TextChanged += TxtInput_TextChanged;
+            TxtDescription.TextChanged += TxtInput_TextChanged;
+            TxtTimeLimit.TextChanged += TxtInput_TextChanged;
+            CbTier.SelectionChanged += CbTier_SelectionChanged;
 
             if (quest.RewardPool != null && quest.RewardPool.Count > 0)
             {
@@ -796,6 +816,8 @@ namespace SCUMQuestEditor
             }
             // --- FIX END ---
 
+            LvConditions.ItemsSource = null;
+            LvConditions.ItemsSource = conditionsView;
             LvConditions.SelectedItem = null;
             
 
@@ -803,8 +825,25 @@ namespace SCUMQuestEditor
 
 
 
-        private void TxtInput_TextChanged(object sender, TextChangedEventArgs e) { UpdateJsonPreview(); }
-        private void CbNpc_SelectionChanged(object sender, SelectionChangedEventArgs e) { UpdateJsonPreview(); }
+        private void TxtInput_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            UpdateJsonPreview();
+            if (sender == TxtTitle)
+            {
+                _currentFilePath = null;
+            }
+        }
+        private void CbNpc_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateJsonPreview();
+            _currentFilePath = null;
+        }
+
+        private void CbTier_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateJsonPreview();
+            _currentFilePath = null;
+        }
 
         private void BtnAddSkillReward_Click(object sender, RoutedEventArgs e)
         {
@@ -968,7 +1007,7 @@ namespace SCUMQuestEditor
                 if (CbNpc?.SelectedItem is ComboBoxItem selectedItem) npc = selectedItem.Tag?.ToString() ?? "Armorer";
 
                 int tier = 1;
-                if (!int.TryParse(TxtTier?.Text ?? "1", out tier)) tier = 1;
+                if (CbTier?.SelectedIndex >= 0) tier = CbTier.SelectedIndex + 1;
 
                 string title = TxtTitle?.Text ?? "New Quest";
                 string description = TxtDescription?.Text ?? "Quest description...";
@@ -1059,7 +1098,7 @@ namespace SCUMQuestEditor
             else { e.Handled = true; }
         }
 
-        private ObservableCollection<Condition> ConditionsList { get; set; } = new ObservableCollection<Condition>();
+        public ObservableCollection<Condition> ConditionsList { get; set; } = new ObservableCollection<Condition>();
 
         private ListCollectionView? conditionsView;
 
@@ -1317,39 +1356,11 @@ namespace SCUMQuestEditor
 
         private void TabConditionEditor_SelectionChanged(object sender, SelectionChangedEventArgs e) { }
 
-        private void BtnSaveCondition_Click(object sender, RoutedEventArgs e) { SaveConditionFromEditor(null, null); }
-
-        private void SaveConditionFromEditor(object? sender, RoutedEventArgs? e)
-        {
-            if (LvConditions.SelectedItem is Condition currentCondition)
-            {
-                BindingExpression expr = EdtCaption.GetBindingExpression(TextBox.TextProperty);
-                expr?.UpdateSource();
-
-                expr = EdtSequence.GetBindingExpression(TextBox.TextProperty);
-                expr?.UpdateSource();
-
-                if (currentCondition.Type.Equals("Fetch", StringComparison.OrdinalIgnoreCase) && currentCondition is FetchCondition fetch)
-                {
-                    fetch.PlayerKeepsItems = ChkPlayerKeepsItems.IsChecked ?? false;
-                    fetch.DisablePurchaseOfRequiredItems = ChkDisablePurchase.IsChecked ?? true;
-                }
-                else if (currentCondition.Type.Equals("Interaction", StringComparison.OrdinalIgnoreCase) && currentCondition is InteractionCondition interaction)
-                {
-                    // Two-way binding now handles the updates automatically.
-                    // We only need to ensure the source is updated if the binding hasn't triggered yet.
-                    // However, since we set UpdateSourceTrigger to PropertyChanged, it should be fine.
-                    // We can explicitly update sources if needed, but typically not required.
-                }
-
-                UpdateJsonPreview();
-            }
-        }
-
-
         public void AddCondition(Condition newCondition)
         {
             ConditionsList.Add(newCondition);
+            LvConditions.ItemsSource = null;
+            LvConditions.ItemsSource = conditionsView;
             LvConditions.SelectedItem = newCondition;
             LvConditions.ScrollIntoView(newCondition);
             UpdateJsonPreview();
@@ -1407,6 +1418,8 @@ namespace SCUMQuestEditor
             if (LvConditions.SelectedItem is Condition selectedCondition)
             {
                 ConditionsList.Remove(selectedCondition);
+                LvConditions.ItemsSource = null;
+                LvConditions.ItemsSource = conditionsView;
                 UpdateJsonPreview();
             }
             else
@@ -1489,7 +1502,8 @@ namespace SCUMQuestEditor
         {
             if (LvConditions.SelectedItem is Condition currentCondition)
             {
-                var dialog = new EditMapLocationsDialog(currentCondition.LocationsShownOnMap);
+                var locations = currentCondition.LocationsShownOnMap ?? new List<MapLocation>();
+                var dialog = new EditMapLocationsDialog(locations);
                 dialog.Owner = this;
                 if (dialog.ShowDialog() == true)
                 {
@@ -1541,6 +1555,29 @@ namespace SCUMQuestEditor
         {
 
         }
+
+        private void ConditionField_LostFocus(object sender, RoutedEventArgs e)
+        {
+            UpdateJsonPreview();
+        }
+
+        private void ConditionField_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                if (sender is TextBox textBox)
+                {
+                    var binding = textBox.GetBindingExpression(TextBox.TextProperty)?.ParentBinding;
+                    if (binding != null)
+                    {
+                        var expr = textBox.GetBindingExpression(TextBox.TextProperty);
+                        if (expr != null) expr.UpdateSource();
+                    }
+                }
+                UpdateJsonPreview();
+            }
+        }
+
         private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ButtonState == MouseButtonState.Pressed)
@@ -1586,5 +1623,84 @@ namespace SCUMQuestEditor
             }
         }
 
+        private void MoveConditionUp_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is Condition selectedCondition)
+            {
+                int currentIndex = ConditionsList.IndexOf(selectedCondition);
+                if (currentIndex > 0)
+                {
+                    ConditionsList.RemoveAt(currentIndex);
+                    ConditionsList.Insert(currentIndex - 1, selectedCondition);
+                    LvConditions.ItemsSource = null;
+                    LvConditions.ItemsSource = conditionsView;
+                    LvConditions.SelectedItem = selectedCondition;
+                    UpdateJsonPreview();
+                }
+            }
+        }
+
+        private void MoveConditionDown_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is Condition selectedCondition)
+            {
+                int currentIndex = ConditionsList.IndexOf(selectedCondition);
+                if (currentIndex >= 0 && currentIndex < ConditionsList.Count - 1)
+                {
+                    ConditionsList.RemoveAt(currentIndex);
+                    ConditionsList.Insert(currentIndex + 1, selectedCondition);
+                    LvConditions.ItemsSource = null;
+                    LvConditions.ItemsSource = conditionsView;
+                    LvConditions.SelectedItem = selectedCondition;
+                    UpdateJsonPreview();
+                }
+            }
+        }
+
+    }
+
+    public class ConditionsIndexEqualsConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value is Condition condition)
+            {
+                var mainWindow = Application.Current.MainWindow as MainWindow;
+                if (mainWindow?.ConditionsList != null)
+                {
+                    bool isFirst = mainWindow.ConditionsList.IndexOf(condition) == 0;
+                    return isFirst ? Visibility.Collapsed : Visibility.Visible;
+                }
+            }
+            return Visibility.Visible;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class ConditionsIndexLessThanConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value is Condition condition)
+            {
+                var mainWindow = Application.Current.MainWindow as MainWindow;
+                if (mainWindow?.ConditionsList != null)
+                {
+                    int index = mainWindow.ConditionsList.IndexOf(condition);
+                    bool isLast = index < 0 || index >= mainWindow.ConditionsList.Count - 1;
+                    return isLast ? Visibility.Collapsed : Visibility.Visible;
+                }
+            }
+            return Visibility.Visible;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

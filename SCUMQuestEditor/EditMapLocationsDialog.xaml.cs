@@ -30,7 +30,6 @@ namespace SCUMQuestEditor
             }
 
             LocationList.ItemsSource = MapLocations;
-            LocationList.SelectionMode = SelectionMode.Single;
 
             // Set defaults
             TxtX.Text = "0.0000";
