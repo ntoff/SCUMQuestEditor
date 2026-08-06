@@ -674,7 +674,7 @@ namespace SCUMQuestEditor
                 "Doctor" => "DC",
                 "GeneralGoods" => "GG",
                 "Harbourmaster" => "HM",
-                "Hunter" => "HT",
+                "Hunter" => "RH",
                 "MasterHunter" => "MH",
                 "Mechanic" => "MC",
                 _ => "AR"

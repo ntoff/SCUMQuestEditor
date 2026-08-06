@@ -31,7 +31,7 @@
                 <StackPanel>
                     <TextBlock Foreground="{DynamicResource MaterialDesignBodyLight}" Text="Available placeholders:" FontWeight="SemiBold" Margin="0,0,0,8"/>
                     <TextBlock Foreground="{DynamicResource MaterialDesignBodyLight}" Text="  {tier} - Quest tier (1, 2, 3)" Margin="0,0,0,4"/>
-                    <TextBlock Foreground="{DynamicResource MaterialDesignBodyLight}" Text="  {trader} - Trader code (AR, BK, BA, BT, DC, GG, HM, HT, MC)" Margin="0,0,0,4"/>
+                    <TextBlock Foreground="{DynamicResource MaterialDesignBodyLight}" Text="  {trader} - Trader code (AR, BK, BA, BT, DC, GG, HM, RH, MH, MC)" Margin="0,0,0,4"/>
                     <TextBlock Foreground="{DynamicResource MaterialDesignBodyLight}" Text="  {title} - Quest title (spaces replaced with underscores)" Margin="0,0,0,4"/>
                 </StackPanel>
             </Border>
