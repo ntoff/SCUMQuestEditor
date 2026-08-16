@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -21,16 +22,16 @@ namespace SCUMQuestEditor
         public double Fame { get => double.TryParse(TxtFame?.Text ?? "0", out double val) ? val : 0; }
         public bool AllowExcluded => ChkAllowExcluded?.IsChecked ?? false;
 
-        public AddTradeDealDialog(TradeDealReward? existingReward = null)
+        private readonly string _traderName;
+
+        public AddTradeDealDialog(TradeDealReward? existingReward = null, string? traderName = null)
         {
             InitializeComponent();
 
             Title = existingReward != null ? "Edit Trade Deal" : "Add Trade Deal";
+            _traderName = traderName ?? "";
 
-            // Load items from file — same as EditWeaponDialog
             LoadTradeItems();
-
-            // Populate the list box
             FilterItems();
 
             if (existingReward != null)
@@ -47,7 +48,6 @@ namespace SCUMQuestEditor
                 ChkAllowExcluded.IsChecked = existingReward.AllowExcluded;
             }
 
-            // Validation
             TxtPrice.PreviewTextInput += NumericPreviewTextInput;
             TxtAmount.PreviewTextInput += NumericPreviewTextInput;
             TxtFame.PreviewTextInput += NumericPreviewTextInput;
@@ -59,12 +59,35 @@ namespace SCUMQuestEditor
 
         private void LoadTradeItems()
         {
+            AvailableItems.Clear();
+
             try
             {
-                string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "_data\\TradeItems.txt");
+                string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "_data\\TradeItems.json");
                 if (File.Exists(path))
                 {
-                    AvailableItems = File.ReadAllLines(path).Where(line => !string.IsNullOrEmpty(line)).ToList();
+                    string json = File.ReadAllText(path);
+                    var traders = JsonSerializer.Deserialize<List<TraderData>>(json);
+
+                    if (traders != null && !string.IsNullOrEmpty(_traderName))
+                    {
+                        var trader = traders.FirstOrDefault(t => t.TraderName == _traderName);
+                        if (trader?.Children != null)
+                        {
+                            AvailableItems.AddRange(trader.Children);
+                        }
+                    }
+
+                    if (AvailableItems.Count == 0)
+                    {
+                        foreach (var trader in (traders ?? Enumerable.Empty<TraderData>()))
+                        {
+                            if (trader?.Children != null)
+                            {
+                                AvailableItems.AddRange(trader.Children);
+                            }
+                        }
+                    }
                 }
                 else
                 {
@@ -73,7 +96,7 @@ namespace SCUMQuestEditor
             }
             catch (System.Exception ex)
             {
-                MessageBox.Show($"Error loading TradeItems.txt: {ex.Message}");
+                MessageBox.Show($"Error loading TradeItems.json: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 AvailableItems.Add("DefaultItem");
             }
         }
@@ -137,6 +160,12 @@ namespace SCUMQuestEditor
             {
                 e.Handled = true;
             }
+        }
+
+        private class TraderData
+        {
+            public string? TraderName { get; set; }
+            public List<string>? Children { get; set; }
         }
     }
 }

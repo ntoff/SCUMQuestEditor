@@ -911,7 +911,8 @@ namespace SCUMQuestEditor
                 return;
             }
 
-            var dialog = new AddTradeDealDialog();
+            var traderName = CurrentTradeDeal?.AssociatedNpc ?? "";
+            var dialog = new AddTradeDealDialog(null, traderName);
             dialog.Owner = this;
             if (dialog.ShowDialog() == true)
             {
@@ -935,7 +936,8 @@ namespace SCUMQuestEditor
 
             if (LvTradeDeals.SelectedItem is TradeDealReward selectedDeal)
             {
-                AddTradeDealDialog dialog = new AddTradeDealDialog(selectedDeal);
+                var traderName = CurrentTradeDeal?.AssociatedNpc ?? "";
+                AddTradeDealDialog dialog = new AddTradeDealDialog(selectedDeal, traderName);
                 dialog.Owner = this;
                 if (dialog.ShowDialog() == true)
                 {
