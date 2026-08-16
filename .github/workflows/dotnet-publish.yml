@@ -23,6 +23,10 @@ jobs:
       - name: Publish (FolderProfile)
         run: dotnet publish SCUMQuestEditor/SCUMQuestEditor.csproj -c Release -p:PublishProfile=FolderProfile
 
+      - name: Get commit SHA
+        id: sha
+        run: echo "sha=$(echo ${{ github.sha }} | cut -c1-8)" >> $env:GITHUB_OUTPUT
+
       - name: Create zip
         run: |
           $timestamp = Get-Date -Format "yyyyMMdd_HHmm"
@@ -35,6 +39,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: ./packages/${{ env.zip_name }}
-          tag_name: v${{ github.run_number }}
+          tag_name: autobuild_${{ steps.sha.outputs.sha }}
           fail_on_unmatched_files: true
           generate_release_notes: true
