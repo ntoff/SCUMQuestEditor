@@ -1,5 +1,5 @@
-$logPath = "C:\Users\Norah\AppData\Local\SCUM\Saved\Logs\SCUM.log"
-$outputPath = "C:\Users\Norah\source\repos\SCUMQuestEditor\SCUMQuestEditor\_data\listitems.txt"
+$logPath = "SCUM.log"
+$outputPath = "listitems.txt"
 
 $items = @()
 $inList = $false
