@@ -4,4 +4,5 @@ SCUMQuestEditor/bin
 SCUMQuestEditor/obj
 SCUMQuestEditor/Properties/*
 SCUMQuestEditor/_data/EliminationWeapons.json
+SCUMQuestEditor/_data/SCUM.log
 packages/*.*
