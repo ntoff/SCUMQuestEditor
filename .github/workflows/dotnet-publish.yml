@@ -1,8 +1,8 @@
 name: .NET Publish & Release
 
 on:
-  push:
-    branches: [main, master, dotnet10]
+  schedule:
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
 permissions:
@@ -14,20 +14,48 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for new commits since last release
+        id: check
+        run: |
+          $lastRelease = git tag --sort=-creatordate | Select-String -Pattern '^autobuild_' | Select-Object -First 1
+          if ([string]::IsNullOrWhiteSpace($lastRelease)) {
+            Write-Output "has_changes=true" >> $env:GITHUB_OUTPUT
+          } else {
+            $lastTag = $lastRelease.ToString().Trim()
+            $lastCommit = git log -1 --format=%H $lastTag
+            $currentCommit = git rev-parse HEAD
+            if ($currentCommit -ne $lastCommit) {
+              Write-Output "has_changes=true" >> $env:GITHUB_OUTPUT
+            } else {
+              Write-Output "has_changes=false" >> $env:GITHUB_OUTPUT
+            }
+          }
+        shell: pwsh
+
+      - name: Skip workflow
+        if: steps.check.outputs.has_changes != 'true'
+        run: echo "No changes since last release. Skipping."
 
       - name: Setup .NET
+        if: steps.check.outputs.has_changes == 'true'
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
 
       - name: Publish (FolderProfile)
+        if: steps.check.outputs.has_changes == 'true'
         run: dotnet publish SCUMQuestEditor/SCUMQuestEditor.csproj -c Release -p:PublishProfile=FolderProfile
 
       - name: Get commit SHA
+        if: steps.check.outputs.has_changes == 'true'
         id: sha
         run: echo "sha=$(echo ${{ github.sha }} | cut -c1-8)" >> $env:GITHUB_OUTPUT
 
       - name: Create zip
+        if: steps.check.outputs.has_changes == 'true'
         run: |
           $timestamp = Get-Date -Format "yyyyMMdd_HHmm"
           $zipName = "SCUMQuestEditor_$timestamp.zip"
@@ -36,6 +64,7 @@ jobs:
         shell: pwsh
 
       - name: Create GitHub Release
+        if: steps.check.outputs.has_changes == 'true'
         uses: softprops/action-gh-release@v2
         with:
           files: ./packages/${{ env.zip_name }}
