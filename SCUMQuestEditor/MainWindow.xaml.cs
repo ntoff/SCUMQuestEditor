@@ -458,6 +458,7 @@ namespace SCUMQuestEditor
             CbTier.Items.Add("1");
             CbTier.Items.Add("2");
             CbTier.Items.Add("3");
+            CbTier.Items.Add("4");
             CbTier.SelectedIndex = 0;
             UpdateJsonPreview();
             InitConditions();
