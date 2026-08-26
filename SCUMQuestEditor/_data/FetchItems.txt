@@ -861,6 +861,15 @@ Dish_Rice_PeasWithMeat
 Dish_Rice_PekingPoultry
 Dish_Rice_SpicySzechuan
 Dish_Rice_StuffedPeppers
+Dish_Salad_Fish
+Dish_Salad_Fruit
+Dish_Salad_Improvised
+Dish_Salad_Waldorf
+Dish_Sandwich_Beans
+Dish_Sandwich_Cheese
+Dish_Sandwich_Improvised
+Dish_Sandwich_Spon
+Dish_Sandwich_Tuna
 Dish_Skewer_Fish
 Dish_Skewer_Meat
 Dish_Skewer_Mixed
