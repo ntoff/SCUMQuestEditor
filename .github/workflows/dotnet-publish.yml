@@ -2,7 +2,7 @@ name: .NET Publish & Release
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, dotnet10]
   workflow_dispatch:
 
 permissions:
