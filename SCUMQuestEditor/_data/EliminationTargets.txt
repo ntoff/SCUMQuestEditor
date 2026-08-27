@@ -30,6 +30,8 @@ BP_Zombie_Police_Female
 BP_Zombie_Police_Muscle
 BP_Zombie_SuicideVest
 BP_Bear
+BP_Bear_Mutant
+BP_BTBear_Mutant_ApexHunt
 BP_Boar
 BP_Boar_Mutant
 BP_Chicken
