@@ -638,7 +638,7 @@
                 </TabItem>
 
                 <!-- TAB 4: JSON Preview -->
-                <TabItem Header="JSON Preview" Style="{StaticResource CompactTabItem}">
+                <TabItem x:Name="JsonPreviewTab" Header="JSON Preview" Style="{StaticResource CompactTabItem}">
                     <Border Style="{StaticResource CardStyle}" Margin="4" Padding="0">
                         <DockPanel>
                             <TextBlock x:Name="TxtJsonWarning" DockPanel.Dock="Top" Margin="8" Foreground="#FF5229" FontWeight="Bold" FontSize="14" TextWrapping="Wrap" Visibility="Collapsed"/>
