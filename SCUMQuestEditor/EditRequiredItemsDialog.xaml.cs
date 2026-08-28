@@ -167,7 +167,7 @@ namespace SCUMQuestEditor
                     selectedReqItem.AcceptedItems.Clear();
                     foreach (var item in LstAcceptedItems.SelectedItems)
                     {
-                        selectedReqItem.AcceptedItems.Add(item.ToString());
+                        selectedReqItem.AcceptedItems.Add(item.ToString()!);
                     }
                     int.TryParse(TxtRequiredQty.Text, out int qty);
                     selectedReqItem.RequiredNum = qty;
@@ -192,14 +192,14 @@ namespace SCUMQuestEditor
                 // Add new items as a single RequiredItem with all selected items
                 var newItem = new RequiredItem
                 {
-                    AcceptedItems = LstAcceptedItems.SelectedItems.Cast<object>().Select(s => s.ToString()).ToList(),
+                    AcceptedItems = LstAcceptedItems.SelectedItems.Cast<object>().Select(s => s.ToString()!).ToList(),
                     RequiredNum = int.TryParse(TxtRequiredQty.Text, out int q) ? q : 1,
                     MinAcceptedItemUses = ChkMinUses.IsChecked == true && int.TryParse(TxtMinUses.Text, out int minUses) ? minUses : 0,
                     MinAcceptedItemMass = ChkMinMass.IsChecked == true && int.TryParse(TxtMinMass.Text, out int minMass) ? minMass : 0,
                     MinAcceptedItemHealth = ChkMinHealth.IsChecked == true && int.TryParse(TxtMinHealth.Text, out int minHealth) ? minHealth : 0,
-                    MinAcceptedCookLevel = ChkMinCookLevel.IsChecked == true && CmbMinCookLevel.SelectedItem != null ? CmbMinCookLevel.SelectedItem.ToString() : null,
-                    MaxAcceptedCookLevel = ChkMaxCookLevel.IsChecked == true && CmbMaxCookLevel.SelectedItem != null ? CmbMaxCookLevel.SelectedItem.ToString() : null,
-                    MinAcceptedCookQuality = ChkMinCookQuality.IsChecked == true && CmbMinCookQuality.SelectedItem != null ? CmbMinCookQuality.SelectedItem.ToString() : null,
+                    MinAcceptedCookLevel = ChkMinCookLevel.IsChecked == true && CmbMinCookLevel.SelectedItem is ComboBoxItem minCookItem ? minCookItem.Content?.ToString() : null,
+                    MaxAcceptedCookLevel = ChkMaxCookLevel.IsChecked == true && CmbMaxCookLevel.SelectedItem is ComboBoxItem maxCookItem ? maxCookItem.Content?.ToString() : null,
+                    MinAcceptedCookQuality = ChkMinCookQuality.IsChecked == true && CmbMinCookQuality.SelectedItem is ComboBoxItem qualityItem ? qualityItem.Content?.ToString() : null,
                     MinAcceptedItemResourceRatio = ChkMinResourcePct.IsChecked == true && int.TryParse(TxtMinResourcePct.Text, out int minResPct) ? minResPct : 0,
                     MinAcceptedItemResourceAmount = ChkMinResourceMl.IsChecked == true && int.TryParse(TxtMinResourceMl.Text, out int minResMl) ? minResMl : 0,
                     RandomAdditionalRequiredNum = int.TryParse(TxtRandomQty.Text, out int rq) ? rq : 0
@@ -247,7 +247,7 @@ namespace SCUMQuestEditor
             // Create a SINGLE RequiredItem containing ALL selected items in its AcceptedItems list
             var newItem = new RequiredItem
             {
-                AcceptedItems = LstAcceptedItems.SelectedItems.Cast<object>().Select(s => s.ToString()).ToList(),
+                AcceptedItems = LstAcceptedItems.SelectedItems.Cast<object>().Select(s => s.ToString()!).ToList(),
                 RequiredNum = int.TryParse(TxtRequiredQty.Text, out int q) ? q : 1,
                 MinAcceptedItemUses = ChkMinUses.IsChecked == true && int.TryParse(TxtMinUses.Text, out int minUses) ? minUses : 0,
                 MinAcceptedItemMass = ChkMinMass.IsChecked == true && int.TryParse(TxtMinMass.Text, out int minMass) ? minMass : 0,
@@ -309,12 +309,12 @@ namespace SCUMQuestEditor
             ChkMinMass.IsChecked = selectedReq.MinAcceptedItemMass > 0;
             TxtMinMass.Text = selectedReq.MinAcceptedItemMass.ToString();
 
-            ChkMinCookLevel.IsChecked = !string.IsNullOrEmpty(selectedReq.MinAcceptedCookLevel);
-            SelectComboBoxItem(CmbMinCookLevel, selectedReq.MinAcceptedCookLevel);
-            ChkMaxCookLevel.IsChecked = !string.IsNullOrEmpty(selectedReq.MaxAcceptedCookLevel);
-            SelectComboBoxItem(CmbMaxCookLevel, selectedReq.MaxAcceptedCookLevel);
-            ChkMinCookQuality.IsChecked = !string.IsNullOrEmpty(selectedReq.MinAcceptedCookQuality);
-            SelectComboBoxItem(CmbMinCookQuality, selectedReq.MinAcceptedCookQuality);
+            if (!string.IsNullOrEmpty(selectedReq.MinAcceptedCookLevel))
+                SelectComboBoxItem(CmbMinCookLevel, selectedReq.MinAcceptedCookLevel!);
+            if (!string.IsNullOrEmpty(selectedReq.MaxAcceptedCookLevel))
+                SelectComboBoxItem(CmbMaxCookLevel, selectedReq.MaxAcceptedCookLevel!);
+            if (!string.IsNullOrEmpty(selectedReq.MinAcceptedCookQuality))
+                SelectComboBoxItem(CmbMinCookQuality, selectedReq.MinAcceptedCookQuality!);
 
             ChkMinResourcePct.IsChecked = selectedReq.MinAcceptedItemResourceRatio > 0;
             TxtMinResourcePct.Text = selectedReq.MinAcceptedItemResourceRatio.ToString();

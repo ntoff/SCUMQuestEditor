@@ -71,8 +71,8 @@ namespace SCUMQuestEditor
             string filter = TxtSearch.Text.ToLower();
             _listCollectionView.Filter = obj =>
             {
-                string weapon = obj as string;
-                return string.IsNullOrEmpty(weapon) || weapon.ToLower().Contains(filter);
+                string weapon = obj.ToString() ?? "";
+                return weapon.ToLower().Contains(filter);
             };
             _listCollectionView.Refresh();
 
@@ -95,7 +95,7 @@ namespace SCUMQuestEditor
             {
                 foreach (var item in e.AddedItems)
                 {
-                    _userSelections.Add(item.ToString());
+                    _userSelections.Add(item.ToString()!);
                 }
             }
 
@@ -103,7 +103,7 @@ namespace SCUMQuestEditor
             {
                 foreach (var item in e.RemovedItems)
                 {
-                    _userSelections.Remove(item.ToString());
+                    _userSelections.Remove(item.ToString()!);
                 }
             }
         }

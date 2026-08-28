@@ -45,7 +45,7 @@ namespace SCUMQuestEditor
         private void BtnOk_Click(object sender, RoutedEventArgs e)
         {
             SelectedItems = new List<string>();
-            foreach (var item in LstTargetTypes.SelectedItems) SelectedItems.Add(item.ToString());
+            foreach (var item in LstTargetTypes.SelectedItems) SelectedItems.Add(item.ToString()!);
             DialogResult = true;
             Close();
         }

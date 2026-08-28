@@ -486,8 +486,8 @@ namespace SCUMQuestEditor
             try
             {
                 string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "_data\\settings.json");
-                string directory = Path.GetDirectoryName(path);
-                if (!Directory.Exists(directory))
+                string? directory = Path.GetDirectoryName(path);
+                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
                 {
                     Directory.CreateDirectory(directory);
                 }
@@ -777,9 +777,9 @@ namespace SCUMQuestEditor
             if (TxtDescription != null) TxtDescription.Text = quest.Description;
             if (TxtTimeLimit != null) TxtTimeLimit.Text = quest.TimeLimitHours.ToString("0.0#");
 
-            TxtTitle.TextChanged += TxtInput_TextChanged;
-            TxtDescription.TextChanged += TxtInput_TextChanged;
-            TxtTimeLimit.TextChanged += TxtInput_TextChanged;
+            TxtTitle!.TextChanged += TxtInput_TextChanged;
+            TxtDescription!.TextChanged += TxtInput_TextChanged;
+            TxtTimeLimit!.TextChanged += TxtInput_TextChanged;
             CbTier.SelectionChanged += CbTier_SelectionChanged;
 
             if (quest.RewardPool != null && quest.RewardPool.Count > 0)
