@@ -624,6 +624,29 @@ namespace SCUMQuestEditor
             {
                 string fileName;
 
+                List<string> emptyFields = new();
+
+                bool rewardPoolEmpty = (CurrentTradeDeal.RewardPool == null || CurrentTradeDeal.RewardPool.Count == 0) || CurrentTradeDeal.RewardPool.All(r => r.CurrencyNormal == 0 && r.CurrencyGold == 0 && r.Fame == 0 && r.Skills == null && r.TradeDeals == null);
+
+                if (rewardPoolEmpty)
+                {
+                    emptyFields.Add("Reward Pool");
+                }
+
+                if (CurrentTradeDeal.Conditions == null || CurrentTradeDeal.Conditions.Count == 0)
+                {
+                    emptyFields.Add("Conditions");
+                }
+
+                if (emptyFields.Count > 0)
+                {
+                    string fieldsList = string.Join(", ", emptyFields);
+                    string message = $"The following fields cannot be empty:\n{fieldsList}";
+                    SaveValidationDialog dialog = new SaveValidationDialog(message) { Owner = this };
+                    dialog.ShowDialog();
+                    return;
+                }
+
                 if (!string.IsNullOrEmpty(_currentFilePath))
                 {
                     fileName = Path.GetFileName(_currentFilePath);
