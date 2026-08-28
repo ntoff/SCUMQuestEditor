@@ -1082,10 +1082,31 @@ namespace SCUMQuestEditor
 
                 string json = JsonSerializer.Serialize(CurrentTradeDeal, options);
                 if (TxtJson != null) TxtJson.Text = json;
+
+                string warning = "";
+                bool rewardPoolEmpty = CurrentTradeDeal.RewardPool == null || CurrentTradeDeal.RewardPool.Count == 0 || CurrentTradeDeal.RewardPool.All(r => r.CurrencyNormal == 0 && r.CurrencyGold == 0 && r.Fame == 0 && r.Skills == null && r.TradeDeals == null);
+                bool conditionsEmpty = CurrentTradeDeal.Conditions == null || CurrentTradeDeal.Conditions.Count == 0;
+
+                if (rewardPoolEmpty && conditionsEmpty)
+                    warning = "Warning: Both reward pool and condition pool are empty. Neither should be left empty.";
+                else if (rewardPoolEmpty)
+                    warning = "Warning: Reward pool is empty. It should not be left empty.";
+                else if (conditionsEmpty)
+                    warning = "Warning: Condition pool is empty. It should not be left empty.";
+
+                if (TxtJsonWarning != null)
+                {
+                    TxtJsonWarning.Text = warning;
+                    TxtJsonWarning.Visibility = string.IsNullOrEmpty(warning) ? Visibility.Collapsed : Visibility.Visible;
+                }
             }
             catch (Exception ex)
             {
                 if (TxtJson != null) TxtJson.Text = $"Error generating JSON: {ex.Message}";
+                if (TxtJsonWarning != null)
+                {
+                    TxtJsonWarning.Visibility = Visibility.Collapsed;
+                }
             }
         }
 
