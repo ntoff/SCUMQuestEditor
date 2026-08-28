@@ -15,8 +15,9 @@ This is an unofficial, community made tool not associated with gamepires or the 
 
 It is free for non-commercial use.
 
-You can customize the default file saving format by editing _data/settings.json
+You can customize the default file saving format
+
 Available placeholders:
-{tier} - Quest tier (1, 2, 3)
-{trader} - Trader code (AR, BK, BA, BT, DC, GG, HM, HT, MC)
-{title} - Quest title with spaces replaced by underscores
+* {tier} - Quest tier (1, 2, 3, 4)
+* {trader} - Trader code (AR, BK, BA, BT, DC, GG, HM, HT, MC)
+* {title} - Quest title with spaces replaced by underscores
