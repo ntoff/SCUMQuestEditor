@@ -1398,7 +1398,7 @@ namespace SCUMQuestEditor
             {
                 TrackingCaption = "Eliminate Target",
                 SequenceIndex = 0,
-                CanBeAutoCompleted = false,
+                CanBeAutoCompleted = true,
                 Amount = 1,
                 TargetCharacters = new List<string>(),
                 AllowedWeapons = new List<string>(),
@@ -1413,7 +1413,7 @@ namespace SCUMQuestEditor
             {
                 TrackingCaption = "Fetch Item",
                 SequenceIndex = 0,
-                CanBeAutoCompleted = false,
+                CanBeAutoCompleted = true,
                 DisablePurchaseOfRequiredItems = true,
                 PlayerKeepsItems = false,
                 RequiredItems = new List<RequiredItem>(),
@@ -1428,7 +1428,7 @@ namespace SCUMQuestEditor
             {
                 TrackingCaption = "Interact",
                 SequenceIndex = 0,
-                CanBeAutoCompleted = false,
+                CanBeAutoCompleted = true,
                 SpawnOnlyNeeded = true,
                 MinNeeded = 1,
                 MaxNeeded = 1,

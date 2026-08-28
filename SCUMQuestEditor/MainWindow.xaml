@@ -391,7 +391,7 @@
                                             <GridViewColumn Header="Auto Complete" Width="Auto">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <CheckBox IsChecked="{Binding CanBeAutoCompleted}" IsEnabled="False"/>
+                                                        <CheckBox IsChecked="{Binding CanBeAutoCompleted}" IsEnabled="True"/>
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>
@@ -442,7 +442,7 @@
 
                                                 <Label Grid.Row="2" Grid.Column="0" Content="Auto Complete:" HorizontalAlignment="Right" Margin="0,0,12,6" Style="{StaticResource CompactLabel}"/>
                                                 <CheckBox x:Name="EdtAutoComplete" Grid.Row="2" Grid.Column="1" Margin="0,5,0,0"
-                                                      IsChecked="False"
+                                                      IsChecked="True"
                                                       LostFocus="ConditionField_LostFocus"/>
                                             </Grid>
                                         </Border>
