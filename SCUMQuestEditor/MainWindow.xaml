@@ -175,7 +175,7 @@
                                     <Label Grid.Row="4" Grid.Column="0" Content="Time Limit (hours):"
                                        HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,8"
                                        Style="{StaticResource CompactLabel}"/>
-                                    <TextBox x:Name="TxtTimeLimit" Grid.Row="4" Grid.Column="1" Text="0.5"
+                                    <TextBox x:Name="TxtTimeLimit" Grid.Row="4" Grid.Column="1" Text="24"
                                          Margin="0,0,0,8" TextAlignment="Left"
                                          PreviewTextInput="FloatPreviewTextInput" DataObject.Pasting="FloatPasting"
                                          TextChanged="TxtInput_TextChanged"

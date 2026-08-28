@@ -532,7 +532,7 @@ namespace SCUMQuestEditor
                 Tier = 1,
                 Title = "New Quest",
                 Description = "Quest description...",
-                TimeLimitHours = 0.5,
+                TimeLimitHours = 24,
                 RewardPool = new List<RewardPool> { new RewardPool() },
                 Conditions = new List<Condition>()
             };
@@ -552,7 +552,7 @@ namespace SCUMQuestEditor
             if (TxtTitle != null) TxtTitle.Text = "New Quest";
             CbTier.SelectedIndex = 0;
             if (TxtDescription != null) TxtDescription.Text = "Quest description...";
-            if (TxtTimeLimit != null) TxtTimeLimit.Text = "0.5";
+            if (TxtTimeLimit != null) TxtTimeLimit.Text = "24";
 
             if (TxtNormalReward != null) TxtNormalReward.Text = "0";
             if (TxtGoldReward != null) TxtGoldReward.Text = "0";
@@ -1037,8 +1037,8 @@ namespace SCUMQuestEditor
 
                 string title = TxtTitle?.Text ?? "New Quest";
                 string description = TxtDescription?.Text ?? "Quest description...";
-                double timeLimit = 0.5;
-                if (!double.TryParse(TxtTimeLimit?.Text ?? "0.5", out timeLimit)) timeLimit = 0.5;
+                double timeLimit = 24;
+                if (!double.TryParse(TxtTimeLimit?.Text ?? "24", out timeLimit)) timeLimit = 24;
 
                 CurrentTradeDeal.AssociatedNpc = npc;
                 CurrentTradeDeal.Tier = tier;
