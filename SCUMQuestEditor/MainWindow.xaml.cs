@@ -608,7 +608,6 @@ namespace SCUMQuestEditor
 
                     _currentFilePath = filePath;
                     UpdateControlsFromQuest(loadedQuest);
-                    TxtJson.Text = jsonContent;
                     CurrentTradeDeal = loadedQuest;
                 }
             }
@@ -739,9 +738,15 @@ namespace SCUMQuestEditor
 
             return format + ".json";
         }
-
         private void UpdateControlsFromQuest(TradeDeal quest)
         {
+            // Disable all change handlers that would trigger UpdateJsonPreview during load
+            CbNpc?.SelectionChanged -= CbNpc_SelectionChanged;
+            CbTier?.SelectionChanged -= CbTier_SelectionChanged;
+            TxtTitle?.TextChanged -= TxtInput_TextChanged;
+            TxtDescription?.TextChanged -= TxtInput_TextChanged;
+            TxtTimeLimit?.TextChanged -= TxtInput_TextChanged;
+
             if (CbNpc != null)
             {
                 bool npcFound = false;
@@ -749,9 +754,7 @@ namespace SCUMQuestEditor
                 {
                     if (item.Tag?.ToString() == quest.AssociatedNpc)
                     {
-                        CbNpc.SelectionChanged -= CbNpc_SelectionChanged;
                         CbNpc.SelectedItem = item;
-                        CbNpc.SelectionChanged += CbNpc_SelectionChanged;
                         npcFound = true;
                         break;
                     }
@@ -761,26 +764,14 @@ namespace SCUMQuestEditor
                 {
                     ComboBoxItem newItem = new ComboBoxItem { Content = quest.AssociatedNpc };
                     CbNpc.Items.Add(newItem);
-                    CbNpc.SelectionChanged -= CbNpc_SelectionChanged;
                     CbNpc.SelectedItem = newItem;
-                    CbNpc.SelectionChanged += CbNpc_SelectionChanged;
                 }
             }
-
-            TxtTitle.TextChanged -= TxtInput_TextChanged;
-            TxtDescription.TextChanged -= TxtInput_TextChanged;
-            TxtTimeLimit.TextChanged -= TxtInput_TextChanged;
-            CbTier.SelectionChanged -= CbTier_SelectionChanged;
 
             if (TxtTitle != null) TxtTitle.Text = quest.Title;
             CbTier.SelectedIndex = quest.Tier - 1;
             if (TxtDescription != null) TxtDescription.Text = quest.Description;
             if (TxtTimeLimit != null) TxtTimeLimit.Text = quest.TimeLimitHours.ToString("0.0#");
-
-            TxtTitle!.TextChanged += TxtInput_TextChanged;
-            TxtDescription!.TextChanged += TxtInput_TextChanged;
-            TxtTimeLimit!.TextChanged += TxtInput_TextChanged;
-            CbTier.SelectionChanged += CbTier_SelectionChanged;
 
             if (quest.RewardPool != null && quest.RewardPool.Count > 0)
             {
@@ -826,7 +817,6 @@ namespace SCUMQuestEditor
                 if (LvTradeDeals != null) LvTradeDeals.ItemsSource = null;
             }
 
-            // --- FIX START ---
             // Clear the observable collection
             ConditionsList.Clear();
 
@@ -838,13 +828,19 @@ namespace SCUMQuestEditor
                     ConditionsList.Add(condition);
                 }
             }
-            // --- FIX END ---
 
             LvConditions.ItemsSource = null;
             LvConditions.ItemsSource = conditionsView;
             LvConditions.SelectedItem = null;
-            
 
+            // Re-enable change handlers after all data is loaded
+            CbNpc?.SelectionChanged += CbNpc_SelectionChanged;
+            CbTier?.SelectionChanged += CbTier_SelectionChanged;
+            TxtTitle?.TextChanged += TxtInput_TextChanged;
+            TxtDescription?.TextChanged += TxtInput_TextChanged;
+            TxtTimeLimit?.TextChanged += TxtInput_TextChanged;
+
+            UpdateJsonPreview();
         }
 
 
