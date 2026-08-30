@@ -10,8 +10,40 @@ namespace SCUMQuestEditor
     public partial class EditRequiredItemsDialog : Window
     {
         private bool _isEditing = false;
+        private bool _isFiltering = false;
+        private HashSet<string> _userSelections = new HashSet<string>();
         private void LvRequiredItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (_isFiltering) return;
+            if (e.AddedItems != null)
+            {
+                foreach (var item in e.AddedItems)
+                {
+                    var reqItem = item as RequiredItem;
+                    if (reqItem != null)
+                    {
+                        foreach (var acceptedItem in reqItem.AcceptedItems)
+                        {
+                            _userSelections.Add(acceptedItem);
+                        }
+                    }
+                }
+            }
+            if (e.RemovedItems != null)
+            {
+                foreach (var item in e.RemovedItems)
+                {
+                    var reqItem = item as RequiredItem;
+                    if (reqItem != null)
+                    {
+                        foreach (var acceptedItem in reqItem.AcceptedItems)
+                        {
+                            _userSelections.Remove(acceptedItem);
+                        }
+                    }
+                }
+            }
+
             // If the user deselects the item while in edit mode, cancel the edit
             if (LvRequiredItems.SelectedItems.Count == 0 && _isEditing)
             {
@@ -114,25 +146,19 @@ namespace SCUMQuestEditor
         {
             if (TxtSearch == null || LstAcceptedItems == null) return;
             string filter = TxtSearch.Text.ToLower();
+            _isFiltering = true;
             LstAcceptedItems.Items.Clear();
             foreach (var item in AvailableItems)
             {
                 if (item != null && item.ToLower().Contains(filter))
                     LstAcceptedItems.Items.Add(item);
             }
-            if (LstAcceptedItems.Items.Count > 0)
+            foreach (var item in _userSelections)
             {
-                if (LstAcceptedItems.SelectedItems.Count > 0)
-                {
-                    List<object> keepSelection = new List<object>();
-                    foreach (var sel in LstAcceptedItems.SelectedItems)
-                    {
-                        if (LstAcceptedItems.Items.Contains(sel)) keepSelection.Add(sel);
-                    }
-                    LstAcceptedItems.SelectedItems.Clear();
-                    foreach (var sel in keepSelection) LstAcceptedItems.SelectedItems.Add(sel);
-                }
+                if (LstAcceptedItems.Items.Contains(item) && !LstAcceptedItems.SelectedItems.Contains(item))
+                    LstAcceptedItems.SelectedItems.Add(item);
             }
+            _isFiltering = false;
         }
 
         private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
@@ -285,13 +311,23 @@ namespace SCUMQuestEditor
             var selectedReq = LvRequiredItems.SelectedItems[0] as RequiredItem;
             if (selectedReq == null) return;
 
+            List<string> previousSelections = new List<string>();
+            foreach (var sel in LstAcceptedItems.SelectedItems)
+            {
+                previousSelections.Add(sel.ToString()!);
+                _userSelections.Add(sel.ToString()!);
+            }
+
             FilterAvailableItems();
 
             LstAcceptedItems.SelectedItems.Clear();
             foreach (var acceptedItem in selectedReq.AcceptedItems)
             {
                 if (LstAcceptedItems.Items.Contains(acceptedItem))
+                {
                     LstAcceptedItems.SelectedItems.Add(acceptedItem);
+                    _userSelections.Add(acceptedItem);
+                }
             }
 
             if (LstAcceptedItems.SelectedItems.Count > 0)
