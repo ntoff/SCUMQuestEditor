@@ -7,37 +7,44 @@ permissions:
   contents: write
 
 jobs:
-  release:
+  publish:
     runs-on: windows-latest
+
     steps:
       - uses: actions/checkout@v4
 
       - name: Read version
-        id: read_version
-        run: |
-          $version = (Get-Content SCUMQuestEditor\Version.txt).Trim()
-          echo "version=$version" >> $env:GITHUB_OUTPUT
+        id: version
+        run: echo "version=$(Get-Content SCUMQuestEditor/Version.txt | ForEach-Object { $_.Trim() })" >> $env:GITHUB_OUTPUT
+        shell: pwsh
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
 
-      - name: Publish
+      - name: Generate BuildInfo
         run: |
-          dotnet publish SCUMQuestEditor.sln -c Release -p:PublishProfile=FolderProfile 2>&1
-          if ($LASTEXITCODE -ne 0) { throw "dotnet publish failed" }
+          $version = (Get-Content SCUMQuestEditor/Version.txt).Trim()
+          $date = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+          $code = "namespace SCUMQuestEditor`r`n{`r`n    public static class BuildInfo`r`n    {`r`n        public const string BuildDate = `"$date`";`r`n        public const string Version = `"$version`";`r`n    }`r`n}"
+          Set-Content -Path SCUMQuestEditor/BuildInfo.cs -Value $code -Encoding UTF8
 
-      - name: Create archive
+      - name: Publish (FolderProfile)
+        run: dotnet publish SCUMQuestEditor/SCUMQuestEditor.csproj -c Release -p:PublishProfile=FolderProfile
+
+      - name: Create zip
         run: |
-          $version = "${{ steps.read_version.outputs.version }}"
-          $zipName = "SCUMQuestEditor-v${version}.zip"
-          Compress-Archive -Path SCUMQuestEditor\bin\Release\net10.0-windows\publish\win-x86\* -DestinationPath $zipName -Force
+          $version = "${{ steps.version.outputs.version }}"
+          $zipName = "SCUMQuestEditor-v$version.zip"
+          Compress-Archive -Path ./SCUMQuestEditor/bin/Release/net10.0-windows/publish/win-x86/* -DestinationPath ./packages/$zipName -Force
+          echo "zip_name=$zipName" >> $env:GITHUB_ENV
+        shell: pwsh
 
-      - name: Upload release
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ steps.read_version.outputs.version }}
-          name: v${{ steps.read_version.outputs.version }}
-          files: SCUMQuestEditor-v*.zip
+          files: ./packages/${{ env.zip_name }}
+          tag_name: v${{ steps.version.outputs.version }}
+          fail_on_unmatched_files: true
           generate_release_notes: true

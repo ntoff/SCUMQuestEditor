@@ -45,6 +45,13 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
+      - name: Generate BuildInfo
+        if: steps.check.outputs.has_changes == 'true'
+        run: |
+          $date = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+          $code = "namespace SCUMQuestEditor`r`n{`r`n    public static class BuildInfo`r`n    {`r`n        public const string BuildDate = `"$date`";`r`n    }`r`n}"
+          Set-Content -Path SCUMQuestEditor/BuildInfo.cs -Value $code -Encoding UTF8
+
       - name: Publish (FolderProfile)
         if: steps.check.outputs.has_changes == 'true'
         run: dotnet publish SCUMQuestEditor/SCUMQuestEditor.csproj -c Release -p:PublishProfile=FolderProfile
@@ -53,6 +60,7 @@ jobs:
         if: steps.check.outputs.has_changes == 'true'
         id: sha
         run: echo "sha=$(echo ${{ github.sha }} | cut -c1-8)" >> $env:GITHUB_OUTPUT
+        shell: pwsh
 
       - name: Create zip
         if: steps.check.outputs.has_changes == 'true'
