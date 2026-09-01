@@ -20,7 +20,8 @@ Available placeholders:
 * {trader} - Trader code (AR, BK, BA, BT, DC, GG, HM, HT, MC)
 * {title} - Quest title with spaces replaced by underscores
 
-Auto builds at midnight UTC, check the [releases](https://github.com/ntoff/SCUMQuestEditor/releases) section for updates before posting issues.
+Auto builds at midnight UTC, check the [releases](https://github.com/ntoff/SCUMQuestEditor/releases) section for updates before posting issues.  
+The auto built versions might contain issues and errors if I'm actively fiddling with the code so the latest version might not always be the "best".
 
 Includes "open with" support and support for opening quest files by dragging them onto the main window.  
 It attempts to do some basic validation by making sure certain elements aren't missing or empty but doesn't perform full json validation  
