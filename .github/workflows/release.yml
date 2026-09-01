@@ -1,0 +1,43 @@
+name: Manual Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read version
+        id: read_version
+        run: |
+          $version = (Get-Content SCUMQuestEditor\Version.txt).Trim()
+          echo "version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Publish
+        run: |
+          dotnet publish SCUMQuestEditor.sln -c Release -p:PublishProfile=FolderProfile 2>&1
+          if ($LASTEXITCODE -ne 0) { throw "dotnet publish failed" }
+
+      - name: Create archive
+        run: |
+          $version = "${{ steps.read_version.outputs.version }}"
+          $zipName = "SCUMQuestEditor-v${version}.zip"
+          Compress-Archive -Path SCUMQuestEditor\bin\Release\net10.0-windows\publish\win-x86\* -DestinationPath $zipName -Force
+
+      - name: Upload release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.read_version.outputs.version }}
+          name: v${{ steps.read_version.outputs.version }}
+          files: SCUMQuestEditor-v*.zip
+          generate_release_notes: true
