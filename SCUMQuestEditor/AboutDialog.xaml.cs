@@ -9,7 +9,7 @@ namespace SCUMQuestEditor
         public AboutDialog()
         {
             InitializeComponent();
-            LblVersion.Text = "Version 2.0.0";
+            LblVersion.Text = $"Version {BuildInfo.Version}";
             LblBuildDate.Text = $"Built on {BuildInfo.BuildDate}";
             LoadIcon();
         }
