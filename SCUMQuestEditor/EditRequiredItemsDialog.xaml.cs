@@ -301,8 +301,32 @@ namespace SCUMQuestEditor
             ClearInputFields();
         }
 
+        private void BtnAddAll_Click(object sender, RoutedEventArgs e)
+        {
+            if (LstAcceptedItems.SelectedItems.Count > 0)
+            {
+                LstAcceptedItems.SelectedItems.Clear();
+                return;
+            }
 
-        private void LoadSelectedRequiredItemIntoEditor()
+            IEnumerable<string> itemsToSelect;
+            if (!string.IsNullOrEmpty(TxtSearch.Text))
+            {
+                itemsToSelect = LstAcceptedItems.Items.Cast<string>();
+            }
+            else
+            {
+                itemsToSelect = AvailableItems;
+            }
+
+            foreach (var item in itemsToSelect)
+            {
+                if (LstAcceptedItems.Items.Contains(item))
+                {
+                    LstAcceptedItems.SelectedItems.Add(item);
+                }
+            }
+        }        private void LoadSelectedRequiredItemIntoEditor()
         {
 
             // Load the first selected item if multiple are selected, or the single selected item

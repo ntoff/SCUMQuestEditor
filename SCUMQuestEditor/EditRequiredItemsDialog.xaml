@@ -51,8 +51,16 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <Button Grid.Row="0" x:Name="BtnAdd" Content="Add Selected Items" Margin="0,0,6,10" Click="BtnAddRequiredItem_Click"
-                        Style="{StaticResource PrimaryButton}"/>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" x:Name="BtnAdd" Content="Add Selected" Margin="0,0,3,10" Click="BtnAddRequiredItem_Click"
+                            Style="{StaticResource PrimaryButton}"/>
+                        <Button Grid.Column="1" x:Name="BtnAddAll" Content="(Un)Select All" Margin="3,0,0,10" Click="BtnAddAll_Click"
+                            Style="{StaticResource PrimaryButton}"/>
+                    </Grid>
 
                     <Border Grid.Row="1" Style="{StaticResource CardStyle}" Padding="0" Margin="0,0,6,0">
                         <ListBox x:Name="LstAcceptedItems" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch"
