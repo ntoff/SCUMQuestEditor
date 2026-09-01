@@ -10,10 +10,7 @@
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         Background="{DynamicResource MaterialDesignBackground}"
-        Foreground="{DynamicResource MaterialDesignBody}"
-        AllowDrop="True"
-        Drop="Window_Drop"
-        DragEnter="Window_DragEnter">
+        Foreground="{DynamicResource MaterialDesignBody}">
 
     <shell:WindowChrome.WindowChrome>
         <shell:WindowChrome
