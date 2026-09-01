@@ -21,3 +21,5 @@ Available placeholders:
 * {tier} - Quest tier (1, 2, 3, 4)
 * {trader} - Trader code (AR, BK, BA, BT, DC, GG, HM, HT, MC)
 * {title} - Quest title with spaces replaced by underscores
+
+Auto builds at midnight UTC, check the [releases](https://github.com/ntoff/SCUMQuestEditor/releases) section for updates.
