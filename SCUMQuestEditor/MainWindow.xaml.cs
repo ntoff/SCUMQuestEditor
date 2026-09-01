@@ -620,7 +620,7 @@ namespace SCUMQuestEditor
         {
             if (e.Data.GetData(DataFormats.FileDrop) is string[] files && files.Length > 0)
             {
-                string jsonFile = files.FirstOrDefault(f => f.ToLower().EndsWith(".json"));
+                string? jsonFile = files.FirstOrDefault(f => f.ToLower().EndsWith(".json"));
                 if (jsonFile != null)
                 {
                     LoadFileFromPath(jsonFile);
