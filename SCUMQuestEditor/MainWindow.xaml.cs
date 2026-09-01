@@ -10,6 +10,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -589,28 +590,69 @@ namespace SCUMQuestEditor
                 bool? result = openFileDialog.ShowDialog();
                 if (result == true)
                 {
-                    string filePath = openFileDialog.FileName;
-                    string jsonContent = File.ReadAllText(filePath);
-
-                    var options = new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true,
-                        Converters = { new ConditionConverter() }
-                    };
-
-                    TradeDeal? loadedQuest = JsonSerializer.Deserialize<TradeDeal>(jsonContent, options);
-
-                    if (loadedQuest == null)
-                    {
-                        MessageBox.Show("Failed to load quest file. The file may be corrupted or invalid.");
-                        return;
-                    }
-
-                    _currentFilePath = filePath;
-                    UpdateControlsFromQuest(loadedQuest);
-                    TxtJson.Text = jsonContent;
-                    CurrentTradeDeal = loadedQuest;
+                    LoadFileFromPath(openFileDialog.FileName);
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading quest file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void MainWindow_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetData(DataFormats.FileDrop) is string[] files)
+            {
+                bool hasJson = files.Any(f => f.ToLower().EndsWith(".json"));
+                if (hasJson)
+                    e.Effects = DragDropEffects.Copy;
+                else
+                    e.Effects = DragDropEffects.None;
+            }
+            else
+            {
+                e.Effects = DragDropEffects.None;
+            }
+            e.Handled = true;
+        }
+
+        private void MainWindow_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetData(DataFormats.FileDrop) is string[] files && files.Length > 0)
+            {
+                string jsonFile = files.FirstOrDefault(f => f.ToLower().EndsWith(".json"));
+                if (jsonFile != null)
+                {
+                    LoadFileFromPath(jsonFile);
+                }
+            }
+            e.Handled = true;
+        }
+
+        public void LoadFileFromPath(string filePath)
+        {
+            try
+            {
+                string jsonContent = File.ReadAllText(filePath);
+
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    Converters = { new ConditionConverter() }
+                };
+
+                TradeDeal? loadedQuest = JsonSerializer.Deserialize<TradeDeal>(jsonContent, options);
+
+                if (loadedQuest == null)
+                {
+                    MessageBox.Show("Failed to load quest file. The file may be corrupted or invalid.");
+                    return;
+                }
+
+                _currentFilePath = filePath;
+                UpdateControlsFromQuest(loadedQuest);
+                TxtJson.Text = jsonContent;
+                CurrentTradeDeal = loadedQuest;
             }
             catch (Exception ex)
             {
