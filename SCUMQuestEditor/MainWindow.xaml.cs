@@ -769,7 +769,7 @@ namespace SCUMQuestEditor
             }
 
             if (TxtTitle != null) TxtTitle.Text = quest.Title;
-            CbTier.SelectedIndex = quest.Tier - 1;
+            CbTier!.SelectedIndex = quest.Tier - 1;
             if (TxtDescription != null) TxtDescription.Text = quest.Description;
             if (TxtTimeLimit != null) TxtTimeLimit.Text = quest.TimeLimitHours.ToString("0.0#");
 
