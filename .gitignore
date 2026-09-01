@@ -7,3 +7,4 @@ SCUMQuestEditor/_data/EliminationWeapons.json
 SCUMQuestEditor/_data/SCUM.log
 SCUMQuestEditor/BuildInfo.cs
 packages/*.*
+SCUMQuestEditor/testquests/*.*
