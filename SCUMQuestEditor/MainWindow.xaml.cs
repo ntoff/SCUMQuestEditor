@@ -1829,6 +1829,34 @@ namespace SCUMQuestEditor
                 this.WindowState = WindowState.Maximized;
         }
 
+        private void Window_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data?.GetData(DataFormats.FileDrop) is string[] files && files.Length > 0)
+            {
+                e.Effects = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effects = DragDropEffects.None;
+            }
+        }
+
+        private void Window_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data?.GetData(DataFormats.FileDrop) is string[] files && files.Length > 0)
+            {
+                var filePath = files[0];
+                
+                if (!File.Exists(filePath))
+                {
+                    MessageBox.Show(this, $"The file '{filePath}' does not exist.", "File Not Found", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                Dispatcher.BeginInvoke(new Action(() => LoadFileFromCommandLine(filePath)), System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+            }
+        }
+
         private void MenuItem_Exit_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
