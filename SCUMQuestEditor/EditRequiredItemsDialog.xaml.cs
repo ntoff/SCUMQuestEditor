@@ -81,8 +81,7 @@ namespace SCUMQuestEditor
 
         private void UpdateEditButtonsState()
         {
-            BtnApply.IsEnabled = _isEditing;
-            BtnCancelEdit.IsEnabled = _isEditing;
+            EditButtonsPanel.Visibility = _isEditing ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public ObservableCollection<RequiredItem> RequiredItems { get; set; } = new ObservableCollection<RequiredItem>();
