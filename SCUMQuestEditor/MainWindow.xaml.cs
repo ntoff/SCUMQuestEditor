@@ -444,13 +444,11 @@ namespace SCUMQuestEditor
         public const int MaxKillAmount = 1000000000;
         private static AppSettings _settings = new AppSettings();
         private string? _currentFilePath;
-        private string? _pendingFilePath;
 
-        public MainWindow(string? filePath = null)
+        public MainWindow()
         {
             InitializeComponent();
             this.Loaded += MainWindow_Loaded;
-            _pendingFilePath = filePath;
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -464,105 +462,6 @@ namespace SCUMQuestEditor
             CbTier.SelectedIndex = 0;
             UpdateJsonPreview();
             InitConditions();
-
-            if (!string.IsNullOrEmpty(_pendingFilePath))
-            {
-                var filePath = _pendingFilePath;
-                _pendingFilePath = null;
-                Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    LoadFileFromCommandLine(filePath);
-                }), System.Windows.Threading.DispatcherPriority.ApplicationIdle);
-            }
-        }
-
-        private void LoadFileFromCommandLine(string filePath)
-        {
-            if (!File.Exists(filePath))
-            {
-                MessageBox.Show(this, $"The file '{filePath}' does not exist.", "File Not Found", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            try
-            {
-                string jsonContent = File.ReadAllText(filePath);
-
-                bool isLikelyQuestFile = IsLikelyQuestFile(jsonContent);
-
-                if (!isLikelyQuestFile)
-                {
-                    var result = MessageBox.Show(
-                        this,
-                        $"The file '{Path.GetFileName(filePath)}' does not appear to be a valid quest file.\n\n" +
-                        "It may be a different JSON file or the file may be corrupted.\n\n" +
-                        "You can still open it, but the editor may not display any meaningful data.\n\n" +
-                        "Do you want to continue loading?",
-                        "Unrecognized File Format",
-                        MessageBoxButton.YesNo,
-                        MessageBoxImage.Warning);
-
-                    if (result != MessageBoxResult.Yes)
-                    {
-                        return;
-                    }
-                }
-
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true,
-                    Converters = { new ConditionConverter() }
-                };
-
-                TradeDeal? loadedQuest = JsonSerializer.Deserialize<TradeDeal>(jsonContent, options);
-
-                if (loadedQuest == null)
-                {
-                    MessageBox.Show(this, $"Failed to parse the file as a quest file.\n\nThe file may not contain valid quest data.", "Invalid Quest Data", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-
-                _currentFilePath = filePath;
-                UpdateControlsFromQuest(loadedQuest);
-                CurrentTradeDeal = loadedQuest;
-            }
-            catch (JsonException ex)
-            {
-                MessageBox.Show($"Error parsing quest file: {ex.Message}", "Parse Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error loading quest file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private bool IsLikelyQuestFile(string jsonContent)
-        {
-            if (string.IsNullOrWhiteSpace(jsonContent))
-                return false;
-
-            int score = 0;
-
-            if (jsonContent.Contains("\"AssociatedNpc\"") || jsonContent.Contains("\"associatedNpc\"")) score++;
-            if (jsonContent.Contains("\"Tier\"") || jsonContent.Contains("\"tier\"")) score++;
-            if (jsonContent.Contains("\"Title\"") || jsonContent.Contains("\"title\"")) score++;
-            if (jsonContent.Contains("\"Description\"") || jsonContent.Contains("\"description\"")) score++;
-            if (jsonContent.Contains("\"TimeLimitHours\"") || jsonContent.Contains("\"timeLimitHours\"")) score++;
-            if (jsonContent.Contains("\"RewardPool\"") || jsonContent.Contains("\"rewardPool\"")) score++;
-            if (jsonContent.Contains("\"Conditions\"") || jsonContent.Contains("\"conditions\"")) score++;
-
-            if (jsonContent.Contains("\"Type\"") || jsonContent.Contains("\"type\""))
-            {
-                if (jsonContent.Contains("\"Elimination\"") || jsonContent.Contains("\"Fetch\"") || jsonContent.Contains("\"Interaction\""))
-                    score += 3;
-                else
-                    score++;
-            }
-
-            if (score >= 4)
-                return true;
-
-            return false;
         }
 
         private void LoadSettings()
