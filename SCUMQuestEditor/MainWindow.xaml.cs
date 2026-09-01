@@ -1183,76 +1183,11 @@ namespace SCUMQuestEditor
 
                 string json = JsonSerializer.Serialize(CurrentTradeDeal, options);
                 if (TxtJson != null) TxtJson.Text = json;
-
-                string warning = "";
-                bool rewardPoolEmpty = CurrentTradeDeal.RewardPool == null || CurrentTradeDeal.RewardPool.Count == 0 || CurrentTradeDeal.RewardPool.All(r => r.CurrencyNormal == 0 && r.CurrencyGold == 0 && r.Fame == 0 && r.Skills == null && r.TradeDeals == null);
-                bool conditionsEmpty = CurrentTradeDeal.Conditions == null || CurrentTradeDeal.Conditions.Count == 0;
-
-                if (rewardPoolEmpty && conditionsEmpty)
-                    warning = "Warning: Both reward pool and condition pool are empty. Neither should be left empty.";
-                else if (rewardPoolEmpty)
-                    warning = "Warning: Reward pool is empty. It should not be left empty.";
-                else if (conditionsEmpty)
-                    warning = "Warning: Condition pool is empty. It should not be left empty.";
-
-                if (TxtJsonWarning != null)
-                {
-                    TxtJsonWarning.Text = warning;
-                    TxtJsonWarning.Visibility = string.IsNullOrEmpty(warning) ? Visibility.Collapsed : Visibility.Visible;
-                }
-
-                if (rewardPoolEmpty || conditionsEmpty)
-                {
-                    JsonPreviewTab?.SetValue(TabItem.ForegroundProperty, new SolidColorBrush(Color.FromArgb(255, 255, 50, 50)));
-                    JsonPreviewTab?.Header = CreateWarningHeader();
-                }
-                else
-                {
-                    JsonPreviewTab?.ClearValue(TabItem.ForegroundProperty);
-                    JsonPreviewTab?.Header = "JSON Preview";
-                }
             }
             catch (Exception ex)
             {
                 if (TxtJson != null) TxtJson.Text = $"Error generating JSON: {ex.Message}";
-                if (TxtJsonWarning != null)
-                {
-                    TxtJsonWarning.Visibility = Visibility.Collapsed;
-                }
-                JsonPreviewTab?.ClearValue(TabItem.ForegroundProperty);
             }
-        }
-
-        private object CreateWarningHeader()
-        {
-            var grid = new Grid();
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(4) });
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-
-            var packIcon = new MaterialDesignThemes.Wpf.PackIcon
-            {
-                Kind = MaterialDesignThemes.Wpf.PackIconKind.AlertCircleOutline,
-                Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 50, 50)),
-                Width = 16,
-                Height = 16,
-                Margin = new Thickness(0, 0, 4, 0)
-            };
-
-            var textBlock = new TextBlock
-            {
-                Text = "JSON Preview",
-                FontWeight = FontWeights.Bold,
-                Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 50, 50)),
-                Margin = new Thickness(0, 2, 0, 0)
-            };
-            
-            Grid.SetColumn(textBlock, 0);
-            Grid.SetColumn(packIcon, 2);
-            grid.Children.Add(textBlock);
-            grid.Children.Add(packIcon);
-
-            return grid;
         }
 
 

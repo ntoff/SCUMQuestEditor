@@ -643,17 +643,14 @@
                 <!-- TAB 4: JSON Preview -->
                 <TabItem x:Name="JsonPreviewTab" Header="JSON Preview" Style="{StaticResource CompactTabItem}">
                     <Border Style="{StaticResource CardStyle}" Margin="4" Padding="0">
-                        <DockPanel>
-                            <TextBlock x:Name="TxtJsonWarning" DockPanel.Dock="Top" Margin="8" Foreground="#FF5229" FontWeight="Bold" FontSize="14" TextWrapping="Wrap" Visibility="Collapsed"/>
-                            <TextBox x:Name="TxtJson" Margin="8,0"
-                                 Text=""
-                                 TextWrapping="Wrap"
-                                 IsReadOnly="True"
-                                 VerticalScrollBarVisibility="Auto"
-                                 VerticalAlignment="Top"
-                                 Style="{StaticResource MaterialDesignTextBox}"
-                                 BorderThickness="0" Background="Transparent"/>
-                        </DockPanel>
+                        <TextBox x:Name="TxtJson" Margin="8"
+                             Text=""
+                             TextWrapping="Wrap"
+                             IsReadOnly="True"
+                             VerticalScrollBarVisibility="Auto"
+                             VerticalAlignment="Top"
+                             Style="{StaticResource MaterialDesignTextBox}"
+                             BorderThickness="0" Background="Transparent"/>
                     </Border>
                 </TabItem>
             </TabControl>
