@@ -118,5 +118,33 @@ namespace SCUMQuestEditor
             DialogResult = false;
             Close();
         }
+
+        private void BtnSelectAll_Click(object sender, RoutedEventArgs e)
+        {
+            if (LstWeapons.SelectedItems.Count > 0)
+            {
+                LstWeapons.SelectedItems.Clear();
+                return;
+            }
+
+            IEnumerable items;
+            if (!string.IsNullOrEmpty(TxtSearch.Text))
+            {
+                items = LstWeapons.Items;
+            }
+            else
+            {
+                items = AvailableWeapons;
+            }
+
+            foreach (var item in items)
+            {
+                string weapon = item.ToString()!;
+                if (LstWeapons.Items.Contains(weapon))
+                {
+                    LstWeapons.SelectedItems.Add(weapon);
+                }
+            }
+        }
     }
 }

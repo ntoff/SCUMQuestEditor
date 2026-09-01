@@ -16,10 +16,14 @@
             </Grid.RowDefinitions>
 
             <Border Grid.Row="0" Style="{StaticResource CardStyle}" Padding="8">
-                <TextBox x:Name="TxtSearch" Margin="0" Padding="8"
-                          Style="{StaticResource MaterialDesignTextBox}"
-                          materialDesign:HintAssist.Hint="Type to search weapons..."
-                          TextChanged="TxtSearch_TextChanged"/>
+                <StackPanel>
+                    <TextBox x:Name="TxtSearch" Margin="0,0,0,6" Padding="8"
+                              Style="{StaticResource MaterialDesignTextBox}"
+                              materialDesign:HintAssist.Hint="Type to search weapons..."
+                              TextChanged="TxtSearch_TextChanged"/>
+                    <Button x:Name="BtnSelectAll" Content="(Un)Select All" Click="BtnSelectAll_Click"
+                            Style="{StaticResource PrimaryButton}"/>
+                </StackPanel>
             </Border>
 
             <Border Grid.Row="1" Margin="8" Style="{StaticResource CardStyle}" Padding="0">
