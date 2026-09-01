@@ -1125,59 +1125,15 @@ namespace SCUMQuestEditor
                 string json = JsonSerializer.Serialize(CurrentTradeDeal, options);
                 if (TxtJson != null) TxtJson.Text = json;
 
-                string warning = "";
-                bool rewardPoolEmpty = CurrentTradeDeal.RewardPool == null || CurrentTradeDeal.RewardPool.Count == 0 || CurrentTradeDeal.RewardPool.All(r => r.CurrencyNormal == 0 && r.CurrencyGold == 0 && r.Fame == 0 && r.Skills == null && r.TradeDeals == null);
-                bool conditionsEmpty = CurrentTradeDeal.Conditions == null || CurrentTradeDeal.Conditions.Count == 0;
-
-                if (rewardPoolEmpty && conditionsEmpty)
-                    warning = "Warning: Both reward pool and condition pool are empty. Neither should be left empty.";
-                else if (rewardPoolEmpty)
-                    warning = "Warning: Reward pool is empty. It should not be left empty.";
-                else if (conditionsEmpty)
-                    warning = "Warning: Condition pool is empty. It should not be left empty.";
-
-                if (CurrentTradeDeal.Conditions != null)
-                {
-                    for (int i = 0; i < CurrentTradeDeal.Conditions.Count; i++)
-                    {
-                        var condition = CurrentTradeDeal.Conditions[i];
-                        if (condition is FetchCondition fetchCondition)
-                        {
-                            if (fetchCondition.RequiredItems == null || fetchCondition.RequiredItems.Count == 0)
-                            {
-                                string conditionCaption = string.IsNullOrEmpty(condition.TrackingCaption) ? $"Condition {i + 1}" : condition.TrackingCaption;
-                                if (!string.IsNullOrEmpty(warning)) warning += "\n";
-                                warning += $"Warning: '{conditionCaption}' (Fetch) has missing or empty RequiredItems.";
-                            }
-                        }
-                        if (condition is EliminationCondition eliminationCondition)
-                        {
-                            if (eliminationCondition.TargetCharacters == null || eliminationCondition.TargetCharacters.Count == 0)
-                            {
-                                string conditionCaption = string.IsNullOrEmpty(condition.TrackingCaption) ? $"Condition {i + 1}" : condition.TrackingCaption;
-                                if (!string.IsNullOrEmpty(warning)) warning += "\n";
-                                warning += $"Warning: '{conditionCaption}' (Elimination) has missing or empty TargetCharacters.";
-                            }
-                        }
-                        if (condition is InteractionCondition interactionCondition)
-                        {
-                            if (interactionCondition.Locations == null || interactionCondition.Locations.Count == 0)
-                            {
-                                string conditionCaption = string.IsNullOrEmpty(condition.TrackingCaption) ? $"Condition {i + 1}" : condition.TrackingCaption;
-                                if (!string.IsNullOrEmpty(warning)) warning += "\n";
-                                warning += $"Warning: '{conditionCaption}' (Interaction) has missing or empty Locations.";
-                            }
-                        }
-                    }
-                }
+                var warnings = BuildWarnings();
 
                 if (TxtJsonWarning != null)
                 {
-                    TxtJsonWarning.Text = warning;
-                    TxtJsonWarning.Visibility = string.IsNullOrEmpty(warning) ? Visibility.Collapsed : Visibility.Visible;
+                    TxtJsonWarning.Text = string.Join("\n", warnings);
+                    TxtJsonWarning.Visibility = warnings.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
                 }
 
-                if (rewardPoolEmpty || conditionsEmpty)
+                if (warnings.Count > 0)
                 {
                     JsonPreviewTab?.SetValue(TabItem.ForegroundProperty, new SolidColorBrush(Color.FromArgb(255, 255, 50, 50)));
                     JsonPreviewTab?.Header = CreateWarningHeader();
@@ -1186,43 +1142,6 @@ namespace SCUMQuestEditor
                 {
                     JsonPreviewTab?.ClearValue(TabItem.ForegroundProperty);
                     JsonPreviewTab?.Header = "JSON Preview";
-                }
-
-                bool hasFetchMissingRequiredItems = false;
-                bool hasEliminationMissingTargetCharacters = false;
-                bool hasInteractionMissingLocations = false;
-                if (CurrentTradeDeal.Conditions != null)
-                {
-                    foreach (var condition in CurrentTradeDeal.Conditions)
-                    {
-                        if (condition is FetchCondition fetchCondition)
-                        {
-                            if (fetchCondition.RequiredItems == null || fetchCondition.RequiredItems.Count == 0)
-                            {
-                                hasFetchMissingRequiredItems = true;
-                            }
-                        }
-                        if (condition is EliminationCondition eliminationCondition)
-                        {
-                            if (eliminationCondition.TargetCharacters == null || eliminationCondition.TargetCharacters.Count == 0)
-                            {
-                                hasEliminationMissingTargetCharacters = true;
-                            }
-                        }
-                        if (condition is InteractionCondition interactionCondition)
-                        {
-                            if (interactionCondition.Locations == null || interactionCondition.Locations.Count == 0)
-                            {
-                                hasInteractionMissingLocations = true;
-                            }
-                        }
-                    }
-                }
-
-                if (hasFetchMissingRequiredItems || hasEliminationMissingTargetCharacters || hasInteractionMissingLocations)
-                {
-                    JsonPreviewTab?.SetValue(TabItem.ForegroundProperty, new SolidColorBrush(Color.FromArgb(255, 255, 50, 50)));
-                    JsonPreviewTab?.Header = CreateWarningHeader();
                 }
             }
             catch (Exception ex)
@@ -1234,6 +1153,50 @@ namespace SCUMQuestEditor
                 }
                 JsonPreviewTab?.ClearValue(TabItem.ForegroundProperty);
             }
+        }
+
+        private List<string> BuildWarnings()
+        {
+            var warnings = new List<string>();
+
+            bool rewardPoolEmpty = CurrentTradeDeal.RewardPool == null || CurrentTradeDeal.RewardPool.Count == 0 || CurrentTradeDeal.RewardPool.All(r => r.CurrencyNormal == 0 && r.CurrencyGold == 0 && r.Fame == 0 && r.Skills == null && r.TradeDeals == null);
+            bool conditionsEmpty = CurrentTradeDeal.Conditions == null || CurrentTradeDeal.Conditions.Count == 0;
+
+            if (rewardPoolEmpty && conditionsEmpty)
+                warnings.Add("Both reward pool and condition pool are empty. Neither should be left empty.");
+            else if (rewardPoolEmpty)
+                warnings.Add("Reward pool is empty. It should not be left empty.");
+            else if (conditionsEmpty)
+                warnings.Add("Condition pool is empty. It should not be left empty.");
+
+            if (CurrentTradeDeal.Conditions != null)
+            {
+                for (int i = 0; i < CurrentTradeDeal.Conditions.Count; i++)
+                {
+                    var condition = CurrentTradeDeal.Conditions[i];
+                    string caption = string.IsNullOrEmpty(condition.TrackingCaption) ? $"Condition {i + 1}" : condition.TrackingCaption;
+
+                    if (condition is FetchCondition fetchCondition)
+                    {
+                        if (fetchCondition.RequiredItems == null || fetchCondition.RequiredItems.Count == 0)
+                            warnings.Add($"'{caption}' (Fetch) has missing or empty RequiredItems.");
+                    }
+
+                    if (condition is EliminationCondition eliminationCondition)
+                    {
+                        if (eliminationCondition.TargetCharacters == null || eliminationCondition.TargetCharacters.Count == 0)
+                            warnings.Add($"'{caption}' (Elimination) has missing or empty TargetCharacters.");
+                    }
+
+                    if (condition is InteractionCondition interactionCondition)
+                    {
+                        if (interactionCondition.Locations == null || interactionCondition.Locations.Count == 0)
+                            warnings.Add($"'{caption}' (Interaction) has missing or empty Locations.");
+                    }
+                }
+            }
+
+            return warnings;
         }
 
         private object CreateWarningHeader()
