@@ -1079,24 +1079,63 @@ namespace SCUMQuestEditor
                 string json = JsonSerializer.Serialize(CurrentTradeDeal, options);
                 if (TxtJson != null) TxtJson.Text = json;
 
-                string warning = "";
                 bool rewardPoolEmpty = CurrentTradeDeal.RewardPool == null || CurrentTradeDeal.RewardPool.Count == 0 || CurrentTradeDeal.RewardPool.All(r => r.CurrencyNormal == 0 && r.CurrencyGold == 0 && r.Fame == 0 && r.Skills == null && r.TradeDeals == null);
                 bool conditionsEmpty = CurrentTradeDeal.Conditions == null || CurrentTradeDeal.Conditions.Count == 0;
 
-                if (rewardPoolEmpty && conditionsEmpty)
-                    warning = "Warning: Both reward pool and condition pool are empty. Neither should be left empty.";
-                else if (rewardPoolEmpty)
-                    warning = "Warning: Reward pool is empty. It should not be left empty.";
-                else if (conditionsEmpty)
-                    warning = "Warning: Condition pool is empty. It should not be left empty.";
+                var conditionErrors = new List<string>();
+                if (!conditionsEmpty)
+                {
+                    var conditions = CurrentTradeDeal.Conditions!;
+                    for (int i = 0; i < conditions.Count; i++)
+                    {
+                        var cond = conditions[i];
+                        string condLabel = $"Condition {i + 1} ({cond.Type})";
+
+                        if (cond is EliminationCondition elim)
+                        {
+                            if (elim.TargetCharacters == null || elim.TargetCharacters.Count == 0)
+                                conditionErrors.Add($"{condLabel}: TargetCharacters is missing or empty");
+                        }
+                        else if (cond is FetchCondition fetch)
+                        {
+                            if (fetch.RequiredItems == null || fetch.RequiredItems.Count == 0)
+                                conditionErrors.Add($"{condLabel}: RequiredItems is missing or empty");
+                        }
+                        else if (cond is InteractionCondition interaction)
+                        {
+                            if (interaction.Locations == null || interaction.Locations.Count == 0)
+                                conditionErrors.Add($"{condLabel}: Locations is missing or empty");
+                        }
+                    }
+                }
+
+                string warning = "";
+                bool hasIssues = rewardPoolEmpty || conditionsEmpty || conditionErrors.Count > 0;
+
+                if (rewardPoolEmpty)
+                    warning += "Reward pool is empty. It should not be left empty.";
+                
+                if (conditionsEmpty)
+                {
+                    if (!string.IsNullOrEmpty(warning))
+                        warning += "\n";
+                    warning += "Conditions is empty. It should not be left empty.";
+                }
+
+                foreach (var error in conditionErrors)
+                {
+                    if (!string.IsNullOrEmpty(warning))
+                        warning += "\n";
+                    warning += $"Warning: {error}";
+                }
 
                 if (TxtJsonWarning != null)
                 {
                     TxtJsonWarning.Text = warning;
-                    TxtJsonWarning.Visibility = string.IsNullOrEmpty(warning) ? Visibility.Collapsed : Visibility.Visible;
+                    TxtJsonWarning.Visibility = hasIssues ? Visibility.Visible : Visibility.Collapsed;
                 }
 
-                if (rewardPoolEmpty || conditionsEmpty)
+                if (hasIssues)
                 {
                     JsonPreviewTab?.SetValue(TabItem.ForegroundProperty, new SolidColorBrush(Color.FromArgb(255, 255, 50, 50)));
                     JsonPreviewTab?.Header = CreateWarningHeader();
