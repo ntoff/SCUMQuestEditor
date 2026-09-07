@@ -1416,6 +1416,8 @@ namespace SCUMQuestEditor
                         EdtMinNeeded.Text = interactionCondition.MinNeeded.ToString();
                         EdtMaxNeeded.Text = interactionCondition.MaxNeeded.ToString();
                         EdtMarkerDistance.Text = interactionCondition.WorldMarkerShowDistance.ToString();
+
+                        BtnEditInteractionLocations.Content = $"Edit Locations ({interactionCondition.Locations.Count})";
                     }
                 }
 
@@ -1481,13 +1483,14 @@ namespace SCUMQuestEditor
             TabInteractionProperties.IsEnabled = type == "interaction";
             if (TabInteractionProperties.IsEnabled)
             {
-                if (condition is InteractionCondition interactionCondition)
-                {
-                    ChkSpawnOnlyNeeded.IsChecked = interactionCondition.SpawnOnlyNeeded;
-                    EdtMinNeeded.Text = interactionCondition.MinNeeded.ToString();
-                    EdtMaxNeeded.Text = interactionCondition.MaxNeeded.ToString();
-                    EdtMarkerDistance.Text = interactionCondition.WorldMarkerShowDistance.ToString();
-                }
+                    if (condition is InteractionCondition interactionCondition)
+                    {
+                        ChkSpawnOnlyNeeded.IsChecked = interactionCondition.SpawnOnlyNeeded;
+                        EdtMinNeeded.Text = interactionCondition.MinNeeded.ToString();
+                        EdtMaxNeeded.Text = interactionCondition.MaxNeeded.ToString();
+                        EdtMarkerDistance.Text = interactionCondition.WorldMarkerShowDistance.ToString();
+                        BtnEditInteractionLocations.Content = $"Edit Locations ({interactionCondition.Locations.Count})";
+                    }
             }
 
             TabEliminationProperties.IsEnabled = type == "elimination";
@@ -1695,6 +1698,7 @@ namespace SCUMQuestEditor
                 if (dialog.ShowDialog() == true)
                 {
                     currentCondition.Locations = dialog.Locations.ToList();
+                    BtnEditInteractionLocations.Content = $"Edit Locations ({currentCondition.Locations.Count})";
                     UpdateJsonPreview();
                 }
             }
