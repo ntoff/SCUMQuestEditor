@@ -2,6 +2,8 @@
 
 Tool for creating custom quests in the video game SCUM.
 
+Requires the .NET 10 runtime https://dotnet.microsoft.com/en-us/download
+
 A lot of the safeties have been turned off and limits disabled.  
 This means it's possible to create quests that don't conform to the standards set out in the documentation.  
 It's up to the end user to know these limits.  
