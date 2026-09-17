@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:SCUMQuestEditor"
-        Title="Edit Interaction Locations" Height="640" Width="1100"
+        Title="Edit Interaction Locations" Height="860" Width="1100"
         WindowStartupLocation="CenterOwner"
         ResizeMode="CanResize"
         Background="{DynamicResource MaterialDesignBackground}"
