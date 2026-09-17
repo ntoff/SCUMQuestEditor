@@ -2,11 +2,15 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:local="clr-namespace:SCUMQuestEditor"
         Title="Edit Interaction Locations" Height="640" Width="1100"
         WindowStartupLocation="CenterOwner"
         ResizeMode="CanResize"
         Background="{DynamicResource MaterialDesignBackground}"
         Foreground="{DynamicResource MaterialDesignBody}">
+    <Window.Resources>
+        <local:StringNullOrEmptyToNullConverter x:Key="StringNullOrEmptyToNullConverter"/>
+    </Window.Resources>
 
     <Border Background="{DynamicResource MaterialDesignPaper}" CornerRadius="12">
         <Border.BorderBrush>
@@ -23,13 +27,39 @@
             <!-- ListView -->
             <Border Grid.Row="0" Style="{StaticResource CardStyle}" Margin="8,8,8,4" Padding="0">
                 <ListView x:Name="LocationList" Margin="4" Style="{StaticResource MaterialDesignListView}"
-                          BorderBrush="{DynamicResource MaterialDesignDivider}">
+                          BorderBrush="{DynamicResource MaterialDesignDivider}"
+                          SelectionMode="Extended"
+                          MouseDoubleClick="LocationList_MouseDoubleClick">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Header="Visible Mesh" DisplayMemberBinding="{Binding VisibleMesh}" />
-                            <GridViewColumn Header="Fallback Transform" DisplayMemberBinding="{Binding FallbackTransform}" />
-                            <GridViewColumn Header="Has Anchor" DisplayMemberBinding="{Binding HasAnchor}" />
-                            <GridViewColumn Header="Instance" DisplayMemberBinding="{Binding InstanceDisplay}" />
+                            <GridViewColumn Header="Visible Mesh">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding VisibleMesh}" ToolTip="{Binding AnchorMesh, Converter={StaticResource StringNullOrEmptyToNullConverter}}" Margin="4,0"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Fallback Transform">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding FallbackTransform}" ToolTip="{Binding AnchorMesh, Converter={StaticResource StringNullOrEmptyToNullConverter}}" Margin="4,0"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Has Anchor">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding HasAnchor}" ToolTip="{Binding AnchorMesh, Converter={StaticResource StringNullOrEmptyToNullConverter}}" Margin="4,0"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Instance">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding InstanceDisplay}" ToolTip="{Binding AnchorMesh, Converter={StaticResource StringNullOrEmptyToNullConverter}}" Margin="4,0"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
                         </GridView>
                     </ListView.View>
                 </ListView>

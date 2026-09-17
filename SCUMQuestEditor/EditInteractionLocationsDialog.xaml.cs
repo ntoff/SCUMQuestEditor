@@ -3,10 +3,28 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Collections.Generic;
 
 namespace SCUMQuestEditor
 {
+    public class StringNullOrEmptyToNullConverter : IValueConverter
+    {
+        public object Convert(object value, System.Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value is string str && !string.IsNullOrEmpty(str))
+            {
+                return str;
+            }
+            return null!;
+        }
+
+        public object ConvertBack(object value, System.Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return Binding.DoNothing;
+        }
+    }
+
     public partial class EditInteractionLocationsDialog : Window
     {
         public ObservableCollection<InteractionLocation> Locations { get; set; } = new ObservableCollection<InteractionLocation>();
@@ -14,6 +32,7 @@ namespace SCUMQuestEditor
         public EditInteractionLocationsDialog(List<InteractionLocation> initialLocations)
         {
             InitializeComponent();
+            LocationList.SelectionMode = SelectionMode.Extended;
 
             foreach (var loc in initialLocations)
             {
@@ -27,7 +46,6 @@ namespace SCUMQuestEditor
             }
 
             LocationList.ItemsSource = Locations;
-            LocationList.SelectionMode = SelectionMode.Single;
         }
 
         private void ParseMeshInfoInput()
@@ -46,10 +64,8 @@ namespace SCUMQuestEditor
                     PropertyNameCaseInsensitive = true
                 };
 
-                InteractionLocation? parsedLocation = null;
-
                 // Try parsing as a single object first
-                parsedLocation = JsonSerializer.Deserialize<InteractionLocation>(input, options);
+                InteractionLocation? parsedLocation = JsonSerializer.Deserialize<InteractionLocation>(input, options);
 
                 if (parsedLocation != null)
                 {
@@ -117,6 +133,12 @@ namespace SCUMQuestEditor
 
         private void BtnEditSelectedLocation_Click(object sender, RoutedEventArgs e)
         {
+            if (LocationList.SelectedItems.Count > 1)
+            {
+                MessageBox.Show("Please select only one item to edit.", "Multiple Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             if (LocationList.SelectedItem is InteractionLocation selectedLoc)
             {
                 var options = new JsonSerializerOptions
@@ -137,15 +159,28 @@ namespace SCUMQuestEditor
 
         private void BtnRemoveSelectedLocation_Click(object sender, RoutedEventArgs e)
         {
-            if (LocationList.SelectedItem is InteractionLocation selectedLoc)
-            {
-                Locations.Remove(selectedLoc);
-                LocationList.ItemsSource = null;
-                LocationList.ItemsSource = Locations;
-            }
-            else
+            if (LocationList.SelectedItems.Count == 0)
             {
                 MessageBox.Show("Please select a location to remove.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var selectedItems = new List<InteractionLocation>(LocationList.SelectedItems.Cast<InteractionLocation>());
+            foreach (var loc in selectedItems)
+            {
+                Locations.Remove(loc);
+            }
+
+            LocationList.SelectedItems.Clear();
+            LocationList.ItemsSource = null;
+            LocationList.ItemsSource = Locations;
+        }
+
+        private void LocationList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (LocationList.SelectedItem is InteractionLocation)
+            {
+                BtnEditSelectedLocation_Click(sender, e);
             }
         }
 
