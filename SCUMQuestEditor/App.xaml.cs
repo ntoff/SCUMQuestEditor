@@ -14,6 +14,24 @@ namespace SCUMQuestEditor
         {
             base.OnStartup(e);
 
+            Dispatcher.UnhandledException += (sender, args) =>
+            {
+                System.IO.File.AppendAllText(
+                    System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "crash.log"),
+                    $"{System.DateTime.Now:O}\n{args.Exception}\n\n{args.Exception.StackTrace}\n\n");
+                args.Handled = true;
+            };
+
+            AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
+            {
+                if (args.ExceptionObject is Exception ex)
+                {
+                    System.IO.File.AppendAllText(
+                        System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "crash.log"),
+                        $"{System.DateTime.Now:O}\n{ex}\n\n");
+                }
+            };
+
             var mainWindow = new MainWindow();
 
             if (e.Args != null && e.Args.Length > 0)
