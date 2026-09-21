@@ -97,6 +97,8 @@
                     <MenuItem Header="Filename Formattin_g" Click="FileNameFormat_Click" />
                 </MenuItem>
                 <MenuItem Header="_Help" Foreground="{DynamicResource MaterialDesignBody}">
+                    <MenuItem Header="_Quest Info" Click="QuestInfo_Click" />
+                    <Separator Style="{StaticResource DividerStyle}"/>
                     <MenuItem Header="_About" Click="About_Click" />
                 </MenuItem>
             </Menu>

@@ -1,0 +1,34 @@
+<Window x:Class="SCUMQuestEditor.QuestInfoDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Quest Info" Height="600" Width="1000"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResize"
+        Background="{DynamicResource MaterialDesignBackground}"
+        Foreground="{DynamicResource MaterialDesignBody}">
+
+    <Border Background="{DynamicResource MaterialDesignPaper}" CornerRadius="12" BorderThickness="1" BorderBrush="{DynamicResource MaterialDesignDivider}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TabControl x:Name="InfoTabs" SelectionChanged="InfoTabs_SelectionChanged">
+                <TabControl.ItemContainerStyle>
+                    <Style TargetType="TabItem" BasedOn="{StaticResource MaterialDesignTabItem}">
+                        <Setter Property="Padding" Value="16,10"/>
+                        <Setter Property="FontSize" Value="13"/>
+                        <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBodyLight}"/>
+                    </Style>
+                </TabControl.ItemContainerStyle>
+            </TabControl>
+
+            <Border Grid.Row="1" Background="{DynamicResource MaterialDesignPaper}" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource MaterialDesignDivider}">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="16,8">
+                    <Button Content="Close" Width="80" Click="BtnClose_Click" Style="{StaticResource PrimaryButton}"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

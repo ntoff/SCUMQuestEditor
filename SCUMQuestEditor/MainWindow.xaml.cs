@@ -767,6 +767,13 @@ namespace SCUMQuestEditor
             dialog.ShowDialog();
         }
 
+        private void QuestInfo_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new QuestInfoDialog();
+            dialog.Owner = this;
+            dialog.ShowDialog();
+        }
+
         private string GenerateFileName()
         {
             string npc = CurrentTradeDeal?.AssociatedNpc ?? "Armorer";

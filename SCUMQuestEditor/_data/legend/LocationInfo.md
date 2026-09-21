@@ -7,6 +7,7 @@ They support two formats:
 
 
 1. Coordinate object: 
+```
 {
     "Location": {
         "X": -157607.328,
@@ -15,14 +16,15 @@ They support two formats:
     },
     "SizeFactor": 1.0
 }
-    
+```
 
 2. String format (from game): 
+```
 {
     "Location": "{X=-157607.328 Y=-687586.562 Z=667.976|P=353.113800 Y=101.191971 R=0.000000}",
     "SizeFactor": 1.0
 }
-    
+```
 
 - **SizeFactor**: Controls circle size (1.0 = ~300m diameter)
 
