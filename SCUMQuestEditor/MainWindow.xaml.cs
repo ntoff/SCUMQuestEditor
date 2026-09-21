@@ -187,7 +187,6 @@ namespace SCUMQuestEditor
         [JsonPropertyName("AcceptedItems")]
         public List<string> AcceptedItems { get; set; } = new List<string>();
 
-        // Display property for the ListView
         public string ItemName => string.Join(", ", AcceptedItems);
 
         public string AcceptedItemsDisplay => string.Join(", ", AcceptedItems);
@@ -195,27 +194,41 @@ namespace SCUMQuestEditor
         [JsonPropertyName("RequiredNum")]
         public int RequiredNum { get; set; } = 0;
 
-        // Display property for the ListView
         public string Quantity => RequiredNum.ToString();
 
-        // Display property for the ListView
+        private string? _propertiesCache;
+        private int _propertiesVersion = 0;
+        private int _lastAccessedVersion = -1;
+
         public string Properties
         {
             get
             {
-                var props = new List<string>();
-                if (MinAcceptedItemUses > 0) props.Add($"Uses>={MinAcceptedItemUses}");
-                if (MinAcceptedItemMass > 0) props.Add($"Mass>={MinAcceptedItemMass}");
-                if (MinAcceptedItemHealth > 0) props.Add($"Health>={MinAcceptedItemHealth}");
-                if (!string.IsNullOrEmpty(MinAcceptedCookLevel)) props.Add($"MinCook>={MinAcceptedCookLevel}");
-                if (!string.IsNullOrEmpty(MaxAcceptedCookLevel)) props.Add($"MaxCook<={MaxAcceptedCookLevel}");
-                if (!string.IsNullOrEmpty(MinAcceptedCookQuality)) props.Add($"CookedQuality>={MinAcceptedCookQuality}");
-                if (MinAcceptedItemResourceRatio > 0) props.Add($"Resource%>={MinAcceptedItemResourceRatio}");
-                if (MinAcceptedItemResourceAmount > 0) props.Add($"Resource>={MinAcceptedItemResourceAmount}");
-                if (RandomAdditionalRequiredNum > 0) props.Add($"Random+={RandomAdditionalRequiredNum}");
-                return string.Join("; ", props);
+                if (_lastAccessedVersion != _propertiesVersion)
+                {
+                    _propertiesCache = ComputeProperties();
+                    _lastAccessedVersion = _propertiesVersion;
+                }
+                return _propertiesCache!;
             }
         }
+
+        private string ComputeProperties()
+        {
+            var parts = new System.Collections.Generic.List<string>(8);
+            if (MinAcceptedItemUses > 0) parts.Add($"Uses>={MinAcceptedItemUses}");
+            if (MinAcceptedItemMass > 0) parts.Add($"Mass>={MinAcceptedItemMass}");
+            if (MinAcceptedItemHealth > 0) parts.Add($"Health>={MinAcceptedItemHealth}");
+            if (!string.IsNullOrEmpty(MinAcceptedCookLevel)) parts.Add($"MinCook>={MinAcceptedCookLevel}");
+            if (!string.IsNullOrEmpty(MaxAcceptedCookLevel)) parts.Add($"MaxCook<={MaxAcceptedCookLevel}");
+            if (!string.IsNullOrEmpty(MinAcceptedCookQuality)) parts.Add($"CookedQuality>={MinAcceptedCookQuality}");
+            if (MinAcceptedItemResourceRatio > 0) parts.Add($"Resource%>={MinAcceptedItemResourceRatio}");
+            if (MinAcceptedItemResourceAmount > 0) parts.Add($"Resource>={MinAcceptedItemResourceAmount}");
+            if (RandomAdditionalRequiredNum > 0) parts.Add($"Random+={RandomAdditionalRequiredNum}");
+            return string.Join("; ", parts);
+        }
+
+        public void MarkPropertiesDirty() => _propertiesVersion++;
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public int MinAcceptedItemUses { get; set; }
@@ -440,8 +453,28 @@ namespace SCUMQuestEditor
 
     public partial class MainWindow : Window
     {
+        private static readonly Lazy<List<string>> s_eliminationTargets = new(() => LoadTextFile("EliminationTargets.txt", new[] { "DefaultTarget" }));
+        private static readonly Lazy<List<string>> s_eliminationWeapons = new(() => LoadTextFile("EliminationWeapons.txt", new[] { "DefaultWeapon" }));
+        private static readonly Lazy<List<string>> s_fetchItems = new(() => LoadTextFile("FetchItems.txt", new[] { "05_Teeth_Necklace", "12_Gauge_Birdshot" }));
+
+        private static readonly Regex s_digitsRegex = new(@"^\d*$", RegexOptions.Compiled);
+        private static readonly Regex s_floatRegex = new(@"^\d*\.?\d*$", RegexOptions.Compiled);
+
+        private static readonly JsonSerializerOptions s_deserializeOptions = new()
+        {
+            PropertyNameCaseInsensitive = true,
+            Converters = { new ConditionConverter() }
+        };
+
+        private static readonly JsonSerializerOptions s_serializeIndentedOptions = new()
+        {
+            WriteIndented = true,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            Converters = { new ConditionConverter() }
+        };
+
         public static List<string> TradeItems { get; private set; } = new List<string> { "Default Item" };
-        public static List<string> FetchItems { get; private set; } = new List<string>();
+        public static List<string> FetchItems => s_fetchItems.Value;
         public const int MaxKillAmount = 1000000000;
         private static AppSettings _settings = new AppSettings();
         private string? _currentFilePath;
@@ -455,7 +488,6 @@ namespace SCUMQuestEditor
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             LoadSettings();
-            LoadFetchItems();
             CbTier.Items.Add("1");
             CbTier.Items.Add("2");
             CbTier.Items.Add("3");
@@ -463,6 +495,23 @@ namespace SCUMQuestEditor
             CbTier.SelectedIndex = 0;
             UpdateJsonPreview();
             InitConditions();
+        }
+
+        private static List<string> LoadTextFile(string fileName, string[] defaults)
+        {
+            try
+            {
+                string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "_data", fileName);
+                if (File.Exists(path))
+                {
+                    return File.ReadAllLines(path).Where(line => !string.IsNullOrEmpty(line)).ToList();
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+            return defaults.ToList();
         }
 
         private void LoadSettings()
@@ -503,26 +552,6 @@ namespace SCUMQuestEditor
             }
         }
 
-        private void LoadFetchItems()
-        {
-            try
-            {
-                string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "_data\\FetchItems.txt");
-                if (File.Exists(path))
-                {
-                    FetchItems = File.ReadAllLines(path).Where(line => !string.IsNullOrEmpty(line)).ToList();
-                }
-                else
-                {
-                    FetchItems.Add("05_Teeth_Necklace");
-                    FetchItems.Add("12_Gauge_Birdshot");
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error loading FetchItems.txt: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
 
         private void MenuItem_New_Click(object sender, RoutedEventArgs e)
         {
@@ -635,13 +664,7 @@ namespace SCUMQuestEditor
             {
                 string jsonContent = File.ReadAllText(filePath);
 
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true,
-                    Converters = { new ConditionConverter() }
-                };
-
-                TradeDeal? loadedQuest = JsonSerializer.Deserialize<TradeDeal>(jsonContent, options);
+                TradeDeal? loadedQuest = JsonSerializer.Deserialize(jsonContent, typeof(TradeDeal), s_deserializeOptions) as TradeDeal;
 
                 if (loadedQuest == null)
                 {
@@ -711,14 +734,7 @@ namespace SCUMQuestEditor
                 {
                     UpdateJsonPreview();
 
-                    var options = new JsonSerializerOptions
-                    {
-                        WriteIndented = true,
-                        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                        Converters = { new ConditionConverter() }
-                    };
-
-                    string json = JsonSerializer.Serialize(CurrentTradeDeal, options);
+                    string json = JsonSerializer.Serialize(CurrentTradeDeal, typeof(TradeDeal), s_serializeIndentedOptions);
                     File.WriteAllText(saveFileDialog.FileName, json);
                     _currentFilePath = saveFileDialog.FileName;
                 }
@@ -1122,14 +1138,7 @@ namespace SCUMQuestEditor
                     CurrentTradeDeal.Conditions = ConditionsList.ToList();
                 }
 
-                var options = new JsonSerializerOptions
-                {
-                    WriteIndented = true,
-                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                    Converters = { new ConditionConverter() }
-                };
-
-                string json = JsonSerializer.Serialize(CurrentTradeDeal, options);
+                string json = JsonSerializer.Serialize(CurrentTradeDeal, typeof(TradeDeal), s_serializeIndentedOptions);
                 if (TxtJson != null) TxtJson.Text = json;
 
                 var warnings = BuildWarnings();
@@ -1239,13 +1248,13 @@ namespace SCUMQuestEditor
         }
 
 
-        private void NumericPreviewTextInput(object sender, TextCompositionEventArgs e) { e.Handled = !Regex.IsMatch(e.Text, @"^\d*$"); }
+        private void NumericPreviewTextInput(object sender, TextCompositionEventArgs e) { e.Handled = !s_digitsRegex.IsMatch(e.Text); }
         private void NumericPasting(object sender, DataObjectPastingEventArgs e)
         {
             if (e.DataObject.GetDataPresent(typeof(string)))
             {
                 string text = (string)e.DataObject.GetData(typeof(string));
-                e.Handled = !Regex.IsMatch(text, @"^\d*$");
+                e.Handled = !s_digitsRegex.IsMatch(text);
             }
             else { e.Handled = true; }
         }
@@ -1254,7 +1263,7 @@ namespace SCUMQuestEditor
         {
             string currentText = ((TextBox)sender).Text;
             if (currentText.Contains(".") && e.Text == ".") { e.Handled = true; return; }
-            e.Handled = !Regex.IsMatch(e.Text, @"^\d*\.?\d*$");
+            e.Handled = !s_floatRegex.IsMatch(e.Text);
         }
 
         private void FloatPasting(object sender, DataObjectPastingEventArgs e)
@@ -1262,7 +1271,7 @@ namespace SCUMQuestEditor
             if (e.DataObject.GetDataPresent(typeof(string)))
             {
                 string text = (string)e.DataObject.GetData(typeof(string));
-                if (Regex.IsMatch(text, @"^\d*\.?\d*$"))
+                if (s_floatRegex.IsMatch(text))
                 {
                     string currentText = ((TextBox)sender).Text;
                     if (text.Contains(".") && currentText.Contains(".")) { e.Handled = true; }

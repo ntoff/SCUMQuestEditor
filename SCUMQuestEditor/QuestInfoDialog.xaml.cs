@@ -14,6 +14,39 @@ namespace SCUMQuestEditor
     {
         private readonly Dictionary<string, TabItem> _tabMap = new();
 
+        private static readonly Regex s_orderedListRegex = new(@"^\s*\d+\.\s", RegexOptions.Compiled);
+        private static readonly Regex s_matchOrderedList = new(@"^\s*(\d+)\.\s*", RegexOptions.Compiled);
+        private static readonly Regex s_replaceOrderedList = new(@"^\s*\d+\.\s*", RegexOptions.Compiled);
+        private static readonly Regex s_bulletListRegex = new(@"^\s*-\s", RegexOptions.Compiled);
+        private static readonly Regex s_replaceBulletList = new(@"^\s*-\s*", RegexOptions.Compiled);
+
+        private static readonly (string title, string fileName)[] s_tabDefinitions = new[]
+        {
+            ("General Info", "GeneralInfo.md"),
+            ("Quest Basics", "QuestBasics.md"),
+            ("Rewards", "Rewards.md"),
+            ("Conditions", "Conditions.md"),
+            ("Location Info", "LocationInfo.md"),
+            ("Important Limits", "ImportantLimits.md")
+        };
+
+        private static readonly Lazy<Dictionary<string, string>> s_markdownCache = new(() =>
+        {
+            string legendPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "_data", "legend");
+            var cache = new Dictionary<string, string>();
+
+            foreach (var (title, fileName) in s_tabDefinitions)
+            {
+                string mdPath = Path.Combine(legendPath, fileName);
+                if (File.Exists(mdPath))
+                {
+                    cache[title] = File.ReadAllText(mdPath);
+                }
+            }
+
+            return cache;
+        });
+
         public QuestInfoDialog()
         {
             InitializeComponent();
@@ -28,36 +61,11 @@ namespace SCUMQuestEditor
 
         private void LoadLegendTabs()
         {
-            string legendPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "_data", "legend");
-            string tabOrderFile = Path.Combine(legendPath, "TabOrder.txt");
+            var contentCache = s_markdownCache.Value;
 
-            if (!File.Exists(tabOrderFile))
+            foreach (var (title, fileName) in s_tabDefinitions)
             {
-                MessageBox.Show("TabOrder.txt not found in _data/legend folder.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            string[] lines = File.ReadAllLines(tabOrderFile);
-            var tabOrder = new List<(string title, string mdFile)>();
-
-            foreach (var line in lines)
-            {
-                if (string.IsNullOrWhiteSpace(line))
-                    continue;
-
-                string[] parts = line.Split(new[] { '=' }, 2);
-                if (parts.Length == 2)
-                {
-                    string title = parts[0].Trim();
-                    string mdFile = parts[1].Trim();
-                    tabOrder.Add((title, mdFile));
-                }
-            }
-
-            foreach (var (title, mdFile) in tabOrder)
-            {
-                string mdPath = Path.Combine(legendPath, mdFile);
-                if (!File.Exists(mdPath))
+                if (!contentCache.TryGetValue(title, out string? content))
                     continue;
 
                 var tab = new TabItem
@@ -72,7 +80,7 @@ namespace SCUMQuestEditor
                 flowDocument.ColumnWidth = double.MaxValue;
                 flowDocument.TextAlignment = TextAlignment.Left;
 
-                RenderMarkdown(flowDocument, mdPath);
+                RenderMarkdown(flowDocument, content);
 
                 var scrollViewer = new ScrollViewer
                 {
@@ -92,9 +100,8 @@ namespace SCUMQuestEditor
             }
         }
 
-        private void RenderMarkdown(FlowDocument doc, string mdPath)
+        private void RenderMarkdown(FlowDocument doc, string content)
         {
-            string content = File.ReadAllText(mdPath);
             string[] lines = content.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
             bool inCodeBlock = false;
@@ -252,19 +259,19 @@ namespace SCUMQuestEditor
                     FlushPending();
                     doc.Blocks.Add(CreateHeading(line.Substring(2), 0));
                 }
-                else if (Regex.IsMatch(line, @"^\s*\d+\.\s"))
+                else if (s_orderedListRegex.IsMatch(line))
                 {
                     int indent = GetIndentLevel(line);
-                    var match = Regex.Match(line, @"^\s*(\d+)\.\s*");
+                    var match = s_matchOrderedList.Match(line);
                     string numStr = match.Success ? match.Groups[1].Value : null;
-                    string text = Regex.Replace(line, @"^\s*\d+\.\s*", "").TrimStart(' ', '\t');
+                    string text = s_replaceOrderedList.Replace(line, "").TrimStart(' ', '\t');
                     if (listItems.Count == 0) currentListBaseIndent = indent;
                     listItems.Add((indent, true, numStr, text));
                 }
-                else if (Regex.IsMatch(line, @"^\s*-\s"))
+                else if (s_bulletListRegex.IsMatch(line))
                 {
                     int indent = GetIndentLevel(line);
-                    string text = Regex.Replace(line, @"^\s*-\s*", "").TrimStart(' ', '\t');
+                    string text = s_replaceBulletList.Replace(line, "").TrimStart(' ', '\t');
                     if (listItems.Count == 0) currentListBaseIndent = indent;
                     listItems.Add((indent, false, null, text));
                 }

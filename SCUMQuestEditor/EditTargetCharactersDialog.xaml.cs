@@ -7,8 +7,19 @@ namespace SCUMQuestEditor
 {
     public partial class EditTargetCharactersDialog : Window
     {
+        private static readonly Lazy<List<string>> s_cachedTypes = new(() =>
+        {
+            try
+            {
+                string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "_data", "EliminationTargets.txt");
+                if (File.Exists(path))
+                    return File.ReadAllLines(path).Where(line => !string.IsNullOrEmpty(line)).ToList();
+            }
+            catch { /* ignore */ }
+            return new List<string> { "DefaultTarget" };
+        });
+
         public List<string> SelectedItems { get; private set; } = new List<string>();
-        private List<string> AvailableTypes { get; set; } = new List<string>();
         private List<string> InitialSelections { get; set; } = new List<string>();
 
         public EditTargetCharactersDialog(List<string>? initialSelections = null)
@@ -16,27 +27,10 @@ namespace SCUMQuestEditor
             InitializeComponent();
             InitialSelections = initialSelections ?? new List<string>();
 
-            try
-            {
-                string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "_data\\EliminationTargets.txt");
-                if (File.Exists(path))
-                {
-                    AvailableTypes = File.ReadAllLines(path).Where(line => !string.IsNullOrEmpty(line)).ToList();
-                }
-                else
-                {
-                    AvailableTypes.Add("DefaultTarget");
-                }
-            }
-            catch (System.Exception ex)
-            {
-                MessageBox.Show($"Error loading targets: {ex.Message}");
-                AvailableTypes.Add("DefaultTarget");
-            }
+            var availableTypes = s_cachedTypes.Value;
+            LstTargetTypes.ItemsSource = availableTypes;
 
-            LstTargetTypes.ItemsSource = AvailableTypes;
-
-            foreach (var item in AvailableTypes)
+            foreach (var item in availableTypes)
             {
                 if (InitialSelections.Contains(item)) LstTargetTypes.SelectedItems.Add(item);
             }

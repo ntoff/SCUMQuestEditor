@@ -11,8 +11,20 @@ namespace SCUMQuestEditor
 {
     public partial class EditWeaponDialog : Window
     {
+        private static readonly Lazy<List<string>> s_cachedWeapons = new(() =>
+        {
+            try
+            {
+                string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "_data", "EliminationWeapons.txt");
+                if (File.Exists(path))
+                    return File.ReadAllLines(path).Where(line => !string.IsNullOrEmpty(line)).ToList();
+            }
+            catch { /* ignore */ }
+            return new List<string> { "DefaultWeapon" };
+        });
+
         public List<string> SelectedItems { get; private set; } = new List<string>();
-        private List<string> AvailableWeapons { get; set; } = new List<string>();
+        private readonly List<string> _availableWeapons;
         private List<string> InitialSelections { get; set; } = new List<string>();
         private ListCollectionView _listCollectionView;
         private HashSet<string> _userSelections = new HashSet<string>();
@@ -23,29 +35,12 @@ namespace SCUMQuestEditor
             InitialSelections = initialSelections ?? new List<string>();
             _userSelections = new HashSet<string>(InitialSelections);
 
-            try
-            {
-                string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "_data\\EliminationWeapons.txt");
-                if (File.Exists(path))
-                {
-                    AvailableWeapons = File.ReadAllLines(path).Where(line => !string.IsNullOrEmpty(line)).ToList();
-                }
-                else
-                {
-                    AvailableWeapons.Add("DefaultWeapon");
-                }
-            }
-            catch (System.Exception ex)
-            {
-                MessageBox.Show($"Error loading weapons: {ex.Message}");
-                AvailableWeapons.Add("DefaultWeapon");
-            }
-
-            _listCollectionView = (ListCollectionView)CollectionViewSource.GetDefaultView(AvailableWeapons);
+            _availableWeapons = s_cachedWeapons.Value;
+            _listCollectionView = (ListCollectionView)CollectionViewSource.GetDefaultView(_availableWeapons);
             _listCollectionView.Filter = obj => true;
             LstWeapons.ItemsSource = _listCollectionView;
 
-            foreach (var item in AvailableWeapons)
+            foreach (var item in _availableWeapons)
             {
                 if (InitialSelections.Contains(item)) LstWeapons.SelectedItems.Add(item);
             }
@@ -134,7 +129,7 @@ namespace SCUMQuestEditor
             }
             else
             {
-                items = AvailableWeapons;
+                items = _availableWeapons;
             }
 
             foreach (var item in items)

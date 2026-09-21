@@ -12,6 +12,21 @@ namespace SCUMQuestEditor
 {
     public partial class AddTradeDealDialog : Window
     {
+        private static readonly Lazy<List<TraderData>> s_cachedTraders = new(() =>
+        {
+            try
+            {
+                string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "_data", "TradeItems.json");
+                if (File.Exists(path))
+                {
+                    string json = File.ReadAllText(path);
+                    return JsonSerializer.Deserialize<List<TraderData>>(json);
+                }
+            }
+            catch { /* ignore */ }
+            return null;
+        });
+
         public static List<string> AvailableItems { get; set; } = new List<string>();
 
         public bool IsOkClicked => DialogResult == true;
@@ -61,42 +76,30 @@ namespace SCUMQuestEditor
         {
             AvailableItems.Clear();
 
-            try
+            var traders = s_cachedTraders.Value;
+
+            if (traders != null && !string.IsNullOrEmpty(_traderName))
             {
-                string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "_data\\TradeItems.json");
-                if (File.Exists(path))
+                var trader = traders.FirstOrDefault(t => t.TraderName == _traderName);
+                if (trader?.Children != null)
                 {
-                    string json = File.ReadAllText(path);
-                    var traders = JsonSerializer.Deserialize<List<TraderData>>(json);
-
-                    if (traders != null && !string.IsNullOrEmpty(_traderName))
-                    {
-                        var trader = traders.FirstOrDefault(t => t.TraderName == _traderName);
-                        if (trader?.Children != null)
-                        {
-                            AvailableItems.AddRange(trader.Children);
-                        }
-                    }
-
-                    if (AvailableItems.Count == 0)
-                    {
-                        foreach (var trader in (traders ?? Enumerable.Empty<TraderData>()))
-                        {
-                            if (trader?.Children != null)
-                            {
-                                AvailableItems.AddRange(trader.Children);
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    AvailableItems.Add("DefaultItem");
+                    AvailableItems.AddRange(trader.Children);
                 }
             }
-            catch (System.Exception ex)
+
+            if (AvailableItems.Count == 0)
             {
-                MessageBox.Show($"Error loading TradeItems.json: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                foreach (var trader in traders ?? Enumerable.Empty<TraderData>())
+                {
+                    if (trader?.Children != null)
+                    {
+                        AvailableItems.AddRange(trader.Children);
+                    }
+                }
+            }
+
+            if (AvailableItems.Count == 0)
+            {
                 AvailableItems.Add("DefaultItem");
             }
         }
