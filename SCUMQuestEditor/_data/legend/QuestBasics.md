@@ -2,8 +2,8 @@
 
 A quest consists of the following mandatory properties:
 
-- **AssociatedNPC**: Must be one of "Armorer", "Banker", "Barber", "Bartender", "Doctor", "Fisherman", "GeneralGoods" or "Mechanic"
-- **Tier**: Integer between 1-3
+- **AssociatedNPC**: Must be one of "Armorer", "Banker", "Barber", "Bartender", "Doctor", "Harbourmaster", "GeneralGoods", "Mechanic", "Hunter" or "MasterHunter"
+- **Tier**: Integer between 1-4
 - **Title**: Any string text
 - **Description**: Any string text
 - **TimeLimitHours**: Number greater than 0.0

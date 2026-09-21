@@ -1,4 +1,4 @@
-"# Quest Rewards
+# Quest Rewards
 
 ## Reward Limits
 

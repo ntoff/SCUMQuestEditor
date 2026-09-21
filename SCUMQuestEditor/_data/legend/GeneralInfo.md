@@ -17,4 +17,5 @@ The following folders will be created:
 
 Custom quests can be made by creating a .json file inside Saved\Config\<Platform>\Quests\Override folder for each custom quest.
 
-You can use this editor to create valid quest JSON files that will work with SCUM.
+You can find the official documentation here:  
+[https://docs.google.com/document/d/1B1qooypdebE2xvJ33cb-BIH5MEEsvi9w4v-vrgcYO1k](https://docs.google.com/document/d/1B1qooypdebE2xvJ33cb-BIH5MEEsvi9w4v-vrgcYO1k)
