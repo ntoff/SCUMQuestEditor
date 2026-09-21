@@ -1,0 +1,6 @@
+General Info = GeneralInfo.md
+Quest Basics = QuestBasics.md
+Rewards = Rewards.md
+Conditions = Conditions.md
+Location Info = LocationInfo.md
+Important Limits = ImportantLimits.md
