@@ -1,6 +1,8 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using System.Diagnostics;
+using System.Windows.Navigation;
 
 namespace SCUMQuestEditor
 {
@@ -27,6 +29,12 @@ namespace SCUMQuestEditor
                 bitmap.Freeze();
                 ImgIcon.Source = bitmap;
             }
+        }
+
+        private void OpenGithubLink(object sender, RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+            e.Handled = true;
         }
 
         private void BtnOk_Click(object sender, RoutedEventArgs e)
