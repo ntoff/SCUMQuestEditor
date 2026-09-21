@@ -263,7 +263,7 @@ namespace SCUMQuestEditor
                 {
                     int indent = GetIndentLevel(line);
                     var match = s_matchOrderedList.Match(line);
-                    string numStr = match.Success ? match.Groups[1].Value : null;
+                    string numStr = match.Success ? match.Groups[1].Value : string.Empty;
                     string text = s_replaceOrderedList.Replace(line, "").TrimStart(' ', '\t');
                     if (listItems.Count == 0) currentListBaseIndent = indent;
                     listItems.Add((indent, true, numStr, text));

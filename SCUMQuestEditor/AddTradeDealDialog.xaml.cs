@@ -12,7 +12,7 @@ namespace SCUMQuestEditor
 {
     public partial class AddTradeDealDialog : Window
     {
-        private static readonly Lazy<List<TraderData>> s_cachedTraders = new(() =>
+        private static readonly Lazy<List<TraderData>?> s_cachedTraders = new(() =>
         {
             try
             {
@@ -78,7 +78,7 @@ namespace SCUMQuestEditor
 
             var traders = s_cachedTraders.Value;
 
-            if (traders != null && !string.IsNullOrEmpty(_traderName))
+            if (traders is not null && !string.IsNullOrEmpty(_traderName))
             {
                 var trader = traders.FirstOrDefault(t => t.TraderName == _traderName);
                 if (trader?.Children != null)
