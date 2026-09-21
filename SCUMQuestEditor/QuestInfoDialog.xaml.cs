@@ -70,7 +70,6 @@ namespace SCUMQuestEditor
                 flowDocument.FontFamily = new FontFamily("Segoe UI, Arial, Verdana, Helvetica, sans-serif");
                 flowDocument.FontSize = 12;
                 flowDocument.ColumnWidth = double.MaxValue;
-                flowDocument.IsHyphenationEnabled = true;
                 flowDocument.TextAlignment = TextAlignment.Left;
 
                 RenderMarkdown(flowDocument, mdPath);
@@ -348,19 +347,35 @@ namespace SCUMQuestEditor
         private IEnumerable<Inline> ParseInline(string text, bool isListItem = false)
         {
             int i = 0;
+            var plainChars = new System.Text.StringBuilder();
+            var result = new List<Inline>();
+
+            void FlushPlain()
+            {
+                if (plainChars.Length > 0)
+                {
+                    result.Add(new Run(plainChars.ToString())
+                    {
+                        Foreground = isListItem ? Brushes.White : new SolidColorBrush(Color.FromArgb(255, 230, 230, 230))
+                    });
+                    plainChars.Clear();
+                }
+            }
+
             while (i < text.Length)
             {
                 if (text[i] == '`' && i + 1 < text.Length)
                 {
+                    FlushPlain();
                     int end = text.IndexOf('`', i + 1);
                     if (end > i)
                     {
-                        yield return new Run(text.Substring(i + 1, end - i - 1))
+                        result.Add(new Run(text.Substring(i + 1, end - i - 1))
                         {
                             FontFamily = new FontFamily("Consolas"),
                             FontWeight = FontWeights.SemiBold,
                             Foreground = new SolidColorBrush(Color.FromArgb(255, 180, 180, 255))
-                        };
+                        });
                         i = end + 1;
                         continue;
                     }
@@ -368,6 +383,7 @@ namespace SCUMQuestEditor
 
                 if (i + 1 < text.Length && text[i] == '*' && text[i + 1] == '*')
                 {
+                    FlushPlain();
                     int end = text.IndexOf("**", i + 2);
                     if (end > i + 1)
                     {
@@ -389,7 +405,7 @@ namespace SCUMQuestEditor
                                 bold.Inlines.Add(r);
                             }
                         }
-                        yield return bold;
+                        result.Add(bold);
                         i = end + 2;
                         continue;
                     }
@@ -397,6 +413,7 @@ namespace SCUMQuestEditor
 
                 if (text[i] == '*' && i + 1 < text.Length)
                 {
+                    FlushPlain();
                     int end = text.IndexOf('*', i + 1);
                     if (end > i + 1)
                     {
@@ -415,7 +432,7 @@ namespace SCUMQuestEditor
                                 italic.Inlines.Add(r);
                             }
                         }
-                        yield return italic;
+                        result.Add(italic);
                         i = end + 1;
                         continue;
                     }
@@ -423,6 +440,7 @@ namespace SCUMQuestEditor
 
                 if (text[i] == '[' && i + 1 < text.Length)
                 {
+                    FlushPlain();
                     int bracketEnd = text.IndexOf(']', i);
                     if (bracketEnd > i && bracketEnd + 1 < text.Length && text[bracketEnd + 1] == '(')
                     {
@@ -439,19 +457,19 @@ namespace SCUMQuestEditor
                                 Cursor = System.Windows.Input.Cursors.Hand
                             };
                             hyperlink.Click += (s, e) => System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
-                            yield return hyperlink;
+                            result.Add(hyperlink);
                             i = parenEnd + 1;
                             continue;
                         }
                     }
                 }
 
-                yield return new Run(text[i].ToString())
-                {
-                    Foreground = isListItem ? Brushes.White : new SolidColorBrush(Color.FromArgb(255, 230, 230, 230))
-                };
+                plainChars.Append(text[i]);
                 i++;
             }
+
+            FlushPlain();
+            return result;
         }
 
         private void InfoTabs_SelectionChanged(object sender, SelectionChangedEventArgs e)
