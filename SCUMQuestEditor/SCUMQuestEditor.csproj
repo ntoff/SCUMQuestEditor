@@ -9,6 +9,7 @@
     <NuGetAuditMode>all</NuGetAuditMode>
     <ApplicationIcon>ICON\icon.ico</ApplicationIcon>
     <UseWindowsForms>False</UseWindowsForms>
+    <FileVersion>$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)Version.txt').Trim())</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
