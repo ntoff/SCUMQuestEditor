@@ -28,7 +28,19 @@ jobs:
             $lastCommit = git log -1 --format=%H $lastTag
             $currentCommit = git rev-parse HEAD
             if ($currentCommit -ne $lastCommit) {
-              Write-Output "has_changes=true" >> $env:GITHUB_OUTPUT
+              $diffFiles = git diff --name-only $lastCommit $currentCommit
+              $hasNonExcludedChanges = $false
+              foreach ($file in $diffFiles) {
+                if ($file -ne 'README.md' -and $file -notlike '_data/*') {
+                  $hasNonExcludedChanges = $true
+                  break
+                }
+              }
+              if ($hasNonExcludedChanges) {
+                Write-Output "has_changes=true" >> $env:GITHUB_OUTPUT
+              } else {
+                Write-Output "has_changes=false" >> $env:GITHUB_OUTPUT
+              }
             } else {
               Write-Output "has_changes=false" >> $env:GITHUB_OUTPUT
             }
