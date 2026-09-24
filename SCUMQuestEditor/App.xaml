@@ -35,6 +35,7 @@
                 <Setter Property="FontSize" Value="13"/>
                 <Setter Property="Padding" Value="8"/>
                 <Setter Property="Margin" Value="0,0,0,8"/>
+                <Setter Property="CaretBrush" Value="White"/>
             </Style>
 
             <!-- Refined ComboBox Style -->
@@ -64,6 +65,7 @@
                 <Setter Property="FontSize" Value="13"/>
                 <Setter Property="Padding" Value="8"/>
                 <Setter Property="Margin" Value="0,0,0,8"/>
+                <Setter Property="CaretBrush" Value="White"/>
             </Style>
 
             <!-- Default ComboBox -->
