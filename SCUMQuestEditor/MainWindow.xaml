@@ -94,6 +94,7 @@
                     <MenuItem Header="E_xit" Click="MenuItem_Exit_Click" />
                 </MenuItem>
                 <MenuItem Header="_Settings" Foreground="{DynamicResource MaterialDesignBody}">
+                    <MenuItem Header="Appearance" Click="AppearanceSettings_Click" />
                     <MenuItem Header="Filename Formattin_g" Click="FileNameFormat_Click" />
                 </MenuItem>
                 <MenuItem Header="_Help" Foreground="{DynamicResource MaterialDesignBody}">

@@ -16,6 +16,8 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using MaterialDesignColors;
+using MaterialDesignThemes.Wpf;
 
 namespace SCUMQuestEditor
 {
@@ -66,6 +68,8 @@ namespace SCUMQuestEditor
     public class AppSettings
     {
         public string FileNameFormat { get; set; } = "T{tier}_{trader}_{title}";
+        public string PrimaryColor { get; set; } = "BlueGrey";
+        public string SecondaryColor { get; set; } = "Green";
     }
 
     public class Condition : INotifyPropertyChanged
@@ -529,6 +533,8 @@ namespace SCUMQuestEditor
             {
                 _settings = new AppSettings();
             }
+
+            ApplyTheme(_settings.PrimaryColor, _settings.SecondaryColor);
         }
 
         private void SaveSettings()
@@ -782,6 +788,84 @@ namespace SCUMQuestEditor
             dialog.Owner = this;
             dialog.ShowDialog();
         }
+
+        private void AppearanceSettings_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new ColorSettingsDialog(_settings.PrimaryColor, _settings.SecondaryColor);
+            dialog.Owner = this;
+            dialog.ShowDialog();
+
+            if (dialog.DialogResult == true)
+            {
+                _settings.PrimaryColor = dialog.PrimaryColor;
+                _settings.SecondaryColor = dialog.SecondaryColor;
+                SaveSettings();
+                ApplyTheme(dialog.PrimaryColor, dialog.SecondaryColor);
+            }
+        }
+
+        public static void ApplyTheme(string primaryColor, string secondaryColor)
+        {
+            var paletteHelper = new MaterialDesignThemes.Wpf.PaletteHelper();
+            var theme = paletteHelper.GetTheme();
+
+            var primaryColorVal = ColorSettingsDialog.GetColorFromName(primaryColor, "500");
+            var secondaryColorVal = ColorSettingsDialog.GetColorFromName(secondaryColor, "500");
+
+            theme.PrimaryMid = new ColorPair(primaryColorVal);
+            theme.PrimaryLight = new ColorPair(LightenColor(primaryColorVal));
+            theme.PrimaryDark = new ColorPair(DarkenColor(primaryColorVal));
+            theme.SecondaryMid = new ColorPair(secondaryColorVal);
+            theme.SecondaryLight = new ColorPair(LightenColor(secondaryColorVal));
+            theme.SecondaryDark = new ColorPair(DarkenColor(secondaryColorVal));
+
+            paletteHelper.SetTheme(theme);
+            
+            var bundleDict = Application.Current.Resources.MergedDictionaries
+                .OfType<ResourceDictionary>()
+                .FirstOrDefault(d => d == Application.Current.FindResource("MaterialDesignBundledTheme") as ResourceDictionary);
+
+            if (bundleDict != null)
+            {
+                var primaryMidBrush = new SolidColorBrush(primaryColorVal);
+                var secondaryMidBrush = new SolidColorBrush(secondaryColorVal);
+                
+                // Primary hue brushes
+                bundleDict["PrimaryHueLightBrush"] = new SolidColorBrush(LightenColor(primaryColorVal));
+                bundleDict["PrimaryHueMidBrush"] = primaryMidBrush;
+                bundleDict["PrimaryHueDarkBrush"] = new SolidColorBrush(DarkenColor(primaryColorVal));
+                
+                // Secondary hue brushes  
+                bundleDict["SecondaryHueLightBrush"] = new SolidColorBrush(LightenColor(secondaryColorVal));
+                bundleDict["SecondaryHueMidBrush"] = secondaryMidBrush;
+                bundleDict["SecondaryHueDarkBrush"] = new SolidColorBrush(DarkenColor(secondaryColorVal));
+                
+                // MaterialDesign.Brush keys used by FlatButton style
+                bundleDict["MaterialDesign.Brush.Primary"] = primaryMidBrush;
+                bundleDict["MaterialDesign.Brush.Primary.Foreground"] = new SolidColorBrush(Colors.White);
+                bundleDict["MaterialDesign.Brush.Primary.Light"] = new SolidColorBrush(LightenColor(primaryColorVal));
+                bundleDict["MaterialDesign.Brush.Primary.Light.Foreground"] = new SolidColorBrush(Colors.White);
+                bundleDict["MaterialDesign.Brush.Primary.Dark"] = new SolidColorBrush(DarkenColor(primaryColorVal));
+                bundleDict["MaterialDesign.Brush.Primary.Dark.Foreground"] = new SolidColorBrush(Colors.White);
+                
+                bundleDict["MaterialDesign.Brush.Secondary"] = secondaryMidBrush;
+                bundleDict["MaterialDesign.Brush.Secondary.Foreground"] = new SolidColorBrush(Colors.White);
+                bundleDict["MaterialDesign.Brush.Secondary.Light"] = new SolidColorBrush(LightenColor(secondaryColorVal));
+                bundleDict["MaterialDesign.Brush.Secondary.Light.Foreground"] = new SolidColorBrush(Colors.White);
+                bundleDict["MaterialDesign.Brush.Secondary.Dark"] = new SolidColorBrush(DarkenColor(secondaryColorVal));
+                bundleDict["MaterialDesign.Brush.Secondary.Dark.Foreground"] = new SolidColorBrush(Colors.White);
+            }
+        }
+
+        private static Color LightenColor(Color color) => Color.FromArgb(color.A, 
+            (byte)Math.Min(255, color.R + 80), 
+            (byte)Math.Min(255, color.G + 80), 
+            (byte)Math.Min(255, color.B + 80));
+
+        private static Color DarkenColor(Color color) => Color.FromArgb(color.A, 
+            (byte)Math.Max(0, color.R - 40), 
+            (byte)Math.Max(0, color.G - 40), 
+            (byte)Math.Max(0, color.B - 40));
 
         private void QuestInfo_Click(object sender, RoutedEventArgs e)
         {
