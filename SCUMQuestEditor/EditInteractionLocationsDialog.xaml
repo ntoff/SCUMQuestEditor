@@ -89,7 +89,7 @@
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <Button x:Name="BtnApply" Content="Apply / Add" Margin="0,0,8,0" Click="BtnApply_Click"
                                 Style="{StaticResource PrimaryButton}"/>
-                        <Button x:Name="BtnCancelInput" Content="Cancel" Click="BtnCancelInput_Click"
+                        <Button x:Name="BtnCancelInput" Content="Cancel Edit" Click="BtnCancelInput_Click"
                                 Style="{StaticResource SubtleButton}"/>
                     </StackPanel>
                 </StackPanel>
