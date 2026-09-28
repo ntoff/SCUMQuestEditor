@@ -98,7 +98,7 @@
 
             <!-- Subtle Button -->
             <Style x:Key="SubtleButton" TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
-                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="FontSize" Value="13"/>
                 <Setter Property="Margin" Value="0,0,8,8"/>
                 <Setter Property="Foreground" Value="{DynamicResource MaterialDesign.Brush.Secondary}"/>
                 <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="6"/>
