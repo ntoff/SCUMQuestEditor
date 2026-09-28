@@ -70,6 +70,7 @@ namespace SCUMQuestEditor
         public string FileNameFormat { get; set; } = "T{tier}_{trader}_{title}";
         public string PrimaryColor { get; set; } = "BlueGrey";
         public string SecondaryColor { get; set; } = "Green";
+        public string ErrorHighlightColor { get; set; } = "Red";
     }
 
     public class Condition : INotifyPropertyChanged
@@ -481,12 +482,15 @@ namespace SCUMQuestEditor
         public static List<string> FetchItems => s_fetchItems.Value;
         public const int MaxKillAmount = 1000000000;
         private static AppSettings _settings = new AppSettings();
+        private static SolidColorBrush _errorHighlightBrush = new SolidColorBrush(Color.FromArgb(255, 255, 50, 50));
+        private static MainWindow? _instance;
         private string? _currentFilePath;
 
         public MainWindow()
         {
             InitializeComponent();
             this.Loaded += MainWindow_Loaded;
+            _instance = this;
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -535,6 +539,7 @@ namespace SCUMQuestEditor
             }
 
             ApplyTheme(_settings.PrimaryColor, _settings.SecondaryColor);
+            ApplyErrorColor(_settings.ErrorHighlightColor);
         }
 
         private void SaveSettings()
@@ -791,7 +796,7 @@ namespace SCUMQuestEditor
 
         private void AppearanceSettings_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new ColorSettingsDialog(_settings.PrimaryColor, _settings.SecondaryColor);
+            var dialog = new ColorSettingsDialog(_settings.PrimaryColor, _settings.SecondaryColor, _settings.ErrorHighlightColor);
             dialog.Owner = this;
             dialog.ShowDialog();
 
@@ -799,8 +804,10 @@ namespace SCUMQuestEditor
             {
                 _settings.PrimaryColor = dialog.PrimaryColor;
                 _settings.SecondaryColor = dialog.SecondaryColor;
+                _settings.ErrorHighlightColor = dialog.ErrorColor;
                 SaveSettings();
                 ApplyTheme(dialog.PrimaryColor, dialog.SecondaryColor);
+                ApplyErrorColor(dialog.ErrorColor);
             }
         }
 
@@ -855,6 +862,19 @@ namespace SCUMQuestEditor
                 bundleDict["MaterialDesign.Brush.Secondary.Dark"] = new SolidColorBrush(DarkenColor(secondaryColorVal));
                 bundleDict["MaterialDesign.Brush.Secondary.Dark.Foreground"] = new SolidColorBrush(Colors.White);
             }
+        }
+
+        public static void ApplyErrorColor(string errorColorName)
+        {
+            var color = ColorSettingsDialog.GetColorFromName(errorColorName, "500");
+            _errorHighlightBrush = new SolidColorBrush(color);
+            _errorHighlightBrush.Freeze();
+            _instance?.RefreshJsonPreview();
+        }
+
+        public void RefreshJsonPreview()
+        {
+            UpdateJsonPreview();
         }
 
         private static Color LightenColor(Color color) => Color.FromArgb(color.A, 
@@ -1231,11 +1251,12 @@ namespace SCUMQuestEditor
                 {
                     TxtJsonWarning.Text = string.Join("\n", warnings);
                     TxtJsonWarning.Visibility = warnings.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+                    TxtJsonWarning.Foreground = _errorHighlightBrush;
                 }
 
                 if (warnings.Count > 0)
                 {
-                    JsonPreviewTab?.SetValue(TabItem.ForegroundProperty, new SolidColorBrush(Color.FromArgb(255, 255, 50, 50)));
+                    JsonPreviewTab?.SetValue(TabItem.ForegroundProperty, _errorHighlightBrush);
                     JsonPreviewTab?.Header = CreateWarningHeader();
                 }
                 else
@@ -1309,7 +1330,7 @@ namespace SCUMQuestEditor
             var packIcon = new MaterialDesignThemes.Wpf.PackIcon
             {
                 Kind = MaterialDesignThemes.Wpf.PackIconKind.AlertCircleOutline,
-                Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 50, 50)),
+                Foreground = _errorHighlightBrush,
                 Width = 16,
                 Height = 16,
                 Margin = new Thickness(0, 0, 4, 0)
@@ -1319,7 +1340,7 @@ namespace SCUMQuestEditor
             {
                 Text = "JSON Preview",
                 FontWeight = FontWeights.Bold,
-                Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 50, 50)),
+                Foreground = _errorHighlightBrush,
                 Margin = new Thickness(0, 2, 0, 0)
             };
             

@@ -12,9 +12,11 @@ namespace SCUMQuestEditor
     {
         private string _selectedPrimaryColor;
         private string _selectedSecondaryColor;
+        private string _selectedErrorColor;
 
         public string PrimaryColor => _selectedPrimaryColor;
         public string SecondaryColor => _selectedSecondaryColor;
+        public string ErrorColor => _selectedErrorColor;
 
         private static readonly Dictionary<string, Dictionary<int, Color>> s_colorMap = new()
         {
@@ -40,11 +42,12 @@ namespace SCUMQuestEditor
 
         private static Color MakeColor(byte r, byte g, byte b) => Color.FromArgb(255, r, g, b);
 
-        public ColorSettingsDialog(string primaryColor, string secondaryColor)
+        public ColorSettingsDialog(string primaryColor, string secondaryColor, string errorColor)
         {
             InitializeComponent();
             _selectedPrimaryColor = primaryColor;
             _selectedSecondaryColor = secondaryColor;
+            _selectedErrorColor = errorColor;
 
             LoadSwatches();
             
@@ -65,6 +68,7 @@ namespace SCUMQuestEditor
 
             PrimarySwatches.ItemsSource = swatchInfos;
             SecondarySwatches.ItemsSource = swatchInfos;
+            ErrorSwatches.ItemsSource = swatchInfos;
 
             foreach (var swatch in swatchInfos)
             {
@@ -72,6 +76,8 @@ namespace SCUMQuestEditor
                     SelectPrimary(swatch);
                 if (swatch.Name == _selectedSecondaryColor)
                     SelectSecondary(swatch);
+                if (swatch.Name == _selectedErrorColor)
+                    SelectError(swatch);
             }
 
             if (!swatchInfos.Any(s => s.Name == _selectedPrimaryColor) && swatchInfos.Count > 0)
@@ -81,6 +87,10 @@ namespace SCUMQuestEditor
             if (!swatchInfos.Any(s => s.Name == _selectedSecondaryColor) && swatchInfos.Count > 0)
             {
                 SelectSecondary(swatchInfos[0]);
+            }
+            if (!swatchInfos.Any(s => s.Name == _selectedErrorColor) && swatchInfos.Count > 0)
+            {
+                SelectError(swatchInfos[0]);
             }
         }
 
@@ -134,6 +144,31 @@ namespace SCUMQuestEditor
             }
         }
 
+        private void SelectError(SwatchInfo swatch)
+        {
+            _selectedErrorColor = swatch.Name;
+            
+            foreach (var item in ErrorSwatches.Items)
+            {
+                if (item is SwatchInfo si)
+                {
+                    var bdr = FindSwatchBorder(ErrorSwatches, si.Name);
+                    if (bdr != null)
+                    {
+                        bdr.SetValue(Border.BorderBrushProperty, FindResource("MaterialDesignDivider"));
+                        bdr.BorderThickness = new Thickness(2);
+                    }
+                }
+            }
+            
+            var bdr2 = FindSwatchBorder(ErrorSwatches, swatch.Name);
+            if (bdr2 != null)
+            {
+                bdr2.SetValue(Border.BorderBrushProperty, FindResource("PrimaryHueMidBrush"));
+                bdr2.BorderThickness = new Thickness(3);
+            }
+        }
+
         private static Border? FindSwatchBorder(ItemsControl itemsControl, string name)
         {
             itemsControl.UpdateLayout();
@@ -158,6 +193,10 @@ namespace SCUMQuestEditor
             var color2 = GetSwatchColor(_selectedSecondaryColor, "500");
             TxtSecondaryPreview.Text = _selectedSecondaryColor;
             SecondaryColorSwatch.Background = new SolidColorBrush(color2);
+
+            var errorColor = GetSwatchColor(_selectedErrorColor, "500");
+            TxtErrorPreview.Text = _selectedErrorColor;
+            ErrorColorSwatch.Background = new SolidColorBrush(errorColor);
         }
 
         private void OnPrimarySwatchClick(object sender, RoutedEventArgs e)
@@ -187,6 +226,7 @@ namespace SCUMQuestEditor
         private void BtnApply_Click(object sender, RoutedEventArgs e)
         {
             MainWindow.ApplyTheme(_selectedPrimaryColor, _selectedSecondaryColor);
+            MainWindow.ApplyErrorColor(_selectedErrorColor);
             UpdatePreview();
         }
 
@@ -205,6 +245,21 @@ namespace SCUMQuestEditor
         private void ResetSecondaryToDefault(object sender, RoutedEventArgs e)
         {
             SelectSecondary(new SwatchInfo("Green", new SolidColorBrush(GetSwatchColor("Green", "500"))));
+            UpdatePreview();
+        }
+
+        private void OnErrorSwatchClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is Border border && border.DataContext is SwatchInfo swatch)
+            {
+                SelectError(swatch);
+                UpdatePreview();
+            }
+        }
+
+        private void ResetErrorToDefault(object sender, RoutedEventArgs e)
+        {
+            SelectError(new SwatchInfo("Red", new SolidColorBrush(GetSwatchColor("Red", "500"))));
             UpdatePreview();
         }
 

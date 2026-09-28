@@ -31,6 +31,10 @@
                         <Border x:Name="SecondaryColorSwatch" Width="32" Height="32" CornerRadius="6" Margin="0,0,12,0"/>
                         <TextBlock x:Name="TxtSecondaryPreview" Foreground="{DynamicResource MaterialDesignBodyLight}" VerticalAlignment="Center" FontSize="13"/>
                     </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <Border x:Name="ErrorColorSwatch" Width="32" Height="32" CornerRadius="6" Margin="0,0,12,0"/>
+                        <TextBlock x:Name="TxtErrorPreview" Foreground="{DynamicResource MaterialDesignBodyLight}" VerticalAlignment="Center" FontSize="13"/>
+                    </StackPanel>
                 </StackPanel>
             </Border>
 
@@ -38,7 +42,7 @@
             <Border Grid.Row="1" Margin="0,16,0,0" Padding="8">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel>
-                        <TextBlock Text="Primary Color (Buttons, Highlights)" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                        <TextBlock Text="Primary Color (Main Buttons, Highlights)" FontWeight="SemiBold" Margin="0,0,0,8"/>
                         <ItemsControl x:Name="PrimarySwatches">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -73,7 +77,7 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
 
-                        <TextBlock Text="Secondary Color (Accents)" FontWeight="SemiBold" Margin="0,24,0,8"/>
+                        <TextBlock Text="Secondary Color (Subtle Buttons, Accents)" FontWeight="SemiBold" Margin="0,24,0,8"/>
                         <ItemsControl x:Name="SecondarySwatches">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -87,6 +91,41 @@
                                         <Border.ContextMenu>
                                             <ContextMenu>
                                                 <MenuItem Header="Reset to Default" Click="ResetSecondaryToDefault"/>
+                                            </ContextMenu>
+                                        </Border.ContextMenu>
+                                        <Border.Background>
+                                            <SolidColorBrush Color="{Binding Brush.Color}"/>
+                                        </Border.Background>
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignDivider}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                                                        <Setter Property="BorderThickness" Value="3"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <TextBlock Text="JSON Error Highlight (Warnings &amp; Errors)" FontWeight="SemiBold" Margin="0,24,0,8"/>
+                        <ItemsControl x:Name="ErrorSwatches">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border x:Name="ErrorSwatchBorder" Width="48" Height="48" CornerRadius="6" Margin="0,0,6,6"
+                                            BorderThickness="2" Cursor="Hand" Padding="0" MouseLeftButtonDown="OnErrorSwatchClick">
+                                        <Border.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Reset to Default" Click="ResetErrorToDefault"/>
                                             </ContextMenu>
                                         </Border.ContextMenu>
                                         <Border.Background>
