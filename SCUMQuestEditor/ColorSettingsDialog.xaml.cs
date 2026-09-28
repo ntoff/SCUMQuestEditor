@@ -244,7 +244,7 @@ namespace SCUMQuestEditor
 
         private void ResetSecondaryToDefault(object sender, RoutedEventArgs e)
         {
-            SelectSecondary(new SwatchInfo("Green", new SolidColorBrush(GetSwatchColor("Green", "500"))));
+            SelectSecondary(new SwatchInfo("Red", new SolidColorBrush(GetSwatchColor("Red", "500"))));
             UpdatePreview();
         }
 
