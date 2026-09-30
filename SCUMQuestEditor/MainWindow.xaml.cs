@@ -916,13 +916,40 @@ namespace SCUMQuestEditor
             int tier = CurrentTradeDeal?.Tier ?? 1;
             string title = TxtTitle?.Text?.Replace(" ", "_") ?? "quest";
             string traderCode = GetTraderCode(npc);
+            string type = GetQuestType();
 
             string format = _settings.FileNameFormat;
             format = format.Replace("{tier}", tier.ToString());
             format = format.Replace("{trader}", traderCode);
             format = format.Replace("{title}", title);
+            format = format.Replace("{type}", type);
 
             return format + ".json";
+        }
+
+        private string GetQuestType()
+        {
+            if (CurrentTradeDeal?.Conditions == null || CurrentTradeDeal.Conditions.Count == 0)
+                return "Mixed";
+
+            bool hasElimination = false;
+            bool hasFetch = false;
+            bool hasInteraction = false;
+
+            foreach (var condition in CurrentTradeDeal.Conditions)
+            {
+                if (condition is EliminationCondition) hasElimination = true;
+                else if (condition is FetchCondition) hasFetch = true;
+                else if (condition is InteractionCondition) hasInteraction = true;
+            }
+
+            int typeCount = (hasElimination ? 1 : 0) + (hasFetch ? 1 : 0) + (hasInteraction ? 1 : 0);
+
+            return typeCount switch
+            {
+                1 => hasElimination ? "Eliminate" : hasFetch ? "Fetch" : "Interact",
+                _ => "Mixed"
+            };
         }
 
         private void UpdateControlsFromQuest(TradeDeal quest)
