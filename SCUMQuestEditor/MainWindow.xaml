@@ -262,7 +262,7 @@
                                           VerticalAlignment="Stretch">
                                         <ListView.View>
                                             <GridView ColumnHeaderContainerStyle="{StaticResource CompactColumnHeader}">
-                                                <GridViewColumn Header="Skill" DisplayMemberBinding="{Binding Skill}"/>
+                                                <GridViewColumn Header="Skill" DisplayMemberBinding="{Binding Skill}" Width="110"/>
                                                 <GridViewColumn Header="Experience" DisplayMemberBinding="{Binding Experience}" Width="140"/>
                                             </GridView>
                                         </ListView.View>
