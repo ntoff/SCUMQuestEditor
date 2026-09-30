@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         mc:Ignorable="av"
-        Title="SCUM Quest Editor" Height="860" Width="1000"
+        Title="SCUM Quest Editor" Height="880" Width="1000"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         Background="{DynamicResource MaterialDesignBackground}"
