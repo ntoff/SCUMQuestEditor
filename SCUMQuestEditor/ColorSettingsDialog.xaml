@@ -19,136 +19,128 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <!-- Preview Card -->
-            <Border Style="{StaticResource CardStyle}" Grid.Row="0" Padding="16">
-                <StackPanel>
-                    <TextBlock Text="Current Colors" FontWeight="SemiBold" Margin="0,0,0,12"/>
-                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                        <Border x:Name="PrimaryColorSwatch" Width="32" Height="32" CornerRadius="6" Margin="0,0,12,0"/>
-                        <TextBlock x:Name="TxtPrimaryPreview" Foreground="{DynamicResource MaterialDesignBodyLight}" VerticalAlignment="Center" FontSize="13"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                        <Border x:Name="SecondaryColorSwatch" Width="32" Height="32" CornerRadius="6" Margin="0,0,12,0"/>
-                        <TextBlock x:Name="TxtSecondaryPreview" Foreground="{DynamicResource MaterialDesignBodyLight}" VerticalAlignment="Center" FontSize="13"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                        <Border x:Name="ErrorColorSwatch" Width="32" Height="32" CornerRadius="6" Margin="0,0,12,0"/>
-                        <TextBlock x:Name="TxtErrorPreview" Foreground="{DynamicResource MaterialDesignBodyLight}" VerticalAlignment="Center" FontSize="13"/>
-                    </StackPanel>
+            <!-- Theme Toggle -->
+            <Border Grid.Row="0" Style="{StaticResource CardStyle}" Padding="12,8" Margin="0,0,0,16">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Light Mode" VerticalAlignment="Center" Margin="0,0,12,0"
+                               Foreground="{DynamicResource MaterialDesignBody}" FontSize="13"/>
+                    <ToggleButton x:Name="TglDarkMode" Width="48" Height="24" Margin="0,0,12,0"
+                                  IsChecked="True" Background="#424242"
+                                  Checked="TglDarkMode_Checked" Unchecked="TglDarkMode_Unchecked"
+                                  Cursor="Hand">
+                        <ToggleButton.Template>
+                            <ControlTemplate TargetType="ToggleButton">
+                                <Border x:Name="PART_Background" Background="#424242" CornerRadius="12"
+                                        IsHitTestVisible="True" Cursor="Hand">
+                                    <Ellipse x:Name="Dot" Width="18" Height="18" Fill="White"
+                                             HorizontalAlignment="Right" Margin="0,0,3,0" VerticalAlignment="Center">
+                                        <Ellipse.RenderTransform>
+                                            <TranslateTransform x:Name="DotOffset" X="0"/>
+                                        </Ellipse.RenderTransform>
+                                    </Ellipse>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsChecked" Value="True">
+                                        <Setter TargetName="PART_Background" Property="Background" Value="#424242"/>
+                                        <Setter TargetName="Dot" Property="HorizontalAlignment" Value="Right"/>
+                                        <Setter TargetName="Dot" Property="Margin" Value="0,0,3,0"/>
+                                    </Trigger>
+                                    <Trigger Property="IsChecked" Value="False">
+                                        <Setter TargetName="PART_Background" Property="Background" Value="#FFA000"/>
+                                        <Setter TargetName="Dot" Property="HorizontalAlignment" Value="Left"/>
+                                        <Setter TargetName="Dot" Property="Margin" Value="3,0,0,0"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </ToggleButton.Template>
+                    </ToggleButton>
+                    <TextBlock Text="Dark Mode" VerticalAlignment="Center"
+                               Foreground="{DynamicResource MaterialDesignBody}" FontSize="13"/>
                 </StackPanel>
             </Border>
 
-            <!-- Primary Color Section -->
-            <Border Grid.Row="1" Margin="0,16,0,0" Padding="8">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel>
-                        <TextBlock Text="Primary Color (Main Buttons, Highlights)" FontWeight="SemiBold" Margin="0,0,0,8"/>
-                        <ItemsControl x:Name="PrimarySwatches">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel Orientation="Horizontal"/>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border x:Name="PrimarySwatchBorder" Width="48" Height="48" CornerRadius="6" Margin="0,0,6,6"
-                                            BorderThickness="2" Cursor="Hand" Padding="0" MouseLeftButtonDown="OnPrimarySwatchClick">
-                                        <Border.ContextMenu>
-                                            <ContextMenu>
-                                                <MenuItem Header="Reset to Default" Click="ResetPrimaryToDefault"/>
-                                            </ContextMenu>
-                                        </Border.ContextMenu>
-                                        <Border.Background>
-                                            <SolidColorBrush Color="{Binding Brush.Color}"/>
-                                        </Border.Background>
-                                        <Border.Style>
-                                            <Style TargetType="Border">
-                                                <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignDivider}"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                                        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryHueMidBrush}"/>
-                                                        <Setter Property="BorderThickness" Value="3"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Border.Style>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+            <!-- Color Swatches -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <!-- Primary Color Section -->
+                    <TextBlock Text="Primary Color (Main Buttons, Highlights)" FontWeight="SemiBold" Margin="0,8,0,8"/>
+                    <ListBox x:Name="PrimarySwatches" Margin="0,0,0,16" SelectionMode="Single" SelectionChanged="OnSwatchSelectionChanged"
+                             Style="{StaticResource {x:Type ListBox}}">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border x:Name="SwatchBorder" Width="32" Height="32" CornerRadius="3" Margin="0,0,2,2"
+                                        BorderThickness="3" BorderBrush="Transparent" Cursor="Hand" Padding="0">
+                                    <Border.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Reset to Default" Click="ResetPrimaryToDefault"/>
+                                        </ContextMenu>
+                                    </Border.ContextMenu>
+                                    <Border.Background>
+                                        <SolidColorBrush Color="{Binding Brush.Color}"/>
+                                    </Border.Background>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
 
-                        <TextBlock Text="Secondary Color (Subtle Buttons, Accents)" FontWeight="SemiBold" Margin="0,24,0,8"/>
-                        <ItemsControl x:Name="SecondarySwatches">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel Orientation="Horizontal"/>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border x:Name="SecondarySwatchBorder" Width="48" Height="48" CornerRadius="6" Margin="0,0,6,6"
-                                            BorderThickness="2" Cursor="Hand" Padding="0" MouseLeftButtonDown="OnSecondarySwatchClick">
-                                        <Border.ContextMenu>
-                                            <ContextMenu>
-                                                <MenuItem Header="Reset to Default" Click="ResetSecondaryToDefault"/>
-                                            </ContextMenu>
-                                        </Border.ContextMenu>
-                                        <Border.Background>
-                                            <SolidColorBrush Color="{Binding Brush.Color}"/>
-                                        </Border.Background>
-                                        <Border.Style>
-                                            <Style TargetType="Border">
-                                                <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignDivider}"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                                        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryHueMidBrush}"/>
-                                                        <Setter Property="BorderThickness" Value="3"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Border.Style>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                    <!-- Secondary Color Section -->
+                    <TextBlock Text="Secondary Color (Subtle Buttons, Accents)" FontWeight="SemiBold" Margin="0,8,0,8"/>
+                    <ListBox x:Name="SecondarySwatches" Margin="0,0,0,16" SelectionMode="Single" SelectionChanged="OnSwatchSelectionChanged"
+                             Style="{StaticResource {x:Type ListBox}}">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border x:Name="SwatchBorder" Width="32" Height="32" CornerRadius="3" Margin="0,0,2,2"
+                                        BorderThickness="3" BorderBrush="Transparent" Cursor="Hand" Padding="0">
+                                    <Border.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Reset to Default" Click="ResetSecondaryToDefault"/>
+                                        </ContextMenu>
+                                    </Border.ContextMenu>
+                                    <Border.Background>
+                                        <SolidColorBrush Color="{Binding Brush.Color}"/>
+                                    </Border.Background>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
 
-                        <TextBlock Text="JSON Error Highlight (Warnings &amp; Errors)" FontWeight="SemiBold" Margin="0,24,0,8"/>
-                        <ItemsControl x:Name="ErrorSwatches">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel Orientation="Horizontal"/>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border x:Name="ErrorSwatchBorder" Width="48" Height="48" CornerRadius="6" Margin="0,0,6,6"
-                                            BorderThickness="2" Cursor="Hand" Padding="0" MouseLeftButtonDown="OnErrorSwatchClick">
-                                        <Border.ContextMenu>
-                                            <ContextMenu>
-                                                <MenuItem Header="Reset to Default" Click="ResetErrorToDefault"/>
-                                            </ContextMenu>
-                                        </Border.ContextMenu>
-                                        <Border.Background>
-                                            <SolidColorBrush Color="{Binding Brush.Color}"/>
-                                        </Border.Background>
-                                        <Border.Style>
-                                            <Style TargetType="Border">
-                                                <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignDivider}"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                                        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryHueMidBrush}"/>
-                                                        <Setter Property="BorderThickness" Value="3"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Border.Style>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
-                </ScrollViewer>
-            </Border>
+                    <!-- Error Highlight Section -->
+                    <TextBlock Text="JSON Error Highlight (Warnings &amp; Errors)" FontWeight="SemiBold" Margin="0,8,0,8"/>
+                    <ListBox x:Name="ErrorSwatches" SelectionMode="Single" SelectionChanged="OnSwatchSelectionChanged"
+                             Style="{StaticResource {x:Type ListBox}}">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border x:Name="SwatchBorder" Width="32" Height="32" CornerRadius="3" Margin="0,0,2,2"
+                                        BorderThickness="3" BorderBrush="Transparent" Cursor="Hand" Padding="0">
+                                    <Border.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Reset to Default" Click="ResetErrorToDefault"/>
+                                        </ContextMenu>
+                                    </Border.ContextMenu>
+                                    <Border.Background>
+                                        <SolidColorBrush Color="{Binding Brush.Color}"/>
+                                    </Border.Background>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+            </ScrollViewer>
 
             <!-- Buttons -->
             <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">

@@ -13,10 +13,12 @@ namespace SCUMQuestEditor
         private string _selectedPrimaryColor;
         private string _selectedSecondaryColor;
         private string _selectedErrorColor;
+        private bool _darkMode;
 
         public string PrimaryColor => _selectedPrimaryColor;
         public string SecondaryColor => _selectedSecondaryColor;
         public string ErrorColor => _selectedErrorColor;
+        public bool DarkMode => _darkMode;
 
         private static readonly Dictionary<string, Dictionary<int, Color>> s_colorMap = new()
         {
@@ -42,17 +44,21 @@ namespace SCUMQuestEditor
 
         private static Color MakeColor(byte r, byte g, byte b) => Color.FromArgb(255, r, g, b);
 
-        public ColorSettingsDialog(string primaryColor, string secondaryColor, string errorColor)
+        public ColorSettingsDialog(string primaryColor, string secondaryColor, string errorColor, bool darkMode = true)
         {
             InitializeComponent();
             _selectedPrimaryColor = primaryColor;
             _selectedSecondaryColor = secondaryColor;
             _selectedErrorColor = errorColor;
+            _darkMode = darkMode;
+            TglDarkMode.IsChecked = darkMode;
 
             LoadSwatches();
             
-            // Defer preview update until resources are loaded
-            this.Loaded += (s, e) => UpdatePreview();
+            this.Loaded += (s, e) => 
+            {
+                Dispatcher.BeginInvoke(new Action(() => UpdateAllBorders()), System.Windows.Threading.DispatcherPriority.Background);
+            };
         }
 
         private void LoadSwatches()
@@ -70,151 +76,90 @@ namespace SCUMQuestEditor
             SecondarySwatches.ItemsSource = swatchInfos;
             ErrorSwatches.ItemsSource = swatchInfos;
 
-            foreach (var swatch in swatchInfos)
-            {
-                if (swatch.Name == _selectedPrimaryColor)
-                    SelectPrimary(swatch);
-                if (swatch.Name == _selectedSecondaryColor)
-                    SelectSecondary(swatch);
-                if (swatch.Name == _selectedErrorColor)
-                    SelectError(swatch);
-            }
+            var primarySwatch = swatchInfos.FirstOrDefault(s => s.Name == _selectedPrimaryColor);
+            var secondarySwatch = swatchInfos.FirstOrDefault(s => s.Name == _selectedSecondaryColor);
+            var errorSwatch = swatchInfos.FirstOrDefault(s => s.Name == _selectedErrorColor);
 
-            if (!swatchInfos.Any(s => s.Name == _selectedPrimaryColor) && swatchInfos.Count > 0)
+            if (primarySwatch != null) PrimarySwatches.SelectedItem = primarySwatch;
+            else if (swatchInfos.Count > 0) PrimarySwatches.SelectedItem = swatchInfos[0];
+
+            if (secondarySwatch != null) SecondarySwatches.SelectedItem = secondarySwatch;
+            else if (swatchInfos.Count > 0) SecondarySwatches.SelectedItem = swatchInfos[0];
+
+            if (errorSwatch != null) ErrorSwatches.SelectedItem = errorSwatch;
+            else if (swatchInfos.Count > 0) ErrorSwatches.SelectedItem = swatchInfos[0];
+        }
+
+        private void OnPrimarySwatchClick(object sender, RoutedEventArgs e) { }
+        private void OnSecondarySwatchClick(object sender, RoutedEventArgs e) { }
+        private void OnErrorSwatchClick(object sender, RoutedEventArgs e) { }
+
+        private void OnSwatchSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender == PrimarySwatches && PrimarySwatches.SelectedItem is SwatchInfo s1)
             {
-                SelectPrimary(swatchInfos[0]);
+                _selectedPrimaryColor = s1.Name;
+                UpdateSwatchBorder(PrimarySwatches, s1.Name);
             }
-            if (!swatchInfos.Any(s => s.Name == _selectedSecondaryColor) && swatchInfos.Count > 0)
+            else if (sender == SecondarySwatches && SecondarySwatches.SelectedItem is SwatchInfo s2)
             {
-                SelectSecondary(swatchInfos[0]);
+                _selectedSecondaryColor = s2.Name;
+                UpdateSwatchBorder(SecondarySwatches, s2.Name);
             }
-            if (!swatchInfos.Any(s => s.Name == _selectedErrorColor) && swatchInfos.Count > 0)
+            else if (sender == ErrorSwatches && ErrorSwatches.SelectedItem is SwatchInfo s3)
             {
-                SelectError(swatchInfos[0]);
+                _selectedErrorColor = s3.Name;
+                UpdateSwatchBorder(ErrorSwatches, s3.Name);
             }
         }
 
-        private void SelectPrimary(SwatchInfo swatch)
+        private void UpdateSwatchBorder(ItemsControl itemsControl, string selectedName)
         {
-            _selectedPrimaryColor = swatch.Name;
-            
-            foreach (var item in PrimarySwatches.Items)
-            {
-                if (item is SwatchInfo si)
-                {
-                    var bdr = FindSwatchBorder(PrimarySwatches, si.Name);
-                    if (bdr != null)
-                    {
-                        bdr.SetValue(Border.BorderBrushProperty, FindResource("MaterialDesignDivider"));
-                        bdr.BorderThickness = new Thickness(2);
-                    }
-                }
-            }
-            
-            var bdr2 = FindSwatchBorder(PrimarySwatches, swatch.Name);
-            if (bdr2 != null)
-            {
-                bdr2.SetValue(Border.BorderBrushProperty, FindResource("PrimaryHueMidBrush"));
-                bdr2.BorderThickness = new Thickness(3);
-            }
-        }
-
-        private void SelectSecondary(SwatchInfo swatch)
-        {
-            _selectedSecondaryColor = swatch.Name;
-            
-            foreach (var item in SecondarySwatches.Items)
-            {
-                if (item is SwatchInfo si)
-                {
-                    var bdr = FindSwatchBorder(SecondarySwatches, si.Name);
-                    if (bdr != null)
-                    {
-                        bdr.SetValue(Border.BorderBrushProperty, FindResource("MaterialDesignDivider"));
-                        bdr.BorderThickness = new Thickness(2);
-                    }
-                }
-            }
-            
-            var bdr2 = FindSwatchBorder(SecondarySwatches, swatch.Name);
-            if (bdr2 != null)
-            {
-                bdr2.SetValue(Border.BorderBrushProperty, FindResource("PrimaryHueMidBrush"));
-                bdr2.BorderThickness = new Thickness(3);
-            }
-        }
-
-        private void SelectError(SwatchInfo swatch)
-        {
-            _selectedErrorColor = swatch.Name;
-            
-            foreach (var item in ErrorSwatches.Items)
-            {
-                if (item is SwatchInfo si)
-                {
-                    var bdr = FindSwatchBorder(ErrorSwatches, si.Name);
-                    if (bdr != null)
-                    {
-                        bdr.SetValue(Border.BorderBrushProperty, FindResource("MaterialDesignDivider"));
-                        bdr.BorderThickness = new Thickness(2);
-                    }
-                }
-            }
-            
-            var bdr2 = FindSwatchBorder(ErrorSwatches, swatch.Name);
-            if (bdr2 != null)
-            {
-                bdr2.SetValue(Border.BorderBrushProperty, FindResource("PrimaryHueMidBrush"));
-                bdr2.BorderThickness = new Thickness(3);
-            }
-        }
-
-        private static Border? FindSwatchBorder(ItemsControl itemsControl, string name)
-        {
-            itemsControl.UpdateLayout();
             foreach (var item in itemsControl.Items)
             {
-                if (item is SwatchInfo si && si.Name == name)
+                if (item is SwatchInfo si)
                 {
                     var container = itemsControl.ItemContainerGenerator.ContainerFromItem(si) as Border;
                     if (container != null)
-                        return container;
+                    {
+                        if (si.Name == selectedName)
+                        {
+                            var brush = FindResource("PrimaryHueMidBrush") as Brush;
+                            container.BorderBrush = brush ?? new SolidColorBrush(Colors.White);
+                        }
+                        else
+                        {
+                            container.BorderBrush = Brushes.Transparent;
+                        }
+                    }
                 }
             }
-            return null;
+        }
+
+        private void UpdateAllBorders()
+        {
+            var primary = PrimarySwatches.SelectedItem as SwatchInfo;
+            if (primary != null) UpdateSwatchBorder(PrimarySwatches, primary.Name);
+            
+            var secondary = SecondarySwatches.SelectedItem as SwatchInfo;
+            if (secondary != null) UpdateSwatchBorder(SecondarySwatches, secondary.Name);
+            
+            var error = ErrorSwatches.SelectedItem as SwatchInfo;
+            if (error != null) UpdateSwatchBorder(ErrorSwatches, error.Name);
         }
 
         private void UpdatePreview()
         {
-            var color1 = GetSwatchColor(_selectedPrimaryColor, "500");
-            TxtPrimaryPreview.Text = _selectedPrimaryColor;
-            PrimaryColorSwatch.Background = new SolidColorBrush(color1);
-
-            var color2 = GetSwatchColor(_selectedSecondaryColor, "500");
-            TxtSecondaryPreview.Text = _selectedSecondaryColor;
-            SecondaryColorSwatch.Background = new SolidColorBrush(color2);
-
-            var errorColor = GetSwatchColor(_selectedErrorColor, "500");
-            TxtErrorPreview.Text = _selectedErrorColor;
-            ErrorColorSwatch.Background = new SolidColorBrush(errorColor);
         }
 
-        private void OnPrimarySwatchClick(object sender, RoutedEventArgs e)
+        private void TglDarkMode_Checked(object sender, RoutedEventArgs e)
         {
-            if (sender is Border border && border.DataContext is SwatchInfo swatch)
-            {
-                SelectPrimary(swatch);
-                UpdatePreview();
-            }
+            _darkMode = true;
         }
 
-        private void OnSecondarySwatchClick(object sender, RoutedEventArgs e)
+        private void TglDarkMode_Unchecked(object sender, RoutedEventArgs e)
         {
-            if (sender is Border border && border.DataContext is SwatchInfo swatch)
-            {
-                SelectSecondary(swatch);
-                UpdatePreview();
-            }
+            _darkMode = false;
         }
 
         private void BtnOk_Click(object sender, RoutedEventArgs e)
@@ -225,6 +170,7 @@ namespace SCUMQuestEditor
 
         private void BtnApply_Click(object sender, RoutedEventArgs e)
         {
+            MainWindow.ApplyDarkMode(_darkMode);
             MainWindow.ApplyTheme(_selectedPrimaryColor, _selectedSecondaryColor);
             MainWindow.ApplyErrorColor(_selectedErrorColor);
             UpdatePreview();
@@ -238,29 +184,32 @@ namespace SCUMQuestEditor
 
         private void ResetPrimaryToDefault(object sender, RoutedEventArgs e)
         {
-            SelectPrimary(new SwatchInfo("BlueGrey", new SolidColorBrush(GetSwatchColor("BlueGrey", "500"))));
-            UpdatePreview();
+            var swatch = PrimarySwatches.Items.Cast<SwatchInfo>().FirstOrDefault(s => s.Name == "BlueGrey");
+            if (swatch != null)
+            {
+                PrimarySwatches.SelectedItem = swatch;
+                _selectedPrimaryColor = "BlueGrey";
+            }
         }
 
         private void ResetSecondaryToDefault(object sender, RoutedEventArgs e)
         {
-            SelectSecondary(new SwatchInfo("Red", new SolidColorBrush(GetSwatchColor("Red", "500"))));
-            UpdatePreview();
-        }
-
-        private void OnErrorSwatchClick(object sender, RoutedEventArgs e)
-        {
-            if (sender is Border border && border.DataContext is SwatchInfo swatch)
+            var swatch = SecondarySwatches.Items.Cast<SwatchInfo>().FirstOrDefault(s => s.Name == "Red");
+            if (swatch != null)
             {
-                SelectError(swatch);
-                UpdatePreview();
+                SecondarySwatches.SelectedItem = swatch;
+                _selectedSecondaryColor = "Red";
             }
         }
 
         private void ResetErrorToDefault(object sender, RoutedEventArgs e)
         {
-            SelectError(new SwatchInfo("Red", new SolidColorBrush(GetSwatchColor("Red", "500"))));
-            UpdatePreview();
+            var swatch = ErrorSwatches.Items.Cast<SwatchInfo>().FirstOrDefault(s => s.Name == "Red");
+            if (swatch != null)
+            {
+                ErrorSwatches.SelectedItem = swatch;
+                _selectedErrorColor = "Red";
+            }
         }
 
         public class SwatchInfo

@@ -37,7 +37,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Border Background="{DynamicResource PrimaryHueMidBrush}" Padding="10,0" Margin="0,0,10,0">
-                    <TextBlock Text="SQE" Foreground="White" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="SQE" Foreground="{DynamicResource MaterialDesignBody}" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </Border>
 
                 <TextBlock Text="SCUM Quest Editor"
@@ -61,7 +61,7 @@
                                             <Border x:Name="btnBorder" Background="Transparent" Padding="6">
                                                 <Path x:Name="IconPath" Data="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
                                                       Stretch="Uniform"
-                                                      Fill="White"
+                                                      Fill="{DynamicResource MaterialDesignBody}"
                                                       Width="16" Height="16"
                                                       HorizontalAlignment="Center"
                                                       VerticalAlignment="Center"/>
@@ -249,7 +249,7 @@
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
-                                    <TextBlock Grid.Row="0" Text="Skills" Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                    <TextBlock Grid.Row="0" Text="Skills" Foreground="{DynamicResource MaterialDesignBody}"
                                               FontSize="14" FontWeight="Medium" Margin="0,0,0,8"/>
                                     <Button Grid.Row="1" Content="Add Skill Reward" Margin="0,0,0,8" Click="BtnAddSkillReward_Click"
                                         Style="{StaticResource PrimaryButton}"/>
@@ -281,7 +281,7 @@
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
-                                    <TextBlock Grid.Row="0" Text="Trade Deals" Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                    <TextBlock Grid.Row="0" Text="Trade Deals" Foreground="{DynamicResource MaterialDesignBody}"
                                               FontSize="14" FontWeight="Medium" Margin="0,0,0,8"/>
                                     <Button Grid.Row="1" Content="Add Trade Deal" Margin="0,0,0,8" Click="BtnAddTradeDeal_Click"
                                         Style="{StaticResource PrimaryButton}"/>
@@ -362,7 +362,7 @@
                                             <GridViewColumn Width="200">
                                                 <GridViewColumn.Header>
                                                     <Border Background="{DynamicResource MaterialDesignPaper}" Padding="4">
-                                                        <TextBlock Text="Caption" VerticalAlignment="Center" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                                                        <TextBlock Text="Caption" VerticalAlignment="Center" Foreground="{DynamicResource MaterialDesignBody}"/>
                                                     </Border>
                                                 </GridViewColumn.Header>
                                                 <GridViewColumn.CellTemplate>
@@ -377,10 +377,11 @@
                                                 <GridViewColumn.Header>
                                                     <Border Background="{DynamicResource MaterialDesignPaper}" Padding="4">
                                                         <StackPanel Orientation="Horizontal">
-                                                            <TextBlock Text="Sequence" VerticalAlignment="Center" Foreground="{DynamicResource MaterialDesignBodyLight}" Margin="0,0,8,0"/>
+                                                            <TextBlock Text="Sequence" VerticalAlignment="Center" Foreground="{DynamicResource MaterialDesignBody}" Margin="0,0,8,0"/>
                                                             <Button Content="Sort" Padding="10,2" FontSize="10" Height="20"
                                                                 Click="SortBySequence"
                                                                 Background="{DynamicResource MaterialDesignDivider}"
+                                                                Foreground="{DynamicResource MaterialDesignBody}"
                                                                 BorderThickness="0"
                                                                 materialDesign:ButtonAssist.CornerRadius="4"/>
                                                         </StackPanel>
@@ -543,7 +544,7 @@
 
                                             <TextBlock Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
                                                    Text="The player must collect the specified items to complete this condition."
-                                                   Foreground="{DynamicResource MaterialDesignBodyLight}" Margin="0,5,0,0" TextDecorations="Underline"
+                                                   Foreground="{DynamicResource MaterialDesignBody}" Margin="0,5,0,0" TextDecorations="Underline"
                                                    VerticalAlignment="Bottom" FontSize="11"/>
                                         </Grid>
                                     </Border>
@@ -598,7 +599,7 @@
 
                                                 <TextBlock Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
                                                        Text="Use '#GetMeshInfo' in-game to get location data for real objects."
-                                                       Foreground="{DynamicResource MaterialDesignBodyLight}" Margin="0,5,0,0" TextDecorations="Underline"
+                                                       Foreground="{DynamicResource MaterialDesignBody}" Margin="0,5,0,0" TextDecorations="Underline"
                                                        FontSize="11"/>
                                             </Grid>
                                         </Border>

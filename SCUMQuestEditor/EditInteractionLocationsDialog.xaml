@@ -76,7 +76,7 @@
             <!-- Input Section -->
             <Border Grid.Row="2" Style="{StaticResource CardStyle}" Margin="8,8,8,8" Padding="12">
                 <StackPanel>
-                    <TextBlock Text="#GetMeshInfo Output" Foreground="{DynamicResource MaterialDesignBodyLight}"
+                    <TextBlock Text="#GetMeshInfo Output" Foreground="{DynamicResource MaterialDesignBody}"
                                FontSize="12" Margin="0,0,0,6"/>
                     <TextBox x:Name="TxtMeshInfoInput" Margin="0,0,0,8"
                              AcceptsReturn="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Height="120"
@@ -84,7 +84,7 @@
                              Style="{StaticResource CompactTextBox}"/>
 
                     <TextBlock Text="Paste the complete output from the #GetMeshInfo command. Look at an object in-game and type #GetMeshInfo to get this data. The output is automatically copied to your clipboard when the command is executed."
-                               TextWrapping="Wrap" Margin="0,4,0,8" Foreground="{DynamicResource MaterialDesignBodyLight}" FontSize="10"/>
+                               TextWrapping="Wrap" Margin="0,4,0,8" Foreground="{DynamicResource MaterialDesignBody}" FontSize="10"/>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <Button x:Name="BtnApply" Content="Apply / Add" Margin="0,0,8,0" Click="BtnApply_Click"

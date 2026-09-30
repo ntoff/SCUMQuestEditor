@@ -127,7 +127,7 @@ namespace SCUMQuestEditor
                 Paragraph para = new Paragraph();
                 para.FontSize = 12;
                 para.Margin = new Thickness(20, 2, 0, 4);
-                para.Foreground = Brushes.White;
+                para.Foreground = GetTextBrush();
 
                 for (int i = 0; i < listItems.Count; i++)
                 {
@@ -146,7 +146,7 @@ namespace SCUMQuestEditor
                         Run prefix = new Run($"{number ?? "1"}. ")
                         {
                             FontWeight = FontWeights.Bold,
-                            Foreground = new SolidColorBrush(Color.FromArgb(255, 170, 170, 170))
+                            Foreground = GetListPrefixBrush()
                         };
                         para.Inlines.Add(prefix);
                     }
@@ -155,7 +155,7 @@ namespace SCUMQuestEditor
                         Run bullet = new Run("\u2022 ")
                         {
                             FontWeight = FontWeights.Bold,
-                            Foreground = new SolidColorBrush(Color.FromArgb(255, 170, 170, 170))
+                            Foreground = GetListPrefixBrush()
                         };
                         para.Inlines.Add(bullet);
                     }
@@ -178,8 +178,8 @@ namespace SCUMQuestEditor
                 {
                     Text = string.Join("\n", codeLines),
                     IsReadOnly = true,
-                    Background = new SolidColorBrush(Color.FromArgb(255, 30, 30, 30)),
-                    Foreground = new SolidColorBrush(Color.FromArgb(255, 166, 226, 47)),
+                    Background = GetCodeBackgroundBrush(),
+                    Foreground = GetCodeForegroundBrush(),
                     FontFamily = new FontFamily("Consolas"),
                     FontSize = 12,
                     Padding = new Thickness(12),
@@ -282,7 +282,7 @@ namespace SCUMQuestEditor
                     foreach (Inline inline in ParseInline(line))
                         para.Inlines.Add(inline);
                     para.Margin = new Thickness(0, 2, 0, 4);
-                    para.Foreground = Brushes.White;
+                    para.Foreground = GetTextBrush();
                     doc.Blocks.Add(para);
                 }
             }
@@ -293,7 +293,7 @@ namespace SCUMQuestEditor
 
         private Block CreateHeading(string text, int level)
         {
-            Brush color = new SolidColorBrush(Color.FromArgb(255, 180, 180, 255));
+            Brush color = GetHeadingBrush();
             Paragraph par = new Paragraph();
             par.Margin = new Thickness(0, level == 0 ? 16 : 12, 0, 4);
             par.FontWeight = FontWeights.Bold;
@@ -363,7 +363,7 @@ namespace SCUMQuestEditor
                 {
                     result.Add(new Run(plainChars.ToString())
                     {
-                        Foreground = isListItem ? Brushes.White : new SolidColorBrush(Color.FromArgb(255, 230, 230, 230))
+                        Foreground = isListItem ? GetTextBrush() : GetTextBrush()
                     });
                     plainChars.Clear();
                 }
@@ -381,7 +381,7 @@ namespace SCUMQuestEditor
                         {
                             FontFamily = new FontFamily("Consolas"),
                             FontWeight = FontWeights.SemiBold,
-                            Foreground = new SolidColorBrush(Color.FromArgb(255, 180, 180, 255))
+                            Foreground = GetHeadingBrush()
                         });
                         i = end + 1;
                         continue;
@@ -401,14 +401,14 @@ namespace SCUMQuestEditor
                             if (inline is Run run)
                             {
                                 var r = new Run(run.Text)
-                                {
-                                    FontWeight = FontWeights.Bold,
-                                    Foreground = isListItem
-                                        ? Brushes.White
-                                        : new SolidColorBrush(Color.FromArgb(255, 180, 180, 255))
-                                };
+                            {
+                                FontWeight = FontWeights.Bold,
+                                Foreground = isListItem
+                                    ? GetTextBrush()
+                                    : GetHeadingBrush()
+                            };
                                 if (run.FontFamily != null) r.FontFamily = run.FontFamily;
-                                if (run.Foreground != null && isListItem) r.Foreground = Brushes.White;
+                                if (run.Foreground != null && isListItem) r.Foreground = GetTextBrush();
                                 bold.Inlines.Add(r);
                             }
                         }
@@ -431,10 +431,10 @@ namespace SCUMQuestEditor
                             if (inline is Run run)
                             {
                                 var r = new Run(run.Text)
-                                {
-                                    FontStyle = FontStyles.Italic,
-                                    Foreground = isListItem ? Brushes.White : new SolidColorBrush(Color.FromArgb(255, 200, 200, 200))
-                                };
+                            {
+                                FontStyle = FontStyles.Italic,
+                                Foreground = isListItem ? GetTextBrush() : GetItalicBrush()
+                            };
                                 if (run.FontFamily != null) r.FontFamily = run.FontFamily;
                                 italic.Inlines.Add(r);
                             }
@@ -460,7 +460,7 @@ namespace SCUMQuestEditor
                             Hyperlink hyperlink = new Hyperlink(new Run(linkText))
                             {
                                 NavigateUri = new Uri(url),
-                                Foreground = new SolidColorBrush(Color.FromArgb(255, 130, 200, 255)),
+                                Foreground = GetLinkBrush(),
                                 Cursor = System.Windows.Input.Cursors.Hand
                             };
                             hyperlink.Click += (s, e) => System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
@@ -481,6 +481,111 @@ namespace SCUMQuestEditor
 
         private void InfoTabs_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+        }
+
+        private bool IsLightMode()
+        {
+            try
+            {
+                var bundled = Application.Current.Resources.MergedDictionaries
+                    .OfType<MaterialDesignThemes.Wpf.BundledTheme>()
+                    .FirstOrDefault();
+                return bundled?.BaseTheme == MaterialDesignThemes.Wpf.BaseTheme.Light;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private SolidColorBrush GetTextBrush()
+        {
+            try
+            {
+                var bodyBrush = Application.Current.FindResource("MaterialDesignBody") as SolidColorBrush;
+                if (bodyBrush != null) return bodyBrush;
+            }
+            catch { }
+            return new SolidColorBrush(Colors.Black);
+        }
+
+        private SolidColorBrush GetHeadingBrush()
+        {
+            try
+            {
+                var primaryBrush = Application.Current.FindResource("PrimaryHueMidBrush") as SolidColorBrush;
+                if (primaryBrush != null) return primaryBrush;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"GetHeadingBrush error: {ex.Message}");
+            }
+
+            try
+            {
+                var paletteHelper = new MaterialDesignThemes.Wpf.PaletteHelper();
+                var theme = paletteHelper.GetTheme();
+                var color = theme.PrimaryMid.Color;
+                return new SolidColorBrush(color);
+            }
+            catch { }
+
+            return new SolidColorBrush(Color.FromArgb(255, 180, 180, 255));
+        }
+
+        private SolidColorBrush GetListPrefixBrush()
+        {
+            try
+            {
+                var bodyLightBrush = Application.Current.FindResource("MaterialDesignBodyLight") as SolidColorBrush;
+                if (bodyLightBrush != null) return bodyLightBrush;
+            }
+            catch { }
+            return new SolidColorBrush(Color.FromArgb(255, 170, 170, 170));
+        }
+
+        private SolidColorBrush GetCodeBackgroundBrush()
+        {
+            try
+            {
+                var paperBrush = Application.Current.FindResource("MaterialDesignPaper") as SolidColorBrush;
+                if (paperBrush != null) return paperBrush;
+            }
+            catch { }
+            return new SolidColorBrush(Color.FromArgb(255, 30, 30, 30));
+        }
+
+        private SolidColorBrush GetCodeForegroundBrush()
+        {
+            try
+            {
+                var bodyBrush = Application.Current.FindResource("MaterialDesignBody") as SolidColorBrush;
+                if (bodyBrush != null) return bodyBrush;
+            }
+            catch { }
+            return new SolidColorBrush(Color.FromArgb(255, 166, 226, 47));
+        }
+
+        private SolidColorBrush GetItalicBrush()
+        {
+            try
+            {
+                var bodyLightBrush = Application.Current.FindResource("MaterialDesignBodyLight") as SolidColorBrush;
+                if (bodyLightBrush != null) return bodyLightBrush;
+            }
+            catch { }
+            return new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
+        }
+
+        private SolidColorBrush GetLinkBrush()
+        {
+            try
+            {
+                var secondaryBrush = Application.Current.FindResource("SecondaryHueMidBrush") as SolidColorBrush;
+                if (secondaryBrush != null) return secondaryBrush;
+            }
+            catch { }
+            return new SolidColorBrush(Color.FromArgb(255, 130, 200, 255));
         }
 
         private void BtnClose_Click(object sender, RoutedEventArgs e)

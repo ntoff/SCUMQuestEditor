@@ -96,7 +96,7 @@
                                      Style="{StaticResource CompactTextBox}"/>
                         </StackPanel>
 
-                        <TextBlock Text="Item Condition" Foreground="{DynamicResource MaterialDesignBodyLight}"
+                        <TextBlock Text="Item Condition" Foreground="{DynamicResource MaterialDesignBody}"
                                    FontSize="13" FontWeight="SemiBold" Margin="0,10,0,6"/>
 
                         <Grid Margin="0,0,0,6">
@@ -129,7 +129,7 @@
                 <!-- Right Column: Properties -->
                 <Border Grid.Column="2" Style="{StaticResource CardStyle}" Margin="6,0,0,0" Padding="12">
                     <StackPanel>
-                        <TextBlock Text="Cooking Properties" Foreground="{DynamicResource MaterialDesignBodyLight}"
+                        <TextBlock Text="Cooking Properties" Foreground="{DynamicResource MaterialDesignBody}"
                                    FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
 
                         <Grid Margin="0,0,0,8">
@@ -172,7 +172,7 @@
                             </ComboBox>
                         </Grid>
 
-                        <TextBlock Text="Resource Properties" Foreground="{DynamicResource MaterialDesignBodyLight}"
+                        <TextBlock Text="Resource Properties" Foreground="{DynamicResource MaterialDesignBody}"
                                    FontSize="13" FontWeight="SemiBold" Margin="0,10,0,6"/>
 
                         <Grid Margin="0,0,0,0">

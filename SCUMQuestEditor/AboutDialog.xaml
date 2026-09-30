@@ -26,10 +26,10 @@
                 <TextBlock Text="SCUM Quest Editor" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center"
                            Foreground="{DynamicResource MaterialDesignBody}"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,6,0,0">
-                    <TextBlock x:Name="LblVersion" FontSize="12" Foreground="{DynamicResource MaterialDesignBodyLight}" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="LblVersion" FontSize="12" Foreground="{DynamicResource MaterialDesignBody}" VerticalAlignment="Center"/>
                     <Button x:Name="BtnCheckUpdates" Content="Check Updates" FontSize="10" Padding="4,1" Margin="6,0,0,0" VerticalAlignment="Center" VerticalContentAlignment="Center" Click="BtnCheckUpdates_Click"/>
                 </StackPanel>
-                <TextBlock x:Name="LblBuildDate" FontSize="12" Foreground="{DynamicResource MaterialDesignBodyLight}" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                <TextBlock x:Name="LblBuildDate" FontSize="12" Foreground="{DynamicResource MaterialDesignBody}" HorizontalAlignment="Center" Margin="0,4,0,0"/>
             </StackPanel>
 
             <StackPanel Grid.Row="1" Margin="0,0,0,20">

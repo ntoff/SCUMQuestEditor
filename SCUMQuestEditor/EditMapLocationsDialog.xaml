@@ -59,7 +59,7 @@
         </Border>
 
         <!-- 3. Manual Input Label -->
-        <TextBlock Grid.Row="2" Text="Or enter coordinates manually:" Foreground="{DynamicResource MaterialDesignBodyLight}"
+        <TextBlock Grid.Row="2" Text="Or enter coordinates manually:" Foreground="{DynamicResource MaterialDesignBody}"
                    Margin="8,8,0,6" FontSize="12"/>
 
         <!-- 4. Manual Input Controls -->
@@ -95,7 +95,7 @@
 
                 <TextBlock Grid.Row="4" Grid.ColumnSpan="2"
                            Text="Size Factor determines the radius of the circle shown on the game map. A value of 1.0 is approximately 300m diameter."
-                           TextWrapping="Wrap" Margin="0,6,0,0" Foreground="{DynamicResource MaterialDesignBodyLight}"
+                           TextWrapping="Wrap" Margin="0,6,0,0" Foreground="{DynamicResource MaterialDesignBody}"
                            FontSize="10"/>
             </Grid>
         </Border>

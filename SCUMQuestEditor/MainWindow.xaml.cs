@@ -71,6 +71,7 @@ namespace SCUMQuestEditor
         public string PrimaryColor { get; set; } = "BlueGrey";
         public string SecondaryColor { get; set; } = "Green";
         public string ErrorHighlightColor { get; set; } = "Red";
+        public bool DarkMode { get; set; } = true;
     }
 
     public class Condition : INotifyPropertyChanged
@@ -538,6 +539,7 @@ namespace SCUMQuestEditor
                 _settings = new AppSettings();
             }
 
+            ApplyDarkMode(_settings.DarkMode);
             ApplyTheme(_settings.PrimaryColor, _settings.SecondaryColor);
             ApplyErrorColor(_settings.ErrorHighlightColor);
         }
@@ -796,7 +798,7 @@ namespace SCUMQuestEditor
 
         private void AppearanceSettings_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new ColorSettingsDialog(_settings.PrimaryColor, _settings.SecondaryColor, _settings.ErrorHighlightColor);
+            var dialog = new ColorSettingsDialog(_settings.PrimaryColor, _settings.SecondaryColor, _settings.ErrorHighlightColor, _settings.DarkMode);
             dialog.Owner = this;
             dialog.ShowDialog();
 
@@ -805,9 +807,23 @@ namespace SCUMQuestEditor
                 _settings.PrimaryColor = dialog.PrimaryColor;
                 _settings.SecondaryColor = dialog.SecondaryColor;
                 _settings.ErrorHighlightColor = dialog.ErrorColor;
+                _settings.DarkMode = dialog.DarkMode;
                 SaveSettings();
+                ApplyDarkMode(dialog.DarkMode);
                 ApplyTheme(dialog.PrimaryColor, dialog.SecondaryColor);
                 ApplyErrorColor(dialog.ErrorColor);
+            }
+        }
+
+        public static void ApplyDarkMode(bool isDark)
+        {
+            var bundledTheme = Application.Current.Resources.MergedDictionaries
+                .OfType<MaterialDesignThemes.Wpf.BundledTheme>()
+                .FirstOrDefault();
+
+            if (bundledTheme != null)
+            {
+                bundledTheme.BaseTheme = isDark ? MaterialDesignThemes.Wpf.BaseTheme.Dark : MaterialDesignThemes.Wpf.BaseTheme.Light;
             }
         }
 

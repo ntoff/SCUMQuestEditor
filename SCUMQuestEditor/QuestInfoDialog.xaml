@@ -19,7 +19,7 @@
                     <Style TargetType="TabItem" BasedOn="{StaticResource MaterialDesignTabItem}">
                         <Setter Property="Padding" Value="16,10"/>
                         <Setter Property="FontSize" Value="13"/>
-                        <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBodyLight}"/>
+                        <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
                     </Style>
                 </TabControl.ItemContainerStyle>
             </TabControl>
