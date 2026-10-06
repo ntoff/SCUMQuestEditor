@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Windows;
@@ -7,6 +8,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 
 namespace SCUMQuestEditor
 {
@@ -22,19 +24,23 @@ namespace SCUMQuestEditor
         private Point _lastMousePosition;
         private BitmapImage _bitmap = null!;
         private Action<double, double, double>? _onCoordinatesSelected;
+        private List<MapLocation>? _mapLocations = null;
 
-        public MapViewDialog(Action<double, double, double> onCoordinatesSelected)
+        public MapViewDialog(Action<double, double, double> onCoordinatesSelected, List<MapLocation>? locations = null)
         {
             InitializeComponent();
             Loaded += MapViewDialog_Loaded;
             SizeChanged += MapViewDialog_SizeChanged;
             _onCoordinatesSelected = onCoordinatesSelected;
+            _mapLocations = locations;
             LoadMapImage();
         }
 
         private void MapViewDialog_Loaded(object sender, RoutedEventArgs e)
         {
             FitMapToWindow();
+            //CenterOnOrigin();
+            RenderLocations();
         }
 
         private void FitMapToWindow()
@@ -114,6 +120,83 @@ namespace SCUMQuestEditor
             TranslateTransform.Y = centerY - ScaleTransform.ScaleY * originT * imageHeight;
         }
 
+        private void RenderLocations()
+        {
+            if (_mapLocations == null || _bitmap == null)
+            {
+                return;
+            }
+
+            CircleCanvas.Children.Clear();
+
+            double dpiScaleX = _bitmap.DpiX / 96.0;
+            double dpiScaleY = _bitmap.DpiY / 96.0;
+
+            double scaledImageWidth = _bitmap.PixelWidth * dpiScaleX;
+            double scaledImageHeight = _bitmap.PixelHeight * dpiScaleY;
+
+            foreach (var loc in _mapLocations)
+            {
+                double diameterInWorldUnits = loc.SizeFactor * 30000.0;
+
+                double diameterInScaledImagePixels = diameterInWorldUnits / mapRange * scaledImageWidth;
+                double diameterInScreenPixels = diameterInScaledImagePixels * ScaleTransform.ScaleX;
+                double radius = diameterInScreenPixels / 2.0;
+
+                double imageFractionX = (loc.Location.X - xMin) / mapRange;
+                double imageFractionY = (loc.Location.Y - yMin) / mapRange;
+
+                double canvasX = (1.0 - imageFractionX) * scaledImageWidth * ScaleTransform.ScaleX + TranslateTransform.X;
+                double canvasY = (1.0 - imageFractionY) * scaledImageHeight * ScaleTransform.ScaleY + TranslateTransform.Y;
+
+                var ellipse = new Ellipse
+                {
+                    Width = diameterInScreenPixels,
+                    Height = diameterInScreenPixels,
+                    Stroke = Brushes.Orange,
+                    StrokeThickness = 3,
+                    Fill = new SolidColorBrush(Color.FromArgb(100, 255, 165, 0)),
+                    IsHitTestVisible = false
+                };
+
+                Canvas.SetLeft(ellipse, canvasX - radius);
+                Canvas.SetTop(ellipse, canvasY - radius);
+                CircleCanvas.Children.Add(ellipse);
+            }
+        }
+
+        private void UpdateCirclePositions()
+        {
+            if (_mapLocations == null || _bitmap == null) return;
+
+            double dpiScaleX = _bitmap.DpiX / 96.0;
+            double dpiScaleY = _bitmap.DpiY / 96.0;
+
+            double scaledImageWidth = _bitmap.PixelWidth * dpiScaleX;
+            double scaledImageHeight = _bitmap.PixelHeight * dpiScaleY;
+
+            for (int i = 0; i < CircleCanvas.Children.Count && i < _mapLocations.Count; i++)
+            {
+                if (CircleCanvas.Children[i] is Ellipse ellipse)
+                {
+                    var loc = _mapLocations[i];
+                    double diameterInWorldUnits = loc.SizeFactor * 30000.0;
+                    double diameterInScaledImagePixels = diameterInWorldUnits / mapRange * scaledImageWidth;
+                    double diameterInScreenPixels = diameterInScaledImagePixels * ScaleTransform.ScaleX;
+                    double radius = diameterInScreenPixels / 2.0;
+
+                    double imageFractionX = (loc.Location.X - xMin) / mapRange;
+                    double imageFractionY = (loc.Location.Y - yMin) / mapRange;
+
+                    double canvasX = (1.0 - imageFractionX) * scaledImageWidth * ScaleTransform.ScaleX + TranslateTransform.X;
+                    double canvasY = (1.0 - imageFractionY) * scaledImageHeight * ScaleTransform.ScaleY + TranslateTransform.Y;
+
+                    Canvas.SetLeft(ellipse, canvasX - radius);
+                    Canvas.SetTop(ellipse, canvasY - radius);
+                }
+            }
+        }
+
         private Point WorldToScreen(double worldX, double worldY)
         {
             if (_bitmap == null) return new Point();
@@ -176,6 +259,8 @@ namespace SCUMQuestEditor
                 TranslateTransform.Y += delta.Y;
                 
                 _lastMousePosition = currentPos;
+                
+                UpdateCirclePositions();
             }
 
             UpdateCoordinates(e.GetPosition(MapImage));
@@ -222,6 +307,7 @@ namespace SCUMQuestEditor
 
             UpdateZoomDisplay();
             UpdateCoordinates(e.GetPosition(MapImage));
+            RenderLocations();
         }
 
         private void UpdateCoordinates(Point imagePos)

@@ -185,7 +185,7 @@ namespace SCUMQuestEditor
                 TxtX.Text = x.ToString("F3");
                 TxtY.Text = y.ToString("F3");
                 TxtZ.Text = z.ToString("F3");
-            });
+            }, MapLocations.ToList());
             mapDialog.Owner = this;
             mapDialog.ShowDialog();
         }

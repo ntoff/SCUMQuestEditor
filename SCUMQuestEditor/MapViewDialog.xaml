@@ -14,7 +14,7 @@
         MouseWheel="Window_MouseWheel">
 
     <Grid>
-        <Canvas x:Name="MapCanvas" Background="Transparent">
+        <Canvas Grid.Row="0" x:Name="MapCanvas" Background="Transparent">
             <Image x:Name="MapImage" RenderTransformOrigin="0,0">
                 <Image.RenderTransform>
                     <TransformGroup x:Name="ZoomTransform">
@@ -24,15 +24,16 @@
                 </Image.RenderTransform>
             </Image>
         </Canvas>
+        <Canvas Grid.Row="0" x:Name="CircleCanvas" Background="Transparent" IsHitTestVisible="False"/>
 
         <Border Style="{StaticResource CardStyle}" Margin="8" HorizontalAlignment="Left" VerticalAlignment="Top">
             <TextBlock x:Name="TxtCoords" Margin="8" Foreground="{DynamicResource MaterialDesignBody}"
-                       FontSize="12" TextWrapping="Wrap"/>
+                        FontSize="12" TextWrapping="Wrap"/>
         </Border>
 
         <Border Style="{StaticResource CardStyle}" Margin="8" HorizontalAlignment="Right" VerticalAlignment="Top">
             <TextBlock x:Name="TxtZoomLevel" Margin="8" Foreground="{DynamicResource MaterialDesignBody}"
-                       FontSize="12" TextAlignment="Center"/>
+                        FontSize="12" TextAlignment="Center"/>
         </Border>
 
         <Border Style="{StaticResource CardStyle}" Margin="8" HorizontalAlignment="Center" VerticalAlignment="Top">
@@ -41,7 +42,7 @@
 
         <Border Style="{StaticResource CardStyle}" Margin="8" HorizontalAlignment="Center" VerticalAlignment="Bottom">
             <TextBlock Margin="4,2" Foreground="{DynamicResource MaterialDesignBody}"
-                       FontSize="11" TextWrapping="Wrap" TextAlignment="Center" Text="Locations set here are only approximate, for accurate locations please copy the location directly from in game"/>
+                        FontSize="11" TextWrapping="Wrap" TextAlignment="Center" Text="Locations set here are only approximate, for accurate locations please copy the location directly from in game"/>
         </Border>
     </Grid>
 </Window>
