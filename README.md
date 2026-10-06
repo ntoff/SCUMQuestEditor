@@ -19,11 +19,10 @@ It is free for non-commercial use.
 You can customize the default file saving format  
 Available placeholders:
 * {tier} - Quest tier (1, 2, 3, 4)
-* {trader} - Trader code (AR, BK, BA, BT, DC, GG, HM, HT, MC)
+* {trader} - Trader code (AR, BK, BA, BT, DC, GG, HM, HT, MH, MC)
 * {title} - Quest title with spaces replaced by underscores
+* {type} - Quest type (Eliminate, Fetch, Interact, Mixed)
 
-Auto builds at midnight UTC, check the [releases](https://github.com/ntoff/SCUMQuestEditor/releases) section for updates before posting issues.  
-The auto built versions might contain issues and errors if I'm actively fiddling with the code so the latest version might not always be the "best".
 
 Includes "open with" support and support for opening quest files by dragging them onto the main window.  
 It attempts to do some basic validation by making sure certain elements aren't missing or empty but doesn't perform full json validation  
