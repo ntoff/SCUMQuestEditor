@@ -1,0 +1,47 @@
+<Window x:Class="SCUMQuestEditor.MapViewDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="Map View" Height="880" Width="1000"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResize"
+        Background="{DynamicResource MaterialDesignBackground}"
+        Foreground="{DynamicResource MaterialDesignBody}"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown"
+        MouseLeftButtonUp="Window_MouseLeftButtonUp"
+        MouseMove="Window_MouseMove"
+        MouseRightButtonDown="Window_MouseRightButtonDown"
+        MouseWheel="Window_MouseWheel">
+
+    <Grid>
+        <Canvas x:Name="MapCanvas" Background="Transparent">
+            <Image x:Name="MapImage" RenderTransformOrigin="0,0">
+                <Image.RenderTransform>
+                    <TransformGroup x:Name="ZoomTransform">
+                        <ScaleTransform x:Name="ScaleTransform"/>
+                        <TranslateTransform x:Name="TranslateTransform"/>
+                    </TransformGroup>
+                </Image.RenderTransform>
+            </Image>
+        </Canvas>
+
+        <Border Style="{StaticResource CardStyle}" Margin="8" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <TextBlock x:Name="TxtCoords" Margin="8" Foreground="{DynamicResource MaterialDesignBody}"
+                       FontSize="12" TextWrapping="Wrap"/>
+        </Border>
+
+        <Border Style="{StaticResource CardStyle}" Margin="8" HorizontalAlignment="Right" VerticalAlignment="Top">
+            <TextBlock x:Name="TxtZoomLevel" Margin="8" Foreground="{DynamicResource MaterialDesignBody}"
+                       FontSize="12" TextAlignment="Center"/>
+        </Border>
+
+        <Border Style="{StaticResource CardStyle}" Margin="8" HorizontalAlignment="Center" VerticalAlignment="Top">
+            <TextBlock Margin="8,4" Foreground="Red" FontSize="12" FontWeight="Bold" Text="This feature is experimental"/>
+        </Border>
+
+        <Border Style="{StaticResource CardStyle}" Margin="8" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+            <TextBlock Margin="4,2" Foreground="{DynamicResource MaterialDesignBody}"
+                       FontSize="11" TextWrapping="Wrap" TextAlignment="Center" Text="Locations set here are only approximate, for accurate locations please copy the location directly from in game"/>
+        </Border>
+    </Grid>
+</Window>

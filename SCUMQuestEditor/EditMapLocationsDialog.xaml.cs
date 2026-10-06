@@ -177,5 +177,17 @@ namespace SCUMQuestEditor
             DialogResult = false;
             Close();
         }
+
+        private void BtnMap_Click(object sender, RoutedEventArgs e)
+        {
+            var mapDialog = new MapViewDialog((x, y, z) =>
+            {
+                TxtX.Text = x.ToString("F3");
+                TxtY.Text = y.ToString("F3");
+                TxtZ.Text = z.ToString("F3");
+            });
+            mapDialog.Owner = this;
+            mapDialog.ShowDialog();
+        }
     }
 }

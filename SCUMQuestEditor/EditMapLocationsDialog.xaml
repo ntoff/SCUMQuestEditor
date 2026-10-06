@@ -67,7 +67,7 @@
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -77,19 +77,22 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <Label Grid.Row="0" Grid.Column="0" Content="X Coordinate:" HorizontalAlignment="Right" Margin="0,4,12,4" Style="{StaticResource CompactLabel}"/>
-                <TextBox x:Name="TxtX" Grid.Row="0" Grid.Column="1" Margin="0,4,0,4" Width="100" HorizontalAlignment="Right" TextAlignment="Right"
+                <Button x:Name="BtnMap" Grid.Row="0" Grid.Column="0" Content="Show Map" Margin="0,0,6,0" Height="28" Click="BtnMap_Click"
+                        Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12"/>
+
+                <Label Grid.Row="0" Grid.Column="0" Content="X Coordinate:" HorizontalAlignment="Right" Margin="0,9,12,0" Padding="0" Style="{StaticResource CompactLabel}"/>
+                <TextBox x:Name="TxtX" Grid.Row="0" Grid.Column="1" Margin="0,0,0,6" Width="100" HorizontalAlignment="Right" TextAlignment="Right" VerticalAlignment="Center"
                          Style="{StaticResource CompactTextBox}"/>
 
-                <Label Grid.Row="1" Grid.Column="0" Content="Y Coordinate:" HorizontalAlignment="Right" Margin="0,4,12,4" Style="{StaticResource CompactLabel}"/>
+                <Label Grid.Row="1" Grid.Column="0" Content="Y Coordinate:" HorizontalAlignment="Right" Margin="0,13,12,4" Style="{StaticResource CompactLabel}"/>
                 <TextBox x:Name="TxtY" Grid.Row="1" Grid.Column="1" Margin="0,4,0,4" Width="100" HorizontalAlignment="Right" TextAlignment="Right"
                          Style="{StaticResource CompactTextBox}"/>
 
-                <Label Grid.Row="2" Grid.Column="0" Content="Z Coordinate:" HorizontalAlignment="Right" Margin="0,4,12,4" Style="{StaticResource CompactLabel}"/>
+                <Label Grid.Row="2" Grid.Column="0" Content="Z Coordinate:" HorizontalAlignment="Right" Margin="0,13,12,4" Style="{StaticResource CompactLabel}"/>
                 <TextBox x:Name="TxtZ" Grid.Row="2" Grid.Column="1" Margin="0,4,0,4" Width="100" HorizontalAlignment="Right" TextAlignment="Right"
                          Style="{StaticResource CompactTextBox}"/>
 
-                <Label Grid.Row="3" Grid.Column="0" Content="Size Factor:" HorizontalAlignment="Right" Margin="0,4,12,4" Style="{StaticResource CompactLabel}"/>
+                <Label Grid.Row="3" Grid.Column="0" Content="Size Factor:" HorizontalAlignment="Right" Margin="0,13,12,4" Style="{StaticResource CompactLabel}"/>
                 <TextBox x:Name="TxtSizeFactor" Grid.Row="3" Grid.Column="1" Margin="0,4,0,4" Width="100" HorizontalAlignment="Right" TextAlignment="Right"
                          Style="{StaticResource CompactTextBox}"/>
 
