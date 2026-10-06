@@ -459,10 +459,6 @@ namespace SCUMQuestEditor
 
     public partial class MainWindow : Window
     {
-        private static readonly Lazy<List<string>> s_eliminationTargets = new(() => LoadTextFile("EliminationTargets.txt", new[] { "DefaultTarget" }));
-        private static readonly Lazy<List<string>> s_eliminationWeapons = new(() => LoadTextFile("EliminationWeapons.txt", new[] { "DefaultWeapon" }));
-        private static readonly Lazy<List<string>> s_fetchItems = new(() => LoadTextFile("FetchItems.txt", new[] { "05_Teeth_Necklace", "12_Gauge_Birdshot" }));
-
         private static readonly Regex s_digitsRegex = new(@"^\d*$", RegexOptions.Compiled);
         private static readonly Regex s_floatRegex = new(@"^\d*\.?\d*$", RegexOptions.Compiled);
 
@@ -480,7 +476,11 @@ namespace SCUMQuestEditor
         };
 
         public static List<string> TradeItems { get; private set; } = new List<string> { "Default Item" };
-        public static List<string> FetchItems => s_fetchItems.Value;
+        public static bool _targetsWarningShown;
+        public static bool _weaponsWarningShown;
+        public static bool _fetchItemsWarningShown;
+        public static bool _tradeItemsWarningShown;
+        public static List<string> FetchItems { get; private set; } = new List<string> { "05_Teeth_Necklace", "12_Gauge_Birdshot" };
         public const int MaxKillAmount = 1000000000;
         private static AppSettings _settings = new AppSettings();
         private static SolidColorBrush _errorHighlightBrush = new SolidColorBrush(Color.FromArgb(255, 255, 50, 50));
@@ -504,23 +504,70 @@ namespace SCUMQuestEditor
             CbTier.SelectedIndex = 0;
             UpdateJsonPreview();
             InitConditions();
+            LoadDataFiles();
         }
 
-        private static List<string> LoadTextFile(string fileName, string[] defaults)
+        private void LoadDataFiles()
         {
-            try
+            string dataDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "_data");
+
+            string targetsPath = Path.Combine(dataDir, "EliminationTargets.txt");
+            if (!File.Exists(targetsPath))
             {
-                string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "_data", fileName);
-                if (File.Exists(path))
-                {
-                    return File.ReadAllLines(path).Where(line => !string.IsNullOrEmpty(line)).ToList();
-                }
+                MainWindow.Log("EliminationTargets.txt file not found.");
+                _targetsWarningShown = true;
             }
-            catch
+
+            string weaponsPath = Path.Combine(dataDir, "EliminationWeapons.txt");
+            if (!File.Exists(weaponsPath))
             {
-                // ignore
+                MainWindow.Log("EliminationWeapons.txt file not found.");
+                _weaponsWarningShown = true;
             }
-            return defaults.ToList();
+
+            string fetchPath = Path.Combine(dataDir, "FetchItems.txt");
+            if (File.Exists(fetchPath))
+                FetchItems = File.ReadAllLines(fetchPath).Where(line => !string.IsNullOrEmpty(line)).ToList();
+            else
+            {
+                MainWindow.Log("FetchItems.txt file not found.");
+                _fetchItemsWarningShown = true;
+            }
+
+            string tradeItemsPath = Path.Combine(dataDir, "TradeItems.json");
+            if (!File.Exists(tradeItemsPath))
+            {
+                MainWindow.Log("TradeItems.json file not found.");
+                _tradeItemsWarningShown = true;
+            }
+
+            if (_targetsWarningShown)
+                MessageBox.Show(
+                    "The EliminationTargets.txt data file is missing or could not be loaded. Target character selection may be limited.",
+                    "Data File Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+
+            if (_weaponsWarningShown)
+                MessageBox.Show(
+                    "The EliminationWeapons.txt data file is missing or could not be loaded. Weapon selection may be limited.",
+                    "Data File Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+
+            if (_fetchItemsWarningShown)
+                MessageBox.Show(
+                    "The FetchItems.txt data file is missing or could not be loaded. Item selection may be limited.",
+                    "Data File Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+
+            if (_tradeItemsWarningShown)
+                MessageBox.Show(
+                    "The TradeItems.json data file is missing or could not be loaded. Trade deal items may not be available.",
+                    "Data File Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
         }
 
         private void LoadSettings()

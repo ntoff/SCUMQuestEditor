@@ -7,8 +7,6 @@ namespace SCUMQuestEditor
 {
     public partial class EditTargetCharactersDialog : Window
     {
-        private static bool _targetsWarningShown = false;
-
         private static readonly Lazy<List<string>> s_cachedTypes = new(() =>
         {
             try
@@ -42,9 +40,9 @@ namespace SCUMQuestEditor
                 if (InitialSelections.Contains(item)) LstTargetTypes.SelectedItems.Add(item);
             }
 
-            if (availableTypes.Count == 1 && availableTypes[0] == "DefaultTarget" && !_targetsWarningShown)
+            if (availableTypes.Count == 1 && availableTypes[0] == "DefaultTarget" && !MainWindow._targetsWarningShown)
             {
-                _targetsWarningShown = true;
+                MainWindow._targetsWarningShown = true;
                 MessageBox.Show(
                     "The EliminationTargets.txt data file is missing or could not be loaded. Target character selection may be limited.",
                     "Data File Error",
