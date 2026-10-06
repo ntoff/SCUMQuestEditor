@@ -90,10 +90,6 @@ namespace SCUMQuestEditor
             else if (swatchInfos.Count > 0) ErrorSwatches.SelectedItem = swatchInfos[0];
         }
 
-        private void OnPrimarySwatchClick(object sender, RoutedEventArgs e) { }
-        private void OnSecondarySwatchClick(object sender, RoutedEventArgs e) { }
-        private void OnErrorSwatchClick(object sender, RoutedEventArgs e) { }
-
         private void OnSwatchSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (sender == PrimarySwatches && PrimarySwatches.SelectedItem is SwatchInfo s1)
@@ -148,10 +144,6 @@ namespace SCUMQuestEditor
             if (error != null) UpdateSwatchBorder(ErrorSwatches, error.Name);
         }
 
-        private void UpdatePreview()
-        {
-        }
-
         private void TglDarkMode_Checked(object sender, RoutedEventArgs e)
         {
             _darkMode = true;
@@ -173,7 +165,6 @@ namespace SCUMQuestEditor
             MainWindow.ApplyDarkMode(_darkMode);
             MainWindow.ApplyTheme(_selectedPrimaryColor, _selectedSecondaryColor);
             MainWindow.ApplyErrorColor(_selectedErrorColor);
-            UpdatePreview();
         }
 
         private void BtnCancel_Click(object sender, RoutedEventArgs e)

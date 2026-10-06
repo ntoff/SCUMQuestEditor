@@ -240,10 +240,10 @@ namespace SCUMQuestEditor
         public int MinAcceptedItemUses { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public double MinAcceptedItemMass { get; set; }
+        public int MinAcceptedItemMass { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public double MinAcceptedItemHealth { get; set; }
+        public int MinAcceptedItemHealth { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public string? MinAcceptedCookLevel { get; set; }
@@ -255,10 +255,10 @@ namespace SCUMQuestEditor
         public string? MinAcceptedCookQuality { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public double MinAcceptedItemResourceRatio { get; set; }
+        public int MinAcceptedItemResourceRatio { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public double MinAcceptedItemResourceAmount { get; set; }
+        public int MinAcceptedItemResourceAmount { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public int RandomAdditionalRequiredNum { get; set; }
@@ -1454,20 +1454,10 @@ namespace SCUMQuestEditor
             conditionsView.SortDescriptions.Add(new SortDescription("SequenceIndex", ListSortDirection.Ascending));
             UpdateJsonPreview();
         }
-        private void SortByCaption(object sender, RoutedEventArgs e)
-        {
-            if (conditionsView == null) return;
-
-            conditionsView.SortDescriptions.Clear();
-            conditionsView.SortDescriptions.Add(new SortDescription("TrackingCaption", ListSortDirection.Ascending));
-            UpdateJsonPreview();
-        }
-
 
         private void LvConditions_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             UpdateConditionTabsState();
-            //ClearConditionEditor(); //I remember this fixing something, but can't remember what. It causes issues though and resets stuff to default.
             TabConditionEditor.SelectedIndex = 0;
 
             if (LvConditions.SelectedItem is Condition selectedCondition)
@@ -1688,9 +1678,6 @@ namespace SCUMQuestEditor
             LvCurrentRequiredItems.ItemsSource = null;
         }
 
-
-        private void TabConditionEditor_SelectionChanged(object sender, SelectionChangedEventArgs e) { }
-
         public void AddCondition(Condition newCondition)
         {
             ConditionsList.Add(newCondition);
@@ -1885,11 +1872,6 @@ namespace SCUMQuestEditor
                     UpdateJsonPreview();
                 }
             }
-        }
-
-        private void TabMapLocations_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
         }
 
         private void ConditionField_LostFocus(object sender, RoutedEventArgs e)
