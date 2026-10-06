@@ -27,3 +27,8 @@ The auto built versions might contain issues and errors if I'm actively fiddling
 
 Includes "open with" support and support for opening quest files by dragging them onto the main window.  
 It attempts to do some basic validation by making sure certain elements aren't missing or empty but doesn't perform full json validation  
+
+# Privacy
+
+This tool does not collect user information or usage statistics. It does include the option to check for updates which then reaches out
+to github to check against the latest version tag. See github's privacy policies for the data they would collect during such an action.
