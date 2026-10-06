@@ -105,7 +105,7 @@
             <Button x:Name="BtnAddUpdate" Content="Add/Update" Margin="0,0,6,0" Click="BtnAddUpdate_Click"
                     Style="{StaticResource PrimaryButton}"/>
             <Button x:Name="BtnEditSelected" Content="Edit Selected" Margin="0,0,6,0" Click="BtnEditSelected_Click"
-                    Style="{StaticResource SubtleButton}"/>
+                    Style="{StaticResource PrimaryButton}"/>
             <Button x:Name="BtnRemoveSelected" Content="Remove Selected" Margin="0,0,6,0" Click="BtnRemoveSelected_Click"
                     Style="{StaticResource SubtleButton}"/>
         </StackPanel>
