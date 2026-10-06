@@ -888,6 +888,16 @@ namespace SCUMQuestEditor
             _instance?.RefreshJsonPreview();
         }
 
+        public static void Log(string message)
+        {
+            try
+            {
+                string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log.txt");
+                File.AppendAllText(path, $"{DateTime.Now:O} {message}\n");
+            }
+            catch { }
+        }
+
         public void RefreshJsonPreview()
         {
             UpdateJsonPreview();

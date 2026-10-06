@@ -11,6 +11,8 @@ namespace SCUMQuestEditor
 {
     public partial class EditWeaponDialog : Window
     {
+        private static bool _weaponsWarningShown = false;
+
         private static readonly Lazy<List<string>> s_cachedWeapons = new(() =>
         {
             try
@@ -18,8 +20,13 @@ namespace SCUMQuestEditor
                 string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "_data", "EliminationWeapons.txt");
                 if (File.Exists(path))
                     return File.ReadAllLines(path).Where(line => !string.IsNullOrEmpty(line)).ToList();
+                else
+                    MainWindow.Log("EliminationWeapons.txt file not found.");
             }
-            catch { /* ignore */ }
+            catch (Exception ex)
+            {
+                MainWindow.Log($"Failed to load EliminationWeapons.txt: {ex.Message}");
+            }
             return new List<string> { "DefaultWeapon" };
         });
 
@@ -43,6 +50,16 @@ namespace SCUMQuestEditor
             foreach (var item in _availableWeapons)
             {
                 if (InitialSelections.Contains(item)) LstWeapons.SelectedItems.Add(item);
+            }
+
+            if (_availableWeapons.Count == 1 && _availableWeapons[0] == "DefaultWeapon" && !_weaponsWarningShown)
+            {
+                _weaponsWarningShown = true;
+                MessageBox.Show(
+                    "The EliminationWeapons.txt data file is missing or could not be loaded. Weapon selection may be limited.",
+                    "Data File Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
             }
 
             LstWeapons.SelectionChanged += LstWeapons_SelectionChanged;

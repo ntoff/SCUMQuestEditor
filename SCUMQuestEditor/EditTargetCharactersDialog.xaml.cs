@@ -7,6 +7,8 @@ namespace SCUMQuestEditor
 {
     public partial class EditTargetCharactersDialog : Window
     {
+        private static bool _targetsWarningShown = false;
+
         private static readonly Lazy<List<string>> s_cachedTypes = new(() =>
         {
             try
@@ -14,8 +16,13 @@ namespace SCUMQuestEditor
                 string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "_data", "EliminationTargets.txt");
                 if (File.Exists(path))
                     return File.ReadAllLines(path).Where(line => !string.IsNullOrEmpty(line)).ToList();
+                else
+                    MainWindow.Log("EliminationTargets.txt file not found.");
             }
-            catch { /* ignore */ }
+            catch (Exception ex)
+            {
+                MainWindow.Log($"Failed to load EliminationTargets.txt: {ex.Message}");
+            }
             return new List<string> { "DefaultTarget" };
         });
 
@@ -33,6 +40,16 @@ namespace SCUMQuestEditor
             foreach (var item in availableTypes)
             {
                 if (InitialSelections.Contains(item)) LstTargetTypes.SelectedItems.Add(item);
+            }
+
+            if (availableTypes.Count == 1 && availableTypes[0] == "DefaultTarget" && !_targetsWarningShown)
+            {
+                _targetsWarningShown = true;
+                MessageBox.Show(
+                    "The EliminationTargets.txt data file is missing or could not be loaded. Target character selection may be limited.",
+                    "Data File Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
             }
         }
 
