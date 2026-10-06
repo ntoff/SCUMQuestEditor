@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        Title="Edit Required Items" Height="800" Width="900" MinHeight="600" MinWidth="800" MaxWidth="1200" MaxHeight="900"
+        Title="Edit Required Items" Height="880" Width="900" MinHeight="600" MinWidth="800" MaxWidth="1200" MaxHeight="900"
         WindowStartupLocation="CenterOwner"
         ResizeMode="CanResizeWithGrip"
         Background="{DynamicResource MaterialDesignBackground}"
@@ -49,9 +49,16 @@
                 <Grid Grid.Column="0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <Grid Grid.Row="0">
+
+                    <TextBox Grid.Row="0" x:Name="TxtSearch" Margin="0,0,0,8" Height="36" Padding="8"
+                             Style="{StaticResource CompactTextBox}"
+                             materialDesign:HintAssist.Hint="Type to search items..."
+                             TextChanged="TxtSearch_TextChanged"/>
+
+                    <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
@@ -62,7 +69,7 @@
                             Style="{StaticResource PrimaryButton}"/>
                     </Grid>
 
-                    <Border Grid.Row="1" Style="{StaticResource CardStyle}" Padding="0" Margin="0,0,6,0">
+                    <Border Grid.Row="2" Style="{StaticResource CardStyle}" Padding="0" Margin="0,0,6,0">
                         <ListBox x:Name="LstAcceptedItems" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch"
                                  Style="{StaticResource MaterialDesignListBox}" SelectionMode="Multiple">
                             <ListBox.ItemTemplate>
@@ -79,22 +86,30 @@
                 <!-- Middle Column: Inputs -->
                 <Border Grid.Column="1" Style="{StaticResource CardStyle}" Margin="6,0,6,0" Padding="12">
                     <StackPanel>
-                        <TextBox x:Name="TxtSearch" Margin="0,0,0,8" Height="36" Padding="8"
-                                 Text="" Style="{StaticResource CompactTextBox}"
-                                 materialDesign:HintAssist.Hint="Type to search items..."
-                                 TextChanged="TxtSearch_TextChanged"/>
 
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                            <Label Content="Required:" HorizontalAlignment="Right" Margin="0,0,8,0" Style="{StaticResource CompactLabel}"/>
-                            <TextBox x:Name="TxtRequiredQty" Text="1" Width="70"
-                                     Style="{StaticResource CompactTextBox}"/>
-                        </StackPanel>
+                    <TextBlock Text="Required Number" Foreground="{DynamicResource MaterialDesignBody}"
+                                   FontSize="13" FontWeight="SemiBold" Margin="0,10,0,6"/>
 
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                            <Label Content="Random:" HorizontalAlignment="Right" Margin="0,0,8,0" Style="{StaticResource CompactLabel}"/>
-                            <TextBox x:Name="TxtRandomQty" Text="0" Width="70"
+                        <Grid Margin="0,0,0,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" MinWidth="100"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Label Grid.Row="0" Grid.Column="0" Content="Required Num:" HorizontalAlignment="Left" Margin="0,9,12,2" Style="{StaticResource CompactLabel}"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" x:Name="TxtRequiredQty" Text="1" Width="70" Margin="12,2,0,2"
+                                     ToolTip="Number of items required."
                                      Style="{StaticResource CompactTextBox}"/>
-                        </StackPanel>
+
+                            <Label Grid.Row="1" Grid.Column="0" Content="Random Additional:" HorizontalAlignment="Left" Margin="0,9,12,2" Style="{StaticResource CompactLabel}"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" x:Name="TxtRandomQty" Text="0" Width="70" Margin="12,2,0,2"
+                                     ToolTip="Random additional number of items to be collected, up to this amount."
+                                     Style="{StaticResource CompactTextBox}"/>
+                        </Grid>
 
                         <TextBlock Text="Item Condition" Foreground="{DynamicResource MaterialDesignBody}"
                                    FontSize="13" FontWeight="SemiBold" Margin="0,10,0,6"/>
@@ -110,15 +125,15 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <CheckBox x:Name="ChkMinHealth" Grid.Row="0" Grid.Column="0" Content="Min Health %" Margin="0,8,12,2"/>
+                            <CheckBox x:Name="ChkMinHealth" Grid.Row="0" Grid.Column="0" Content="Min Health %" Margin="0,9,12,2"/>
                             <TextBox x:Name="TxtMinHealth" Grid.Row="0" Grid.Column="1" Text="50" Width="70" Margin="12,2,0,2"
                                      Style="{StaticResource CompactTextBox}"/>
 
-                            <CheckBox x:Name="ChkMinUses" Grid.Row="1" Grid.Column="0" Content="Min Uses" Margin="0,8,12,2"/>
+                            <CheckBox x:Name="ChkMinUses" Grid.Row="1" Grid.Column="0" Content="Min Uses" Margin="0,9,12,2"/>
                             <TextBox x:Name="TxtMinUses" Grid.Row="1" Grid.Column="1" Text="1" Width="70" Margin="12,2,0,2"
                                      Style="{StaticResource CompactTextBox}"/>
 
-                            <CheckBox x:Name="ChkMinMass" Grid.Row="2" Grid.Column="0" Content="Min Mass (g)" Margin="0,8,12,2"/>
+                            <CheckBox x:Name="ChkMinMass" Grid.Row="2" Grid.Column="0" Content="Min Mass (g)" Margin="0,9,12,2"/>
                             <TextBox x:Name="TxtMinMass" Grid.Row="2" Grid.Column="1" Text="100" Width="70" Margin="12,2,0,2"
                                      Style="{StaticResource CompactTextBox}"/>
                         </Grid>
@@ -143,7 +158,7 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <CheckBox x:Name="ChkMinCookLevel" Grid.Row="0" Grid.Column="0" Content="Min Cook Level" Margin="0,8,12,2"/>
+                            <CheckBox x:Name="ChkMinCookLevel" Grid.Row="0" Grid.Column="0" Content="Min Cook Level" Margin="0,9,12,2"/>
                             <ComboBox x:Name="CmbMinCookLevel" Grid.Row="0" Grid.Column="1" Width="110" Margin="12,2,0,2">
                                 <ComboBoxItem Content="Raw" />
                                 <ComboBoxItem Content="Undercooked" />
@@ -152,7 +167,7 @@
                                 <ComboBoxItem Content="Burned" />
                             </ComboBox>
 
-                            <CheckBox x:Name="ChkMaxCookLevel" Grid.Row="1" Grid.Column="0" Content="Max Cook Level" Margin="0,8,12,2"/>
+                            <CheckBox x:Name="ChkMaxCookLevel" Grid.Row="1" Grid.Column="0" Content="Max Cook Level" Margin="0,9,12,2"/>
                             <ComboBox x:Name="CmbMaxCookLevel" Grid.Row="1" Grid.Column="1" Width="110" Margin="12,2,0,2">
                                 <ComboBoxItem Content="Raw" />
                                 <ComboBoxItem Content="Undercooked" />
@@ -161,7 +176,7 @@
                                 <ComboBoxItem Content="Burned" />
                             </ComboBox>
 
-                            <CheckBox x:Name="ChkMinCookQuality" Grid.Row="2" Grid.Column="0" Content="Min Cook Quality" Margin="0,8,12,2"/>
+                            <CheckBox x:Name="ChkMinCookQuality" Grid.Row="2" Grid.Column="0" Content="Min Cook Quality" Margin="0,9,12,2"/>
                             <ComboBox x:Name="CmbMinCookQuality" Grid.Row="2" Grid.Column="1" Width="110" Margin="12,2,0,2">
                                 <ComboBoxItem Content="Ruined" />
                                 <ComboBoxItem Content="Bad" />
@@ -185,11 +200,11 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <CheckBox x:Name="ChkMinResourcePct" Grid.Row="0" Grid.Column="0" Content="Min Resource (%)" Margin="0,8,12,2"/>
+                            <CheckBox x:Name="ChkMinResourcePct" Grid.Row="0" Grid.Column="0" Content="Min Resource (%)" Margin="0,9,12,2"/>
                             <TextBox x:Name="TxtMinResourcePct" Grid.Row="0" Grid.Column="1" Text="50" Width="70" Margin="12,2,0,2"
                                      Style="{StaticResource CompactTextBox}"/>
 
-                            <CheckBox x:Name="ChkMinResourceMl" Grid.Row="1" Grid.Column="0" Content="Min Resource (ml)" Margin="0,8,12,2"/>
+                            <CheckBox x:Name="ChkMinResourceMl" Grid.Row="1" Grid.Column="0" Content="Min Resource (ml)" Margin="0,9,12,2"/>
                             <TextBox x:Name="TxtMinResourceMl" Grid.Row="1" Grid.Column="1" Text="100" Width="70" Margin="12,2,0,2"
                                      Style="{StaticResource CompactTextBox}"/>
                         </Grid>
