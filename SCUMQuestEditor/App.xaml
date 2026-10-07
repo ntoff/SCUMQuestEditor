@@ -184,6 +184,7 @@
             <!-- Converters -->
             <local:ConditionsIndexEqualsConverter x:Key="ConditionsIndexEqualsConverter" />
             <local:ConditionsIndexLessThanConverter x:Key="ConditionsIndexLessThanConverter" />
+            <local:DarkModeToBackgroundColorConverter x:Key="DarkModeToBackgroundColorConverter" />
 
         </ResourceDictionary>
     </Application.Resources>

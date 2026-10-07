@@ -482,6 +482,7 @@ namespace SCUMQuestEditor
         public static bool _tradeItemsWarningShown;
         public static List<string> FetchItems { get; private set; } = new List<string> { "05_Teeth_Necklace", "12_Gauge_Birdshot" };
         public const int MaxKillAmount = 1000000000;
+        public static AppSettings Settings => _settings;
         private static AppSettings _settings = new AppSettings();
         private static SolidColorBrush _errorHighlightBrush = new SolidColorBrush(Color.FromArgb(255, 255, 50, 50));
         private static MainWindow? _instance;
@@ -836,6 +837,100 @@ namespace SCUMQuestEditor
             }
         }
 
+        private bool _editModeEnabled = false;
+
+        private void SetEditMode(bool enabled)
+        {
+            _editModeEnabled = enabled;
+            
+            if (_editModeEnabled)
+            {
+                TxtJson.IsReadOnly = false;
+                EditWarningBanner.Visibility = Visibility.Visible;
+                EditWarningText.Foreground = _errorHighlightBrush;
+                UpdateEditWarningBackground();
+                BtnSaveJson.IsEnabled = true;
+                BtnSaveJson.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                TxtJson.IsReadOnly = true;
+                EditWarningBanner.Visibility = Visibility.Collapsed;
+                BtnSaveJson.IsEnabled = false;
+                BtnSaveJson.Visibility = Visibility.Collapsed;
+                UpdateJsonPreview();
+            }
+        }
+
+        private void UpdateEditWarningBackground()
+        {
+            string color = _settings.DarkMode ? "#333333" : "#F5F5F5";
+            EditWarningBanner.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(color));
+        }
+
+        private void MenuEditModeToggle_Click(object sender, RoutedEventArgs e)
+        {
+            SetEditMode(((MenuItem)sender).IsChecked == true);
+        }
+
+        private void BtnSaveJson_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string jsonText = TxtJson.Text ?? string.Empty;
+                CurrentTradeDeal = JsonSerializer.Deserialize<TradeDeal>(jsonText, s_serializeIndentedOptions)!;
+
+                if (CurrentTradeDeal == null) return;
+
+                List<string> emptyFields = new();
+                bool rewardPoolEmpty = (CurrentTradeDeal.RewardPool == null || CurrentTradeDeal.RewardPool.Count == 0) || CurrentTradeDeal.RewardPool.All(r => r.CurrencyNormal == 0 && r.CurrencyGold == 0 && r.Fame == 0 && r.Skills == null && r.TradeDeals == null);
+                if (rewardPoolEmpty) emptyFields.Add("Reward Pool");
+                if (CurrentTradeDeal.Conditions == null || CurrentTradeDeal.Conditions.Count == 0) emptyFields.Add("Conditions");
+
+                if (emptyFields.Count > 0)
+                {
+                    string fieldsList = string.Join(", ", emptyFields);
+                    string message = $"The following fields cannot be empty:\n{fieldsList}";
+                    SaveValidationDialog dialog = new SaveValidationDialog(message) { Owner = this };
+                    dialog.ShowDialog();
+                    return;
+                }
+
+                string fileName;
+                if (!string.IsNullOrEmpty(_currentFilePath))
+                {
+                    fileName = Path.GetFileName(_currentFilePath);
+                }
+                else
+                {
+                    fileName = GenerateFileName();
+                }
+
+                SaveFileDialog saveFileDialog = new SaveFileDialog
+                {
+                    Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+                    Title = "Save Quest File",
+                    DefaultExt = "json",
+                    FileName = fileName
+                };
+
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    string outputJson = JsonSerializer.Serialize(CurrentTradeDeal, typeof(TradeDeal), s_serializeIndentedOptions);
+                    File.WriteAllText(saveFileDialog.FileName, outputJson);
+                    _currentFilePath = saveFileDialog.FileName;
+                }
+            }
+            catch (JsonException ex)
+            {
+                MessageBox.Show($"Invalid JSON format: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error saving quest file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         private void About_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new AboutDialog();
@@ -871,6 +966,11 @@ namespace SCUMQuestEditor
             if (bundledTheme != null)
             {
                 bundledTheme.BaseTheme = isDark ? MaterialDesignThemes.Wpf.BaseTheme.Dark : MaterialDesignThemes.Wpf.BaseTheme.Light;
+            }
+
+            if (_instance != null && _instance._editModeEnabled)
+            {
+                _instance.UpdateEditWarningBackground();
             }
         }
 
@@ -933,6 +1033,10 @@ namespace SCUMQuestEditor
             _errorHighlightBrush = new SolidColorBrush(color);
             _errorHighlightBrush.Freeze();
             _instance?.RefreshJsonPreview();
+            if (_instance != null && _instance._editModeEnabled)
+            {
+                _instance.EditWarningText.Foreground = _errorHighlightBrush;
+            }
         }
 
         public static void Log(string message)
@@ -2093,6 +2197,23 @@ namespace SCUMQuestEditor
                 }
             }
             return Visibility.Visible;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class DarkModeToBackgroundColorConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value is bool darkMode)
+            {
+                return darkMode ? "#7F000000" : "#E8F5E9";
+            }
+            return "#7F000000";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

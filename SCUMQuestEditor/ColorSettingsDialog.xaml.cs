@@ -162,6 +162,11 @@ namespace SCUMQuestEditor
 
         private void BtnApply_Click(object sender, RoutedEventArgs e)
         {
+            MainWindow.Settings.DarkMode = _darkMode;
+            MainWindow.Settings.PrimaryColor = _selectedPrimaryColor;
+            MainWindow.Settings.SecondaryColor = _selectedSecondaryColor;
+            MainWindow.Settings.ErrorHighlightColor = _selectedErrorColor;
+            
             MainWindow.ApplyDarkMode(_darkMode);
             MainWindow.ApplyTheme(_selectedPrimaryColor, _selectedSecondaryColor);
             MainWindow.ApplyErrorColor(_selectedErrorColor);
