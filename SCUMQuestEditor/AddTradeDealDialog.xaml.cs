@@ -7,11 +7,13 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Text.RegularExpressions;
+using SCUMQuestEditor.Models;
 
 namespace SCUMQuestEditor
 {
     public partial class AddTradeDealDialog : Window
     {
+        private MainWindow? _mainWindow;
         private static readonly Lazy<List<TraderData>?> s_cachedTraders = new(() =>
         {
             try
@@ -46,8 +48,9 @@ namespace SCUMQuestEditor
 
         private readonly string _traderName;
 
-        public AddTradeDealDialog(TradeDealReward? existingReward = null, string? traderName = null)
+        public AddTradeDealDialog(MainWindow mainWindow, TradeDealReward? existingReward = null, string? traderName = null)
         {
+            _mainWindow = mainWindow;
             InitializeComponent();
 
             Title = existingReward != null ? "Edit Trade Deal" : "Add Trade Deal";
@@ -109,9 +112,9 @@ namespace SCUMQuestEditor
             {
                 AvailableItems.Add("DefaultItem");
 
-                if (!MainWindow._tradeItemsWarningShown)
+                if (!(_mainWindow?.TradeItemsWarningShown ?? false))
                 {
-                    MainWindow._tradeItemsWarningShown = true;
+                    _mainWindow.TradeItemsWarningShown = true;
                     MessageBox.Show(
                         "The TradeItems.json data file is missing or could not be loaded. Trade deal items may not be available.",
                         "Data File Error",

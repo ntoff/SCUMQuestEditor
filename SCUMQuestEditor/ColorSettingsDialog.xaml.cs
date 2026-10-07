@@ -14,6 +14,7 @@ namespace SCUMQuestEditor
         private string _selectedSecondaryColor;
         private string _selectedErrorColor;
         private bool _darkMode;
+        private MainWindow? _mainWindow;
 
         public string PrimaryColor => _selectedPrimaryColor;
         public string SecondaryColor => _selectedSecondaryColor;
@@ -44,8 +45,9 @@ namespace SCUMQuestEditor
 
         private static Color MakeColor(byte r, byte g, byte b) => Color.FromArgb(255, r, g, b);
 
-        public ColorSettingsDialog(string primaryColor, string secondaryColor, string errorColor, bool darkMode = true)
+        public ColorSettingsDialog(MainWindow mainWindow, string primaryColor, string secondaryColor, string errorColor, bool darkMode = true)
         {
+            _mainWindow = mainWindow;
             InitializeComponent();
             _selectedPrimaryColor = primaryColor;
             _selectedSecondaryColor = secondaryColor;
@@ -168,14 +170,17 @@ namespace SCUMQuestEditor
 
         private void CommitChanges()
         {
-            MainWindow.Settings.DarkMode = _darkMode;
-            MainWindow.Settings.PrimaryColor = _selectedPrimaryColor;
-            MainWindow.Settings.SecondaryColor = _selectedSecondaryColor;
-            MainWindow.Settings.ErrorHighlightColor = _selectedErrorColor;
-            
-            MainWindow.ApplyDarkMode(_darkMode);
-            MainWindow.ApplyTheme(_selectedPrimaryColor, _selectedSecondaryColor);
-            MainWindow.ApplyErrorColor(_selectedErrorColor);
+            if (_mainWindow != null)
+            {
+                _mainWindow.Settings.DarkMode = _darkMode;
+                _mainWindow.Settings.PrimaryColor = _selectedPrimaryColor;
+                _mainWindow.Settings.SecondaryColor = _selectedSecondaryColor;
+                _mainWindow.Settings.ErrorHighlightColor = _selectedErrorColor;
+                
+                _mainWindow.ApplyDarkMode(_darkMode);
+                _mainWindow.ApplyTheme(_selectedPrimaryColor, _selectedSecondaryColor);
+                _mainWindow.ApplyErrorColor(_selectedErrorColor);
+            }
         }
 
         private void BtnCancel_Click(object sender, RoutedEventArgs e)

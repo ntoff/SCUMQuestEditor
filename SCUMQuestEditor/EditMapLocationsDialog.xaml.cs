@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Text.RegularExpressions;
+using SCUMQuestEditor.Models;
 
 namespace SCUMQuestEditor
 {

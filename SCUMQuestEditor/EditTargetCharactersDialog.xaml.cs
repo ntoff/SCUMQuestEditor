@@ -7,6 +7,7 @@ namespace SCUMQuestEditor
 {
     public partial class EditTargetCharactersDialog : Window
     {
+        private MainWindow? _mainWindow;
         private static readonly Lazy<List<string>> s_cachedTypes = new(() =>
         {
             try
@@ -27,8 +28,9 @@ namespace SCUMQuestEditor
         public List<string> SelectedItems { get; private set; } = new List<string>();
         private List<string> InitialSelections { get; set; } = new List<string>();
 
-        public EditTargetCharactersDialog(List<string>? initialSelections = null)
+        public EditTargetCharactersDialog(MainWindow mainWindow, List<string>? initialSelections = null)
         {
+            _mainWindow = mainWindow;
             InitializeComponent();
             InitialSelections = initialSelections ?? new List<string>();
 
@@ -40,9 +42,9 @@ namespace SCUMQuestEditor
                 if (InitialSelections.Contains(item)) LstTargetTypes.SelectedItems.Add(item);
             }
 
-            if (availableTypes.Count == 1 && availableTypes[0] == "DefaultTarget" && !MainWindow._targetsWarningShown)
+            if (availableTypes.Count == 1 && availableTypes[0] == "DefaultTarget" && !(_mainWindow?.TargetsWarningShown ?? false))
             {
-                MainWindow._targetsWarningShown = true;
+                    _mainWindow.TargetsWarningShown = true;
                 MessageBox.Show(
                     "The EliminationTargets.txt data file is missing or could not be loaded. Target character selection may be limited.",
                     "Data File Error",

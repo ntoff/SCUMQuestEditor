@@ -11,6 +11,7 @@ namespace SCUMQuestEditor
 {
     public partial class EditWeaponDialog : Window
     {
+        private MainWindow? _mainWindow;
         private static readonly Lazy<List<string>> s_cachedWeapons = new(() =>
         {
             try
@@ -34,8 +35,9 @@ namespace SCUMQuestEditor
         private ListCollectionView _listCollectionView;
         private HashSet<string> _userSelections = new HashSet<string>();
 
-        public EditWeaponDialog(List<string>? initialSelections = null)
+        public EditWeaponDialog(MainWindow mainWindow, List<string>? initialSelections = null)
         {
+            _mainWindow = mainWindow;
             InitializeComponent();
             InitialSelections = initialSelections ?? new List<string>();
             _userSelections = new HashSet<string>(InitialSelections);
@@ -50,9 +52,9 @@ namespace SCUMQuestEditor
                 if (InitialSelections.Contains(item)) LstWeapons.SelectedItems.Add(item);
             }
 
-            if (_availableWeapons.Count == 1 && _availableWeapons[0] == "DefaultWeapon" && !MainWindow._weaponsWarningShown)
+            if (_availableWeapons.Count == 1 && _availableWeapons[0] == "DefaultWeapon" && !(_mainWindow?.WeaponsWarningShown ?? false))
             {
-                MainWindow._weaponsWarningShown = true;
+                    _mainWindow.WeaponsWarningShown = true;
                 MessageBox.Show(
                     "The EliminationWeapons.txt data file is missing or could not be loaded. Weapon selection may be limited.",
                     "Data File Error",

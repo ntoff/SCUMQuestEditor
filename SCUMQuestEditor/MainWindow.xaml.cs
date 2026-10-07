@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -18,481 +18,50 @@ using System.Windows.Input;
 using System.Windows.Media;
 using MaterialDesignColors;
 using MaterialDesignThemes.Wpf;
+using SCUMQuestEditor.Models;
+using SCUMQuestEditor.Converters;
+using SCUMQuestEditor.ViewModels;
+using ModelsCondition = SCUMQuestEditor.Models.Condition;
 
 namespace SCUMQuestEditor
 {
-    public class SkillReward
-    {
-        public string Skill { get; set; } = "";
-        public double Experience { get; set; } = 0;
-    }
-
-    public class TradeDealReward
-    {
-        public string Item { get; set; } = "";
-        public double Price { get; set; } = 0;
-        public int Amount { get; set; } = 1;
-        public double Fame { get; set; } = 0;
-        public bool AllowExcluded { get; set; } = false;
-    }
-
-    public class RewardPool
-    {
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public int CurrencyNormal { get; set; } = 0;
-
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public int CurrencyGold { get; set; } = 0;
-
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public int Fame { get; set; } = 0;
-
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public List<SkillReward>? Skills { get; set; } = null;
-
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public List<TradeDealReward>? TradeDeals { get; set; } = null;
-    }
-
-    public class TradeDeal
-    {
-        public string AssociatedNpc { get; set; } = "";
-        public int Tier { get; set; }
-        public string Title { get; set; } = "";
-        public string Description { get; set; } = "";
-        public double TimeLimitHours { get; set; }
-        public List<RewardPool> RewardPool { get; set; } = new List<RewardPool>();
-        public List<Condition> Conditions { get; set; } = new List<Condition>();
-    }
-
-    public class AppSettings
-    {
-        public string FileNameFormat { get; set; } = "T{tier}_{trader}_{title}";
-        public string PrimaryColor { get; set; } = "BlueGrey";
-        public string SecondaryColor { get; set; } = "Green";
-        public string ErrorHighlightColor { get; set; } = "Red";
-        public bool DarkMode { get; set; } = true;
-    }
-
-    public class Condition : INotifyPropertyChanged
-    {
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        private string _trackingCaption = "";
-        public string TrackingCaption
-        {
-            get => _trackingCaption;
-            set
-            {
-                if (_trackingCaption != value)
-                {
-                    _trackingCaption = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private int _sequenceIndex = 0;
-        public int SequenceIndex
-        {
-            get => _sequenceIndex;
-            set
-            {
-                if (value < 0) value = 0;
-                else if (value > 10) value = 10;
-
-                if (_sequenceIndex != value)
-                {
-                    _sequenceIndex = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private bool _canBeAutoCompleted;
-        public bool CanBeAutoCompleted
-        {
-            get => _canBeAutoCompleted;
-            set
-            {
-                if (_canBeAutoCompleted != value)
-                {
-                    _canBeAutoCompleted = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        [JsonPropertyName("Type")]
-        public string Type { get; set; } = "";
-
-        [JsonPropertyName("LocationsShownOnMap")]
-        public List<MapLocation> LocationsShownOnMap { get; set; } = new List<MapLocation>();
-    }
-
-    public class MapLocation
-    {
-        [JsonPropertyName("Location")]
-        public MapLocationEntry Location { get; set; } = new MapLocationEntry();
-
-        [JsonPropertyName("SizeFactor")]
-        public double SizeFactor { get; set; } = 1.0;
-
-        public string FormatString => $"X={Location.X} Y={Location.Y} Z={Location.Z}";
-    }
-
-    public class MapLocationEntry
-    {
-        [JsonPropertyName("X")]
-        public double X { get; set; }
-
-        [JsonPropertyName("Y")]
-        public double Y { get; set; }
-
-        [JsonPropertyName("Z")]
-        public double Z { get; set; }
-    }
-
-    public class EliminationCondition : Condition
-    {
-        public EliminationCondition()
-        {
-            Type = "Elimination";
-        }
-
-        public int Amount { get; set; } = 1;
-        public List<string>? TargetCharacters { get; set; } = new List<string>();
-        public List<string>? AllowedWeapons { get; set; } = new List<string>();
-    }
-
-    public class FetchCondition : Condition
-    {
-        public FetchCondition()
-        {
-            Type = "Fetch";
-        }
-
-        [JsonPropertyName("DisablePurchaseOfRequiredItems")]
-        public bool DisablePurchaseOfRequiredItems { get; set; } = true;
-
-        [JsonPropertyName("PlayerKeepsItems")]
-        public bool PlayerKeepsItems { get; set; } = false;
-
-
-        [JsonPropertyName("RequiredItems")]
-        public List<RequiredItem> RequiredItems { get; set; } = new List<RequiredItem>();
-    }
-
-    public class RequiredItem
-    {
-        [JsonPropertyName("AcceptedItems")]
-        public List<string> AcceptedItems { get; set; } = new List<string>();
-
-        public string ItemName => string.Join(", ", AcceptedItems);
-
-        public string AcceptedItemsDisplay => string.Join(", ", AcceptedItems);
-
-        [JsonPropertyName("RequiredNum")]
-        public int RequiredNum { get; set; } = 0;
-
-        public string Quantity => RequiredNum.ToString();
-
-        private string? _propertiesCache;
-        private int _propertiesVersion = 0;
-        private int _lastAccessedVersion = -1;
-
-        public string Properties
-        {
-            get
-            {
-                if (_lastAccessedVersion != _propertiesVersion)
-                {
-                    _propertiesCache = ComputeProperties();
-                    _lastAccessedVersion = _propertiesVersion;
-                }
-                return _propertiesCache!;
-            }
-        }
-
-        private string ComputeProperties()
-        {
-            var parts = new System.Collections.Generic.List<string>(8);
-            if (MinAcceptedItemUses > 0) parts.Add($"Uses>={MinAcceptedItemUses}");
-            if (MinAcceptedItemMass > 0) parts.Add($"Mass>={MinAcceptedItemMass}");
-            if (MinAcceptedItemHealth > 0) parts.Add($"Health>={MinAcceptedItemHealth}");
-            if (!string.IsNullOrEmpty(MinAcceptedCookLevel)) parts.Add($"MinCook>={MinAcceptedCookLevel}");
-            if (!string.IsNullOrEmpty(MaxAcceptedCookLevel)) parts.Add($"MaxCook<={MaxAcceptedCookLevel}");
-            if (!string.IsNullOrEmpty(MinAcceptedCookQuality)) parts.Add($"CookedQuality>={MinAcceptedCookQuality}");
-            if (MinAcceptedItemResourceRatio > 0) parts.Add($"Resource%>={MinAcceptedItemResourceRatio}");
-            if (MinAcceptedItemResourceAmount > 0) parts.Add($"Resource>={MinAcceptedItemResourceAmount}");
-            if (RandomAdditionalRequiredNum > 0) parts.Add($"Random+={RandomAdditionalRequiredNum}");
-            return string.Join("; ", parts);
-        }
-
-        public void MarkPropertiesDirty() => _propertiesVersion++;
-
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public int MinAcceptedItemUses { get; set; }
-
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public int MinAcceptedItemMass { get; set; }
-
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public int MinAcceptedItemHealth { get; set; }
-
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public string? MinAcceptedCookLevel { get; set; }
-
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public string? MaxAcceptedCookLevel { get; set; }
-
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public string? MinAcceptedCookQuality { get; set; }
-
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public int MinAcceptedItemResourceRatio { get; set; }
-
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public int MinAcceptedItemResourceAmount { get; set; }
-
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public int RandomAdditionalRequiredNum { get; set; }
-    }
-
-    public class InteractionLocation
-    {
-        [JsonPropertyName("AnchorMesh")]
-        public string AnchorMesh { get; set; } = "";
-
-        [JsonPropertyName("FallbackTransform")]
-        public string FallbackTransform { get; set; } = "";
-
-        [JsonPropertyName("VisibleMesh")]
-        public string VisibleMesh { get; set; } = "";
-
-        // CHANGED: Make Instance nullable so it can be null if missing in JSON
-        [JsonPropertyName("Instance")]
-        public int? Instance { get; set; } = null;
-
-        // NEW: Helper for display purposes
-        [JsonIgnore]
-        public string InstanceDisplay => Instance.HasValue ? Instance.Value.ToString() : "N/A";
-
-        [JsonIgnore]
-        public bool HasAnchor => !string.IsNullOrEmpty(AnchorMesh);
-    }
-
-
-    public class InteractionCondition : Condition
-    {
-        public InteractionCondition()
-        {
-            Type = "Interaction";
-        }
-
-        [JsonPropertyName("SpawnOnlyNeeded")]
-        public bool SpawnOnlyNeeded { get; set; } = true;
-
-        [JsonPropertyName("MinNeeded")]
-        public int MinNeeded { get; set; } = 1;
-
-        [JsonPropertyName("MaxNeeded")]
-        public int MaxNeeded { get; set; } = 1;
-
-        [JsonPropertyName("WorldMarkerShowDistance")]
-        public int WorldMarkerShowDistance { get; set; } = 5;
-
-        [JsonPropertyName("Locations")]
-        public List<InteractionLocation> Locations { get; set; } = new List<InteractionLocation>();
-    }
-
-    public class ConditionConverter : JsonConverter<Condition>
-    {
-        public override Condition? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            // Deserialize to JsonElement
-            JsonElement element = JsonSerializer.Deserialize<JsonElement>(ref reader);
-
-            // Get 'Type' property
-            if (!element.TryGetProperty("Type", out JsonElement typeElement))
-            {
-                throw new JsonException("Condition JSON must contain a 'Type' property.");
-            }
-
-            string? conditionType = typeElement.GetString();
-            if (string.IsNullOrEmpty(conditionType))
-            {
-                throw new JsonException("Condition 'Type' property is missing or empty.");
-            }
-
-            // Map type string to concrete Type
-            Type targetType = conditionType switch
-            {
-                "Elimination" => typeof(EliminationCondition),
-                "Fetch" => typeof(FetchCondition),
-                "Interaction" => typeof(InteractionCondition),
-                _ => throw new JsonException($"Unknown condition type: {conditionType}")
-            };
-
-            // Deserialize to concrete type — returns object?
-            var result = JsonSerializer.Deserialize(element.GetRawText(), targetType, options);
-
-            // Ensure result is of the expected type and non-null
-            if (result is not Condition condition)
-            {
-                throw new JsonException($"Deserialized object is not a Condition (got {result?.GetType()?.Name ?? "null"}).");
-            }
-
-            return condition;
-        }
-
-
-        public override void Write(Utf8JsonWriter writer, Condition value, JsonSerializerOptions options)
-        {
-            writer.WriteStartObject();
-            writer.WriteString("TrackingCaption", value.TrackingCaption);
-            writer.WriteNumber("SequenceIndex", value.SequenceIndex);
-            writer.WriteBoolean("CanBeAutoCompleted", value.CanBeAutoCompleted);
-            writer.WriteString("Type", value.Type);
-
-            if (value is EliminationCondition elimination)
-            {
-                writer.WriteNumber("Amount", elimination.Amount);
-
-                if (elimination.TargetCharacters != null && elimination.TargetCharacters.Count > 0)
-                {
-                    writer.WriteStartArray("TargetCharacters");
-                    foreach (var item in elimination.TargetCharacters) writer.WriteStringValue(item);
-                    writer.WriteEndArray();
-                }
-
-                if (elimination.AllowedWeapons != null && elimination.AllowedWeapons.Count > 0)
-                {
-                    writer.WriteStartArray("AllowedWeapons");
-                    foreach (var item in elimination.AllowedWeapons) writer.WriteStringValue(item);
-                    writer.WriteEndArray();
-                }
-            }
-            else if (value is FetchCondition fetch)
-            {
-                writer.WriteBoolean("DisablePurchaseOfRequiredItems", fetch.DisablePurchaseOfRequiredItems);
-                writer.WriteBoolean("PlayerKeepsItems", fetch.PlayerKeepsItems);
-
-                if (fetch.RequiredItems != null && fetch.RequiredItems.Count > 0)
-                {
-                    writer.WriteStartArray("RequiredItems");
-                    foreach (var item in fetch.RequiredItems)
-                    {
-                        writer.WriteStartObject();
-                        writer.WriteStartArray("AcceptedItems");
-                        foreach (var acceptedItem in item.AcceptedItems) writer.WriteStringValue(acceptedItem);
-                        writer.WriteEndArray();
-                        writer.WriteNumber("RequiredNum", item.RequiredNum);
-
-                        if (item.MinAcceptedItemUses > 0) writer.WriteNumber("MinAcceptedItemUses", item.MinAcceptedItemUses);
-                        if (item.MinAcceptedItemMass > 0) writer.WriteNumber("MinAcceptedItemMass", item.MinAcceptedItemMass);
-                        if (item.MinAcceptedItemHealth > 0) writer.WriteNumber("MinAcceptedItemHealth", item.MinAcceptedItemHealth);
-                        if (!string.IsNullOrEmpty(item.MinAcceptedCookLevel)) writer.WriteString("MinAcceptedCookLevel", item.MinAcceptedCookLevel);
-                        if (!string.IsNullOrEmpty(item.MaxAcceptedCookLevel)) writer.WriteString("MaxAcceptedCookLevel", item.MaxAcceptedCookLevel);
-                        if (!string.IsNullOrEmpty(item.MinAcceptedCookQuality)) writer.WriteString("MinAcceptedCookQuality", item.MinAcceptedCookQuality);
-                        if (item.MinAcceptedItemResourceRatio > 0) writer.WriteNumber("MinAcceptedItemResourceRatio", item.MinAcceptedItemResourceRatio);
-                        if (item.MinAcceptedItemResourceAmount > 0) writer.WriteNumber("MinAcceptedItemResourceAmount", item.MinAcceptedItemResourceAmount);
-                        if (item.RandomAdditionalRequiredNum > 0) writer.WriteNumber("RandomAdditionalRequiredNum", item.RandomAdditionalRequiredNum);
-
-                        writer.WriteEndObject();
-                    }
-                    writer.WriteEndArray();
-                }
-            }
-            else if (value is InteractionCondition interaction)
-            {
-
-                if (interaction.Locations != null && interaction.Locations.Count > 0)
-                {
-                    writer.WriteStartArray("Locations");
-                    foreach (var loc in interaction.Locations)
-                    {
-                        writer.WriteStartObject();
-                        writer.WriteString("AnchorMesh", loc.AnchorMesh);
-                        writer.WriteString("FallbackTransform", loc.FallbackTransform);
-                        writer.WriteString("VisibleMesh", loc.VisibleMesh);
-                        if (loc.Instance.HasValue)
-                        {
-                            writer.WriteNumber("Instance", loc.Instance.Value);
-                        }
-                        writer.WriteEndObject();
-                    }
-                    writer.WriteEndArray();
-                }
-
-                writer.WriteNumber("MinNeeded", interaction.MinNeeded);
-                writer.WriteNumber("MaxNeeded", interaction.MaxNeeded);
-                writer.WriteBoolean("SpawnOnlyNeeded", interaction.SpawnOnlyNeeded);
-                writer.WriteNumber("WorldMarkerShowDistance", interaction.WorldMarkerShowDistance);
-            }
-
-            if (value.LocationsShownOnMap != null && value.LocationsShownOnMap.Count > 0)
-            {
-                writer.WriteStartArray("LocationsShownOnMap");
-                foreach (var loc in value.LocationsShownOnMap)
-                {
-                    writer.WriteStartObject();
-                    writer.WriteStartObject("Location");
-                    writer.WriteNumber("X", loc.Location.X);
-                    writer.WriteNumber("Y", loc.Location.Y);
-                    writer.WriteNumber("Z", loc.Location.Z);
-                    writer.WriteEndObject();
-                    writer.WriteNumber("SizeFactor", loc.SizeFactor);
-                    writer.WriteEndObject();
-                }
-                writer.WriteEndArray();
-            }
-
-            writer.WriteEndObject();
-        }
-    }
-
     public partial class MainWindow : Window
     {
-        private static readonly Regex s_digitsRegex = new(@"^\d*$", RegexOptions.Compiled);
-        private static readonly Regex s_floatRegex = new(@"^\d*\.?\d*$", RegexOptions.Compiled);
+        public MainWindowViewModel ViewModel { get; }
 
-        private static readonly JsonSerializerOptions s_deserializeOptions = new()
+        private readonly Regex s_digitsRegex = new(@"^\d*$", RegexOptions.Compiled);
+        private readonly Regex s_floatRegex = new(@"^\d*\.?\d*$", RegexOptions.Compiled);
+
+        private readonly JsonSerializerOptions s_deserializeOptions = new()
         {
             PropertyNameCaseInsensitive = true,
             Converters = { new ConditionConverter() }
         };
 
-        private static readonly JsonSerializerOptions s_serializeIndentedOptions = new()
+        private readonly JsonSerializerOptions s_serializeIndentedOptions = new()
         {
             WriteIndented = true,
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
             Converters = { new ConditionConverter() }
         };
 
-        public static List<string> TradeItems { get; private set; } = new List<string> { "Default Item" };
-        public static bool _targetsWarningShown;
-        public static bool _weaponsWarningShown;
-        public static bool _fetchItemsWarningShown;
-        public static bool _tradeItemsWarningShown;
-        public static List<string> FetchItems { get; private set; } = new List<string> { "05_Teeth_Necklace", "12_Gauge_Birdshot" };
+        public List<string> TradeItems { get; private set; } = new List<string> { "Default Item" };
+        public bool TargetsWarningShown { get; set; }
+        public bool WeaponsWarningShown { get; set; }
+        public bool FetchItemsWarningShown { get; set; }
+        public bool TradeItemsWarningShown { get; set; }
+        public List<string> FetchItems { get; private set; } = new List<string> { "05_Teeth_Necklace", "12_Gauge_Birdshot" };
         public const int MaxKillAmount = 1000000000;
-        public static AppSettings Settings => _settings;
-        private static AppSettings _settings = new AppSettings();
-        private static SolidColorBrush _errorHighlightBrush = new SolidColorBrush(Color.FromArgb(255, 0xEF, 0x53, 0x50));
-        private static MainWindow? _instance;
+        public AppSettings Settings { get; } = new AppSettings();
+        private SolidColorBrush _errorHighlightBrush = new SolidColorBrush(Color.FromArgb(255, 0xEF, 0x53, 0x50));
         private string? _currentFilePath;
 
         public MainWindow()
         {
+            ViewModel = new MainWindowViewModel();
             InitializeComponent();
+            DataContext = ViewModel;
             this.Loaded += MainWindow_Loaded;
-            _instance = this;
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -515,15 +84,15 @@ namespace SCUMQuestEditor
             string targetsPath = Path.Combine(dataDir, "EliminationTargets.txt");
             if (!File.Exists(targetsPath))
             {
-                MainWindow.Log("EliminationTargets.txt file not found.");
-                _targetsWarningShown = true;
+                Log("EliminationTargets.txt file not found.");
+                TargetsWarningShown = true;
             }
 
             string weaponsPath = Path.Combine(dataDir, "EliminationWeapons.txt");
             if (!File.Exists(weaponsPath))
             {
-                MainWindow.Log("EliminationWeapons.txt file not found.");
-                _weaponsWarningShown = true;
+                Log("EliminationWeapons.txt file not found.");
+                WeaponsWarningShown = true;
             }
 
             string fetchPath = Path.Combine(dataDir, "FetchItems.txt");
@@ -531,39 +100,39 @@ namespace SCUMQuestEditor
                 FetchItems = File.ReadAllLines(fetchPath).Where(line => !string.IsNullOrEmpty(line)).ToList();
             else
             {
-                MainWindow.Log("FetchItems.txt file not found.");
-                _fetchItemsWarningShown = true;
+                Log("FetchItems.txt file not found.");
+                FetchItemsWarningShown = true;
             }
 
             string tradeItemsPath = Path.Combine(dataDir, "TradeItems.json");
             if (!File.Exists(tradeItemsPath))
             {
-                MainWindow.Log("TradeItems.json file not found.");
-                _tradeItemsWarningShown = true;
+                Log("TradeItems.json file not found.");
+                TradeItemsWarningShown = true;
             }
 
-            if (_targetsWarningShown)
+            if (TargetsWarningShown)
                 MessageBox.Show(
                     "The EliminationTargets.txt data file is missing or could not be loaded. Target character selection may be limited.",
                     "Data File Error",
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
 
-            if (_weaponsWarningShown)
+            if (WeaponsWarningShown)
                 MessageBox.Show(
                     "The EliminationWeapons.txt data file is missing or could not be loaded. Weapon selection may be limited.",
                     "Data File Error",
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
 
-            if (_fetchItemsWarningShown)
+            if (FetchItemsWarningShown)
                 MessageBox.Show(
                     "The FetchItems.txt data file is missing or could not be loaded. Item selection may be limited.",
                     "Data File Error",
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
 
-            if (_tradeItemsWarningShown)
+            if (TradeItemsWarningShown)
                 MessageBox.Show(
                     "The TradeItems.json data file is missing or could not be loaded. Trade deal items may not be available.",
                     "Data File Error",
@@ -579,17 +148,24 @@ namespace SCUMQuestEditor
                 if (File.Exists(path))
                 {
                     string json = File.ReadAllText(path);
-                    _settings = JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
+                    var loaded = JsonSerializer.Deserialize<AppSettings>(json);
+                    if (loaded != null)
+                    {
+                        Settings.FileNameFormat = loaded.FileNameFormat;
+                        Settings.PrimaryColor = loaded.PrimaryColor;
+                        Settings.SecondaryColor = loaded.SecondaryColor;
+                        Settings.ErrorHighlightColor = loaded.ErrorHighlightColor;
+                        Settings.DarkMode = loaded.DarkMode;
+                    }
                 }
             }
             catch
             {
-                _settings = new AppSettings();
             }
 
-            ApplyDarkMode(_settings.DarkMode);
-            ApplyTheme(_settings.PrimaryColor, _settings.SecondaryColor);
-            ApplyErrorColor(_settings.ErrorHighlightColor);
+            ApplyDarkMode(Settings.DarkMode);
+            ApplyTheme(Settings.PrimaryColor, Settings.SecondaryColor);
+            ApplyErrorColor(Settings.ErrorHighlightColor);
         }
 
         private void SaveSettings()
@@ -604,7 +180,7 @@ namespace SCUMQuestEditor
                 }
 
                 var options = new JsonSerializerOptions { WriteIndented = true };
-                string json = JsonSerializer.Serialize(_settings, options);
+                string json = JsonSerializer.Serialize(Settings, options);
                 File.WriteAllText(path, json);
             }
             catch (Exception ex)
@@ -625,7 +201,7 @@ namespace SCUMQuestEditor
                 Description = "Quest description...",
                 TimeLimitHours = 24,
                 RewardPool = new List<RewardPool> { new RewardPool() },
-                Conditions = new List<Condition>()
+                Conditions = new List<ModelsCondition>()
             };
 
             if (CbNpc != null)
@@ -826,13 +402,13 @@ namespace SCUMQuestEditor
 
         private void FileNameFormat_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new FilenameFormatDialog(_settings.FileNameFormat);
+            var dialog = new FilenameFormatDialog(Settings.FileNameFormat);
             dialog.Owner = this;
             dialog.ShowDialog();
 
             if (dialog.IsOkClicked)
             {
-                _settings.FileNameFormat = dialog.NewFormat;
+                Settings.FileNameFormat = dialog.NewFormat;
                 SaveSettings();
             }
         }
@@ -864,7 +440,7 @@ namespace SCUMQuestEditor
 
         private void UpdateEditWarningBackground()
         {
-            string color = _settings.DarkMode ? "#333333" : "#F5F5F5";
+            string color = Settings.DarkMode ? "#333333" : "#F5F5F5";
             EditWarningBanner.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(color));
         }
 
@@ -940,16 +516,16 @@ namespace SCUMQuestEditor
 
         private void AppearanceSettings_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new ColorSettingsDialog(_settings.PrimaryColor, _settings.SecondaryColor, _settings.ErrorHighlightColor, _settings.DarkMode);
+            var dialog = new ColorSettingsDialog(this, Settings.PrimaryColor, Settings.SecondaryColor, Settings.ErrorHighlightColor, Settings.DarkMode);
             dialog.Owner = this;
             dialog.ShowDialog();
 
             if (dialog.DialogResult == true)
             {
-                _settings.PrimaryColor = dialog.PrimaryColor;
-                _settings.SecondaryColor = dialog.SecondaryColor;
-                _settings.ErrorHighlightColor = dialog.ErrorColor;
-                _settings.DarkMode = dialog.DarkMode;
+                Settings.PrimaryColor = dialog.PrimaryColor;
+                Settings.SecondaryColor = dialog.SecondaryColor;
+                Settings.ErrorHighlightColor = dialog.ErrorColor;
+                Settings.DarkMode = dialog.DarkMode;
                 SaveSettings();
                 ApplyDarkMode(dialog.DarkMode);
                 ApplyTheme(dialog.PrimaryColor, dialog.SecondaryColor);
@@ -957,7 +533,7 @@ namespace SCUMQuestEditor
             }
         }
 
-        public static void ApplyDarkMode(bool isDark)
+        public void ApplyDarkMode(bool isDark)
         {
             var bundledTheme = Application.Current.Resources.MergedDictionaries
                 .OfType<MaterialDesignThemes.Wpf.BundledTheme>()
@@ -968,13 +544,13 @@ namespace SCUMQuestEditor
                 bundledTheme.BaseTheme = isDark ? MaterialDesignThemes.Wpf.BaseTheme.Dark : MaterialDesignThemes.Wpf.BaseTheme.Light;
             }
 
-            if (_instance != null && _instance._editModeEnabled)
+            if (_editModeEnabled)
             {
-                _instance.UpdateEditWarningBackground();
+                UpdateEditWarningBackground();
             }
         }
 
-        public static void ApplyTheme(string primaryColor, string secondaryColor)
+        public void ApplyTheme(string primaryColor, string secondaryColor)
         {
             var paletteHelper = new MaterialDesignThemes.Wpf.PaletteHelper();
             var theme = paletteHelper.GetTheme();
@@ -992,15 +568,15 @@ namespace SCUMQuestEditor
             paletteHelper.SetTheme(theme);
         }
 
-        public static void ApplyErrorColor(string errorColorName)
+        public void ApplyErrorColor(string errorColorName)
         {
             var color = ColorSettingsDialog.GetColorFromName(errorColorName, "500");
             _errorHighlightBrush = new SolidColorBrush(color);
             _errorHighlightBrush.Freeze();
-            _instance?.RefreshJsonPreview();
-            if (_instance != null && _instance._editModeEnabled)
+            RefreshJsonPreview();
+            if (_editModeEnabled)
             {
-                _instance.EditWarningText.Foreground = _errorHighlightBrush;
+                EditWarningText.Foreground = _errorHighlightBrush;
             }
         }
 
@@ -1034,7 +610,7 @@ namespace SCUMQuestEditor
             string traderCode = GetTraderCode(npc);
             string type = GetQuestType();
 
-            string format = _settings.FileNameFormat;
+            string format = Settings.FileNameFormat;
             format = format.Replace("{tier}", tier.ToString());
             format = format.Replace("{trader}", traderCode);
             format = format.Replace("{title}", title);
@@ -1264,7 +840,7 @@ namespace SCUMQuestEditor
             }
 
             var traderName = CurrentTradeDeal?.AssociatedNpc ?? "";
-            var dialog = new AddTradeDealDialog(null, traderName);
+            var dialog = new AddTradeDealDialog(this, null, traderName);
             dialog.Owner = this;
             if (dialog.ShowDialog() == true)
             {
@@ -1289,7 +865,7 @@ namespace SCUMQuestEditor
             if (LvTradeDeals.SelectedItem is TradeDealReward selectedDeal)
             {
                 var traderName = CurrentTradeDeal?.AssociatedNpc ?? "";
-                AddTradeDealDialog dialog = new AddTradeDealDialog(selectedDeal, traderName);
+                AddTradeDealDialog dialog = new AddTradeDealDialog(this, selectedDeal, traderName);
                 dialog.Owner = this;
                 if (dialog.ShowDialog() == true)
                 {
@@ -1394,7 +970,7 @@ namespace SCUMQuestEditor
                 // Use the sorted view if available, otherwise the raw list
                 if (conditionsView != null)
                 {
-                    CurrentTradeDeal.Conditions = conditionsView.Cast<Condition>().ToList();
+                    CurrentTradeDeal.Conditions = conditionsView.Cast<ModelsCondition>().ToList();
                 }
                 else
                 {
@@ -1546,7 +1122,7 @@ namespace SCUMQuestEditor
             else { e.Handled = true; }
         }
 
-        public ObservableCollection<Condition> ConditionsList { get; set; } = new ObservableCollection<Condition>();
+        public ObservableCollection<ModelsCondition> ConditionsList { get; set; } = new ObservableCollection<ModelsCondition>();
 
         private ListCollectionView? conditionsView;
 
@@ -1576,7 +1152,7 @@ namespace SCUMQuestEditor
             UpdateConditionTabsState();
             TabConditionEditor.SelectedIndex = 0;
 
-            if (LvConditions.SelectedItem is Condition selectedCondition)
+            if (LvConditions.SelectedItem is ModelsCondition selectedCondition)
             {
                 BindingOperations.ClearAllBindings(EdtCaption);
                 BindingOperations.ClearAllBindings(EdtSequence);
@@ -1715,14 +1291,14 @@ namespace SCUMQuestEditor
 
         private void UpdateConditionTabsState()
         {
-            bool hasSelection = LvConditions.SelectedItem is Condition;
+            bool hasSelection = LvConditions.SelectedItem is ModelsCondition;
 
             TabFetchProperties.IsEnabled = hasSelection;
             TabInteractionProperties.IsEnabled = hasSelection;
             TabEliminationProperties.IsEnabled = hasSelection;
             TabMapLocationsItem.IsEnabled = hasSelection;
 
-            if (hasSelection && LvConditions.SelectedItem is Condition selectedCondition)
+            if (hasSelection && LvConditions.SelectedItem is ModelsCondition selectedCondition)
             {
                 string type = selectedCondition.Type.ToLower();
                 TabFetchProperties.IsEnabled = type == "fetch";
@@ -1731,7 +1307,7 @@ namespace SCUMQuestEditor
             }
         }
 
-        private void LoadConditionToEditor(Condition condition)
+        private void LoadConditionToEditor(ModelsCondition condition)
         {
             EdtCaption.Text = condition.TrackingCaption;
             EdtSequence.Text = condition.SequenceIndex.ToString();
@@ -1794,7 +1370,7 @@ namespace SCUMQuestEditor
             LvCurrentRequiredItems.ItemsSource = null;
         }
 
-        public void AddCondition(Condition newCondition)
+        public void AddCondition(ModelsCondition newCondition)
         {
             ConditionsList.Add(newCondition);
             LvConditions.ItemsSource = null;
@@ -1853,7 +1429,7 @@ namespace SCUMQuestEditor
 
         private void BtnRemoveSelectedCondition_Click(object sender, RoutedEventArgs e)
         {
-            if (LvConditions.SelectedItem is Condition selectedCondition)
+            if (LvConditions.SelectedItem is ModelsCondition selectedCondition)
             {
                 ConditionsList.Remove(selectedCondition);
                 LvConditions.ItemsSource = null;
@@ -1870,7 +1446,7 @@ namespace SCUMQuestEditor
         {
             if (LvConditions.SelectedItem is EliminationCondition currentCondition)
             {
-                var dialog = new EditTargetCharactersDialog(currentCondition.TargetCharacters);
+                var dialog = new EditTargetCharactersDialog(this, currentCondition.TargetCharacters);
                 dialog.Owner = this;
                 if (dialog.ShowDialog() == true)
                 {
@@ -1886,7 +1462,7 @@ namespace SCUMQuestEditor
         {
             if (LvConditions.SelectedItem is EliminationCondition currentCondition)
             {
-                var dialog = new EditWeaponDialog(currentCondition.AllowedWeapons);
+                var dialog = new EditWeaponDialog(this, currentCondition.AllowedWeapons);
                 dialog.Owner = this;
                 if (dialog.ShowDialog() == true)
                 {
@@ -1960,7 +1536,7 @@ namespace SCUMQuestEditor
 
         private void BtnEditMapLocations_Click(object sender, RoutedEventArgs e)
         {
-            if (LvConditions.SelectedItem is Condition currentCondition)
+            if (LvConditions.SelectedItem is ModelsCondition currentCondition)
             {
                 var locations = currentCondition.LocationsShownOnMap ?? new List<MapLocation>();
                 var dialog = new EditMapLocationsDialog(locations);
@@ -2081,7 +1657,7 @@ namespace SCUMQuestEditor
 
         private void MoveConditionUp_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.Tag is Condition selectedCondition)
+            if (sender is Button button && button.Tag is ModelsCondition selectedCondition)
             {
                 int currentIndex = ConditionsList.IndexOf(selectedCondition);
                 if (currentIndex > 0)
@@ -2098,7 +1674,7 @@ namespace SCUMQuestEditor
 
         private void MoveConditionDown_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.Tag is Condition selectedCondition)
+            if (sender is Button button && button.Tag is ModelsCondition selectedCondition)
             {
                 int currentIndex = ConditionsList.IndexOf(selectedCondition);
                 if (currentIndex >= 0 && currentIndex < ConditionsList.Count - 1)
@@ -2113,67 +1689,5 @@ namespace SCUMQuestEditor
             }
         }
 
-    }
-
-    public class ConditionsIndexEqualsConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            if (value is Condition condition)
-            {
-                var mainWindow = Application.Current.MainWindow as MainWindow;
-                if (mainWindow?.ConditionsList != null)
-                {
-                    bool isFirst = mainWindow.ConditionsList.IndexOf(condition) == 0;
-                    return isFirst ? Visibility.Collapsed : Visibility.Visible;
-                }
-            }
-            return Visibility.Visible;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class ConditionsIndexLessThanConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            if (value is Condition condition)
-            {
-                var mainWindow = Application.Current.MainWindow as MainWindow;
-                if (mainWindow?.ConditionsList != null)
-                {
-                    int index = mainWindow.ConditionsList.IndexOf(condition);
-                    bool isLast = index < 0 || index >= mainWindow.ConditionsList.Count - 1;
-                    return isLast ? Visibility.Collapsed : Visibility.Visible;
-                }
-            }
-            return Visibility.Visible;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class DarkModeToBackgroundColorConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            if (value is bool darkMode)
-            {
-                return darkMode ? "#7F000000" : "#E8F5E9";
-            }
-            return "#7F000000";
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
