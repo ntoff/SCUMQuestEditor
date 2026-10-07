@@ -484,7 +484,7 @@ namespace SCUMQuestEditor
         public const int MaxKillAmount = 1000000000;
         public static AppSettings Settings => _settings;
         private static AppSettings _settings = new AppSettings();
-        private static SolidColorBrush _errorHighlightBrush = new SolidColorBrush(Color.FromArgb(255, 255, 50, 50));
+        private static SolidColorBrush _errorHighlightBrush = new SolidColorBrush(Color.FromArgb(255, 0xEF, 0x53, 0x50));
         private static MainWindow? _instance;
         private string? _currentFilePath;
 
@@ -983,48 +983,13 @@ namespace SCUMQuestEditor
             var secondaryColorVal = ColorSettingsDialog.GetColorFromName(secondaryColor, "500");
 
             theme.PrimaryMid = new ColorPair(primaryColorVal);
-            theme.PrimaryLight = new ColorPair(LightenColor(primaryColorVal));
-            theme.PrimaryDark = new ColorPair(DarkenColor(primaryColorVal));
+            theme.PrimaryLight = new ColorPair(ColorSettingsDialog.LightenColor(primaryColorVal));
+            theme.PrimaryDark = new ColorPair(ColorSettingsDialog.DarkenColor(primaryColorVal));
             theme.SecondaryMid = new ColorPair(secondaryColorVal);
-            theme.SecondaryLight = new ColorPair(LightenColor(secondaryColorVal));
-            theme.SecondaryDark = new ColorPair(DarkenColor(secondaryColorVal));
+            theme.SecondaryLight = new ColorPair(ColorSettingsDialog.LightenColor(secondaryColorVal));
+            theme.SecondaryDark = new ColorPair(ColorSettingsDialog.DarkenColor(secondaryColorVal));
 
             paletteHelper.SetTheme(theme);
-            
-            var bundleDict = Application.Current.Resources.MergedDictionaries
-                .OfType<ResourceDictionary>()
-                .FirstOrDefault(d => d == Application.Current.FindResource("MaterialDesignBundledTheme") as ResourceDictionary);
-
-            if (bundleDict != null)
-            {
-                var primaryMidBrush = new SolidColorBrush(primaryColorVal);
-                var secondaryMidBrush = new SolidColorBrush(secondaryColorVal);
-                
-                // Primary hue brushes
-                bundleDict["PrimaryHueLightBrush"] = new SolidColorBrush(LightenColor(primaryColorVal));
-                bundleDict["PrimaryHueMidBrush"] = primaryMidBrush;
-                bundleDict["PrimaryHueDarkBrush"] = new SolidColorBrush(DarkenColor(primaryColorVal));
-                
-                // Secondary hue brushes  
-                bundleDict["SecondaryHueLightBrush"] = new SolidColorBrush(LightenColor(secondaryColorVal));
-                bundleDict["SecondaryHueMidBrush"] = secondaryMidBrush;
-                bundleDict["SecondaryHueDarkBrush"] = new SolidColorBrush(DarkenColor(secondaryColorVal));
-                
-                // MaterialDesign.Brush keys used by FlatButton style
-                bundleDict["MaterialDesign.Brush.Primary"] = primaryMidBrush;
-                bundleDict["MaterialDesign.Brush.Primary.Foreground"] = new SolidColorBrush(Colors.White);
-                bundleDict["MaterialDesign.Brush.Primary.Light"] = new SolidColorBrush(LightenColor(primaryColorVal));
-                bundleDict["MaterialDesign.Brush.Primary.Light.Foreground"] = new SolidColorBrush(Colors.White);
-                bundleDict["MaterialDesign.Brush.Primary.Dark"] = new SolidColorBrush(DarkenColor(primaryColorVal));
-                bundleDict["MaterialDesign.Brush.Primary.Dark.Foreground"] = new SolidColorBrush(Colors.White);
-                
-                bundleDict["MaterialDesign.Brush.Secondary"] = secondaryMidBrush;
-                bundleDict["MaterialDesign.Brush.Secondary.Foreground"] = new SolidColorBrush(Colors.White);
-                bundleDict["MaterialDesign.Brush.Secondary.Light"] = new SolidColorBrush(LightenColor(secondaryColorVal));
-                bundleDict["MaterialDesign.Brush.Secondary.Light.Foreground"] = new SolidColorBrush(Colors.White);
-                bundleDict["MaterialDesign.Brush.Secondary.Dark"] = new SolidColorBrush(DarkenColor(secondaryColorVal));
-                bundleDict["MaterialDesign.Brush.Secondary.Dark.Foreground"] = new SolidColorBrush(Colors.White);
-            }
         }
 
         public static void ApplyErrorColor(string errorColorName)
@@ -1053,16 +1018,6 @@ namespace SCUMQuestEditor
         {
             UpdateJsonPreview();
         }
-
-        private static Color LightenColor(Color color) => Color.FromArgb(color.A, 
-            (byte)Math.Min(255, color.R + 80), 
-            (byte)Math.Min(255, color.G + 80), 
-            (byte)Math.Min(255, color.B + 80));
-
-        private static Color DarkenColor(Color color) => Color.FromArgb(color.A, 
-            (byte)Math.Max(0, color.R - 40), 
-            (byte)Math.Max(0, color.G - 40), 
-            (byte)Math.Max(0, color.B - 40));
 
         private void QuestInfo_Click(object sender, RoutedEventArgs e)
         {

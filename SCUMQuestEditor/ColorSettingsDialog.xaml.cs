@@ -156,11 +156,17 @@ namespace SCUMQuestEditor
 
         private void BtnOk_Click(object sender, RoutedEventArgs e)
         {
+            CommitChanges();
             DialogResult = true;
             Close();
         }
 
         private void BtnApply_Click(object sender, RoutedEventArgs e)
+        {
+            CommitChanges();
+        }
+
+        private void CommitChanges()
         {
             MainWindow.Settings.DarkMode = _darkMode;
             MainWindow.Settings.PrimaryColor = _selectedPrimaryColor;
@@ -222,10 +228,87 @@ namespace SCUMQuestEditor
 
         public static Color GetColorFromName(string swatchName, string chromaticity) => GetSwatchColor(swatchName, chromaticity);
 
-        public static Color LightenColor(Color color) => Color.FromArgb(color.A, 
-            (byte)Math.Min(255, color.R + 80), 
-            (byte)Math.Min(255, color.G + 80), 
-            (byte)Math.Min(255, color.B + 80));
+        public static Color LightenColor(Color color, double lightnessDelta = 0.25)
+        {
+            var hsl = ToHsl(color);
+            hsl[2] = Math.Min(1.0, hsl[2] + lightnessDelta);
+            return FromHsl(hsl[0], hsl[1], hsl[2], color.A);
+        }
+
+        public static Color DarkenColor(Color color, double lightnessDelta = 0.15)
+        {
+            var hsl = ToHsl(color);
+            hsl[2] = Math.Max(0.0, hsl[2] - lightnessDelta);
+            return FromHsl(hsl[0], hsl[1], hsl[2], color.A);
+        }
+
+        private static double[] ToHsl(Color color)
+        {
+            double r = color.R / 255.0;
+            double g = color.G / 255.0;
+            double b = color.B / 255.0;
+
+            double max = Math.Max(r, Math.Max(g, b));
+            double min = Math.Min(r, Math.Min(g, b));
+            double l = (max + min) / 2.0;
+
+            if (max == min)
+            {
+                return new double[] { 0, 0, l };
+            }
+
+            double d = max - min;
+            double s = l > 0.5 ? d / (2.0 - max - min) : d / (max + min);
+
+            double h;
+            if (max == r)
+            {
+                h = ((g - b) / d + (g < b ? 6.0 : 0.0)) / 6.0;
+            }
+            else if (max == g)
+            {
+                h = ((b - r) / d + 2.0) / 6.0;
+            }
+            else
+            {
+                h = ((r - g) / d + 4.0) / 6.0;
+            }
+
+            return new double[] { h, s, l };
+        }
+
+        private static Color FromHsl(double h, double s, double l, byte a)
+        {
+            double r, g, b;
+
+            if (s == 0)
+            {
+                double v = (byte)(l * 255);
+                r = g = b = v;
+            }
+            else
+            {
+                double v1 = l < 0.5 ? l * (1.0 + s) : l + s - l * s;
+                double v2 = 2.0 * l - v1;
+
+                r = 255 * MidValue(v1, v2, h + 1.0 / 3.0);
+                g = 255 * MidValue(v1, v2, h);
+                b = 255 * MidValue(v1, v2, h - 1.0 / 3.0);
+            }
+
+            return Color.FromArgb(a, (byte)Math.Round(r), (byte)Math.Round(g), (byte)Math.Round(b));
+        }
+
+        private static double MidValue(double v1, double v2, double vh)
+        {
+            if (vh < 0) vh += 1.0;
+            if (vh > 1) vh -= 1.0;
+
+            return vh < 1.0 / 6.0 ? v1 + (v2 - v1) * 6.0 * vh
+                 : vh < 0.5 ? v2
+                 : vh < 2.0 / 3.0 ? v1 + (v2 - v1) * (2.0 / 3.0 - vh) * 6.0
+                 : v1;
+        }
 
         private static Color GetSwatchColor(string swatchName, string chromaticity)
         {
