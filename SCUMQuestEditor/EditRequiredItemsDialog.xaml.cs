@@ -288,17 +288,12 @@ namespace SCUMQuestEditor
 
             RequiredItems.Add(newItem);
 
-            // Refresh ListView and select the newly added item
+            // Refresh ListView
             LvRequiredItems.ItemsSource = null;
             LvRequiredItems.ItemsSource = RequiredItems;
 
-            if (newItem != null)
-            {
-                LvRequiredItems.SelectedItem = newItem;
-                LvRequiredItems.ScrollIntoView(newItem);
-                LoadSelectedRequiredItemIntoEditor();
-            }
-            ClearInputFields();
+            LstAcceptedItems.SelectedItems.Clear();
+            _userSelections.Clear();
         }
 
         private void BtnAddAll_Click(object sender, RoutedEventArgs e)
@@ -424,6 +419,8 @@ namespace SCUMQuestEditor
             _isEditing = false;
             UpdateEditButtonsState();
 
+            LstAcceptedItems.SelectedItems.Clear();
+            _userSelections.Clear();
             ClearInputFields();
             FilterAvailableItems();
         }

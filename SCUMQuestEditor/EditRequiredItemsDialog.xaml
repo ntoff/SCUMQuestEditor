@@ -217,7 +217,7 @@
                 <StackPanel x:Name="EditButtonsPanel" Orientation="Horizontal" Visibility="Collapsed" Margin="0,0,10,0">
                     <Button x:Name="BtnApply" Content="Apply" Margin="0,0,8,0" Click="BtnApply_Click"
                             Style="{StaticResource PrimaryButton}"/>
-                    <Button x:Name="BtnCancelEdit" Content="Cancel Edit" Click="BtnCancelEdit_Click"
+                    <Button x:Name="BtnCancelEdit" Content="Cancel Edit" Margin="0,0,8,0" Click="BtnCancelEdit_Click"
                             Style="{StaticResource SubtleButton}"/>
                 </StackPanel>
                 <Button x:Name="BtnOk" Content="OK" Margin="0,0,10,0" Click="BtnOk_Click"
