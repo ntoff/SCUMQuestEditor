@@ -52,9 +52,9 @@ namespace SCUMQuestEditor
                 if (InitialSelections.Contains(item)) LstWeapons.SelectedItems.Add(item);
             }
 
-            if (_availableWeapons.Count == 1 && _availableWeapons[0] == "DefaultWeapon" && !(_mainWindow?.WeaponsWarningShown ?? false))
+            if (_mainWindow != null && _availableWeapons.Count == 1 && _availableWeapons[0] == "DefaultWeapon" && !(_mainWindow?.WeaponsWarningShown ?? false))
             {
-                    _mainWindow.WeaponsWarningShown = true;
+                    _mainWindow!.WeaponsWarningShown = true;
                 MessageBox.Show(
                     "The EliminationWeapons.txt data file is missing or could not be loaded. Weapon selection may be limited.",
                     "Data File Error",

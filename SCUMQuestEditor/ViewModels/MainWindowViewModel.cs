@@ -795,8 +795,8 @@ namespace SCUMQuestEditor.ViewModels
             _canExecute = canExecute;
         }
 
-        public bool CanExecute(object? parameter) => _canExecute?.Invoke(parameter) ?? true;
-        public void Execute(object? parameter) => _execute(parameter);
+        public bool CanExecute(object? parameter) => _canExecute?.Invoke(parameter!) ?? true;
+        public void Execute(object? parameter) => _execute(parameter!);
         public event EventHandler? CanExecuteChanged
         {
             add { CommandManager.RequerySuggested += value; }
@@ -809,7 +809,7 @@ namespace SCUMQuestEditor.ViewModels
         private readonly Action<T> _execute;
         private readonly Predicate<T?>? _canExecute;
 
-        public RelayCommand(Action<T> execute, Predicate<T?> canExecute = null)
+        public RelayCommand(Action<T> execute, Predicate<T?>? canExecute = null)
         {
             _execute = execute ?? throw new ArgumentNullException(nameof(execute));
             _canExecute = canExecute;

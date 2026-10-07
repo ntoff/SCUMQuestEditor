@@ -112,9 +112,9 @@ namespace SCUMQuestEditor
             {
                 AvailableItems.Add("DefaultItem");
 
-                if (!(_mainWindow?.TradeItemsWarningShown ?? false))
+                if (_mainWindow != null && !(_mainWindow?.TradeItemsWarningShown ?? false))
                 {
-                    _mainWindow.TradeItemsWarningShown = true;
+                    _mainWindow!.TradeItemsWarningShown = true;
                     MessageBox.Show(
                         "The TradeItems.json data file is missing or could not be loaded. Trade deal items may not be available.",
                         "Data File Error",

@@ -42,9 +42,9 @@ namespace SCUMQuestEditor
                 if (InitialSelections.Contains(item)) LstTargetTypes.SelectedItems.Add(item);
             }
 
-            if (availableTypes.Count == 1 && availableTypes[0] == "DefaultTarget" && !(_mainWindow?.TargetsWarningShown ?? false))
+            if (_mainWindow != null && availableTypes.Count == 1 && availableTypes[0] == "DefaultTarget" && !(_mainWindow?.TargetsWarningShown ?? false))
             {
-                    _mainWindow.TargetsWarningShown = true;
+                    _mainWindow!.TargetsWarningShown = true;
                 MessageBox.Show(
                     "The EliminationTargets.txt data file is missing or could not be loaded. Target character selection may be limited.",
                     "Data File Error",
