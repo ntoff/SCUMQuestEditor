@@ -1839,6 +1839,28 @@ namespace SCUMQuestEditor
             }
         }
 
+        private void BtnClearEliminationTargets_Click(object sender, RoutedEventArgs e)
+        {
+            if (LvConditions.SelectedItem is EliminationCondition currentCondition)
+            {
+                currentCondition.TargetCharacters = new List<string>();
+                EdtEliminationTargets.ItemsSource = null;
+                EdtEliminationTargets.ItemsSource = currentCondition.TargetCharacters;
+                UpdateJsonPreview();
+            }
+        }
+
+        private void BtnClearEliminationWeapons_Click(object sender, RoutedEventArgs e)
+        {
+            if (LvConditions.SelectedItem is EliminationCondition currentCondition)
+            {
+                currentCondition.AllowedWeapons = new List<string>();
+                EdtAllowedWeapons.ItemsSource = null;
+                EdtAllowedWeapons.ItemsSource = currentCondition.AllowedWeapons;
+                UpdateJsonPreview();
+            }
+        }
+
         private void EdtKillAmount_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (sender is TextBox textBox)

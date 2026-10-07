@@ -30,11 +30,11 @@
                 <SolidColorBrush Color="{DynamicResource MaterialDesignDividerColor}"/>
             </Border.BorderBrush>
             <Grid MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
 
                 <Border Background="{DynamicResource PrimaryHueMidBrush}" Padding="10,0" Margin="0,0,10,0">
                     <TextBlock Text="SQE" Foreground="{DynamicResource MaterialDesignBody}" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -117,12 +117,13 @@
 
                             <!-- Quest Info Card -->
                             <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
@@ -466,6 +467,7 @@
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="Auto"/>
@@ -476,26 +478,33 @@
                                                 </Grid.RowDefinitions>
 
                                                 <Label Grid.Row="0" Grid.Column="0" Content="Target Characters:" HorizontalAlignment="Right" Margin="0,0,12,6" Style="{StaticResource CompactLabel}"/>
-                                                <Button Grid.Row="0" Grid.Column="1" Content="Edit Targets" Margin="0,0,0,8" Click="BtnEditEliminationTargets_Click"
+                                                <Button Grid.Row="0" Grid.Column="1" Content="Edit Targets" Margin="0,0,4,8" Click="BtnEditEliminationTargets_Click"
+                                                Style="{StaticResource PrimaryButton}"/>
+                                                <Button Grid.Row="0" Grid.Column="2" Content="Clear List" Margin="4,0,0,8" Click="BtnClearEliminationTargets_Click"
                                                 Style="{StaticResource PrimaryButton}"/>
 
                                                 <Label Grid.Row="1" Grid.Column="0" Content="Current Targets:" HorizontalAlignment="Right" Margin="0,0,12,6" Style="{StaticResource CompactLabel}"/>
                                                 <ListBox Grid.Row="1" Grid.Column="1" x:Name="EdtEliminationTargets" Margin="0,0,0,8" Height="100"
+                                                Grid.ColumnSpan="2"
                                                 Style="{StaticResource MaterialDesignListBox}"/>
 
                                                 <Label Grid.Row="2" Grid.Column="0" Content="Amount to Kill:" HorizontalAlignment="Right" Margin="0,0,12,6" Style="{StaticResource CompactLabel}"/>
                                                 <TextBox x:Name="EdtKillAmount" Grid.Row="2" Grid.Column="1" Margin="0,0,0,8" Text="1"
+                                                Grid.ColumnSpan="2"
                                                 TextChanged="EdtKillAmount_TextChanged"
                                                 PreviewTextInput="NumericPreviewTextInput" DataObject.Pasting="NumericPasting"
                                                 LostFocus="ConditionField_LostFocus" KeyDown="ConditionField_KeyDown"
                                                 Style="{StaticResource CompactTextBox}"/>
 
                                                 <Label Grid.Row="3" Grid.Column="0" Content="Allowed Weapons:" HorizontalAlignment="Right" Margin="0,0,12,6" Style="{StaticResource CompactLabel}"/>
-                                                <Button Grid.Row="3" Grid.Column="1" Content="Edit Weapons" Margin="0,0,0,8" Click="BtnEditEliminationWeapons_Click"
+                                                <Button Grid.Row="3" Grid.Column="1" Content="Edit Weapons" Margin="0,0,4,8" Click="BtnEditEliminationWeapons_Click"
+                                                Style="{StaticResource PrimaryButton}"/>
+                                                <Button Grid.Row="3" Grid.Column="2" Content="Clear List" Margin="4,0,0,8" Click="BtnClearEliminationWeapons_Click"
                                                 Style="{StaticResource PrimaryButton}"/>
 
                                                 <Label Grid.Row="4" Grid.Column="0" Content="Current Weapons:" HorizontalAlignment="Right" Margin="0,0,12,6" Style="{StaticResource CompactLabel}"/>
                                                 <ListBox Grid.Row="4" Grid.Column="1" x:Name="EdtAllowedWeapons" Margin="0,0,0,8" Height="100"
+                                                Grid.ColumnSpan="2"
                                                 Style="{StaticResource MaterialDesignListBox}"/>
                                             </Grid>
                                         </Border>
