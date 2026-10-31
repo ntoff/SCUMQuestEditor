@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Media;
 using System.Collections.Generic;
 using SCUMQuestEditor.Models;
 
@@ -182,6 +183,44 @@ namespace SCUMQuestEditor
             if (LocationList.SelectedItem is InteractionLocation)
             {
                 BtnEditSelectedLocation_Click(sender, e);
+            }
+        }
+
+        private void LocationList_PreviewMouseRightButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            var hit = LocationList.InputHitTest(e.GetPosition(LocationList));
+            if (hit is not DependencyObject element)
+                return;
+
+            var listItem = FindParent<ListViewItem>(element);
+            if (listItem is null || listItem.DataContext is not InteractionLocation)
+                return;
+
+            var menu = new ContextMenu();
+            var copyItem = new MenuItem { Header = "Copy Teleport Location" };
+            copyItem.Click += CopyTeleportLocation_Click;
+            menu.Items.Add(copyItem);
+            menu.IsOpen = true;
+            e.Handled = true;
+        }
+
+        private T FindParent<T>(DependencyObject child) where T : DependencyObject
+        {
+            var parent = VisualTreeHelper.GetParent(child);
+            return parent is null ? null : parent is T ? (T)parent : FindParent<T>(parent);
+        }
+
+        private void CopyTeleportLocation_Click(object sender, RoutedEventArgs e)
+        {
+            if (LocationList.SelectedItem is InteractionLocation selectedLoc && !string.IsNullOrEmpty(selectedLoc.FallbackTransform))
+            {
+                var positionPart = selectedLoc.FallbackTransform.Split('|')[0];
+                var coordinates = positionPart.Split(',');
+                if (coordinates.Length >= 3)
+                {
+                    var teleportCmd = $"#teleport {coordinates[0]} {coordinates[1]} {coordinates[2]}";
+                    Clipboard.SetText(teleportCmd);
+                }
             }
         }
 

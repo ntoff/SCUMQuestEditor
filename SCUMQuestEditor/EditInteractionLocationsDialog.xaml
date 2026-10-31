@@ -29,7 +29,8 @@
                 <ListView x:Name="LocationList" Margin="4" Style="{StaticResource MaterialDesignListView}"
                           BorderBrush="{DynamicResource MaterialDesignDivider}"
                           SelectionMode="Extended"
-                          MouseDoubleClick="LocationList_MouseDoubleClick">
+                          MouseDoubleClick="LocationList_MouseDoubleClick"
+                          PreviewMouseRightButtonDown="LocationList_PreviewMouseRightButtonDown">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="Visible Mesh">
