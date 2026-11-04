@@ -77,6 +77,7 @@ Dish_Smoked_Fish
 Dish_Smoked_RabbitLeg
 Dish_Smoked_RedMeat
 Dish_Soup_Chicken
+Dish_Soup_CrowStew
 Dish_Soup_EggDrop
 Dish_Soup_HotAndSour
 Dish_Soup_Improvised
