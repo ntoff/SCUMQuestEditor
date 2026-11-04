@@ -8,3 +8,4 @@ SCUMQuestEditor/_data/SCUM.log
 SCUMQuestEditor/BuildInfo.cs
 packages/*.*
 SCUMQuestEditor/testquests/*.*
+SCUMQuestEditor/_data/CookingRecipeRegistry.json
