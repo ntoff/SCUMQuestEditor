@@ -14,7 +14,7 @@ namespace SCUMQuestEditor
     public partial class AddTradeDealDialog : Window
     {
         private MainWindow? _mainWindow;
-        private static readonly Lazy<List<TraderData>?> s_cachedTraders = new(() =>
+        private static readonly Func<List<TraderData>?> s_tradersFactory = () =>
         {
             try
             {
@@ -34,7 +34,14 @@ namespace SCUMQuestEditor
                 MainWindow.Log($"Failed to load TradeItems.json: {ex.Message}");
             }
             return null;
-        });
+        };
+
+        private static Lazy<List<TraderData>?> s_cachedTraders = new(s_tradersFactory);
+
+        public static void ResetCache()
+        {
+            s_cachedTraders = new Lazy<List<TraderData>?>(s_tradersFactory);
+        }
 
         public static List<string> AvailableItems { get; set; } = new List<string>();
 

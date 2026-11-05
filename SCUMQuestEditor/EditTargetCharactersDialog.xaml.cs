@@ -8,7 +8,7 @@ namespace SCUMQuestEditor
     public partial class EditTargetCharactersDialog : Window
     {
         private MainWindow? _mainWindow;
-        private static readonly Lazy<List<string>> s_cachedTypes = new(() =>
+        private static readonly Func<List<string>> s_typesFactory = () =>
         {
             try
             {
@@ -23,7 +23,14 @@ namespace SCUMQuestEditor
                 MainWindow.Log($"Failed to load EliminationTargets.txt: {ex.Message}");
             }
             return new List<string> { "DefaultTarget" };
-        });
+        };
+
+        private static Lazy<List<string>> s_cachedTypes = new(s_typesFactory);
+
+        public static void ResetCache()
+        {
+            s_cachedTypes = new Lazy<List<string>>(s_typesFactory);
+        }
 
         public List<string> SelectedItems { get; private set; } = new List<string>();
         private List<string> InitialSelections { get; set; } = new List<string>();

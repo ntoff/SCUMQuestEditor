@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -531,6 +532,71 @@ namespace SCUMQuestEditor
                 ApplyTheme(dialog.PrimaryColor, dialog.SecondaryColor);
                 ApplyErrorColor(dialog.ErrorColor);
             }
+        }
+
+        private async void DownloadDataFiles_Click(object sender, RoutedEventArgs e)
+        {
+            var result = MessageBox.Show(
+                "This will connect to the internet to download the latest data files.\n\n" +
+                "The following files will be updated:\n" +
+                "- EliminationTargets.txt\n" +
+                "- EliminationWeapons.txt\n" +
+                "- FetchItems.txt\n" +
+                "- TradeItems.json\n\n" +
+                "Existing files will be overwritten and the editor will reload with the new data.\n\n" +
+                "Do you want to continue?",
+                "Update Data Files",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            string dataDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "_data");
+            Directory.CreateDirectory(dataDir);
+
+            var files = new Dictionary<string, string>
+            {
+                { "EliminationTargets.txt", "https://raw.githubusercontent.com/ntoff/SCUMQuestEditor/dotnet10/SCUMQuestEditor/_data/EliminationTargets.txt" },
+                { "EliminationWeapons.txt", "https://raw.githubusercontent.com/ntoff/SCUMQuestEditor/dotnet10/SCUMQuestEditor/_data/EliminationWeapons.txt" },
+                { "FetchItems.txt", "https://raw.githubusercontent.com/ntoff/SCUMQuestEditor/dotnet10/SCUMQuestEditor/_data/FetchItems.txt" },
+                { "TradeItems.json", "https://raw.githubusercontent.com/ntoff/SCUMQuestEditor/dotnet10/SCUMQuestEditor/_data/TradeItems.json" }
+            };
+
+            var httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
+
+            foreach (var (fileName, url) in files)
+            {
+                try
+                {
+                    Log($"Updating {fileName}");
+                    string content = await httpClient.GetStringAsync(url);
+                    string outputPath = Path.Combine(dataDir, fileName);
+                    File.WriteAllText(outputPath, content);
+                    Log($"Successfully updated {fileName}");
+                }
+                catch (Exception ex)
+                {
+                    Log($"Failed to update {fileName}: {ex.Message}");
+                    MessageBox.Show(
+                        $"Failed to update {fileName}:\n{ex.Message}\n\nThe rest of the files were updated successfully.",
+                        "Update Error",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                }
+            }
+
+            // Reset static caches so updated data is picked up on next dialog open
+            AddTradeDealDialog.ResetCache();
+            EditTargetCharactersDialog.ResetCache();
+            EditWeaponDialog.ResetCache();
+
+            // Reload the data files
+            TargetsWarningShown = false;
+            WeaponsWarningShown = false;
+            FetchItemsWarningShown = false;
+            TradeItemsWarningShown = false;
+            LoadDataFiles();
         }
 
         public void ApplyDarkMode(bool isDark)

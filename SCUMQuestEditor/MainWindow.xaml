@@ -101,6 +101,8 @@
                     <MenuItem Header="JSON Preview">
                         <MenuItem Header="Edit Mode" x:Name="MenuEditmodeToggle" IsCheckable="True" Click="MenuEditModeToggle_Click"/>
                     </MenuItem>
+                    <Separator Style="{StaticResource DividerStyle}"/>
+                    <MenuItem Header="_Update Data Files" Click="DownloadDataFiles_Click"/>
                 </MenuItem>
                 <MenuItem Header="_Help" Foreground="{DynamicResource MaterialDesignBody}">
                     <MenuItem Header="_Quest Info" Click="QuestInfo_Click" />

@@ -12,7 +12,7 @@ namespace SCUMQuestEditor
     public partial class EditWeaponDialog : Window
     {
         private MainWindow? _mainWindow;
-        private static readonly Lazy<List<string>> s_cachedWeapons = new(() =>
+        private static readonly Func<List<string>> s_weaponsFactory = () =>
         {
             try
             {
@@ -27,7 +27,14 @@ namespace SCUMQuestEditor
                 MainWindow.Log($"Failed to load EliminationWeapons.txt: {ex.Message}");
             }
             return new List<string> { "DefaultWeapon" };
-        });
+        };
+
+        private static Lazy<List<string>> s_cachedWeapons = new(s_weaponsFactory);
+
+        public static void ResetCache()
+        {
+            s_cachedWeapons = new Lazy<List<string>>(s_weaponsFactory);
+        }
 
         public List<string> SelectedItems { get; private set; } = new List<string>();
         private readonly List<string> _availableWeapons;
