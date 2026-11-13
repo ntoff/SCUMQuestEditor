@@ -841,7 +841,9 @@ namespace SCUMQuestEditor.ViewModels
                 _vm.SaveSettings();
             }
         }
+        #pragma warning disable CS0067 // Event is never raised
         public event EventHandler? CanExecuteChanged;
+        #pragma warning restore CS0067
     }
 
     public class AboutClickCommand : ICommand
@@ -853,7 +855,9 @@ namespace SCUMQuestEditor.ViewModels
             dialog.Owner = Application.Current.MainWindow;
             dialog.ShowDialog();
         }
+#pragma warning disable CS0067 // Event is never raised
         public event EventHandler? CanExecuteChanged;
+#pragma warning restore CS0067
     }
 
     public class AppearanceSettingsCommand : ICommand
@@ -883,7 +887,9 @@ namespace SCUMQuestEditor.ViewModels
                 _vm.ApplyErrorColor(dialog.ErrorColor);
             }
         }
+#pragma warning disable CS0067 // Event is never raised
         public event EventHandler? CanExecuteChanged;
+#pragma warning restore CS0067
     }
 
     public class QuestInfoClickCommand : ICommand
@@ -895,7 +901,9 @@ namespace SCUMQuestEditor.ViewModels
             dialog.Owner = Application.Current.MainWindow;
             dialog.ShowDialog();
         }
+#pragma warning disable CS0067 // Event is never raised
         public event EventHandler? CanExecuteChanged;
+#pragma warning restore CS0067
     }
 
     public class MenuEditModeToggleCommand : ICommand
@@ -914,6 +922,8 @@ namespace SCUMQuestEditor.ViewModels
         {
             _vm.IsEditMode = enabled;
         }
+#pragma warning disable CS0067 // Event is never raised
         public event EventHandler? CanExecuteChanged;
+#pragma warning restore CS0067
     }
 }

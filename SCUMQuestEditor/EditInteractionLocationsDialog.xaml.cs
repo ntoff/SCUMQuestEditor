@@ -49,13 +49,13 @@ namespace SCUMQuestEditor
         public object Convert(object[] values, System.Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if (values == null || values.Length != 2)
-                return null;
+                return null!;
 
             var fallbackTransform = values[0] as string ?? "";
             var locations = values[1] as IEnumerable<InteractionLocation>;
 
             if (locations == null)
-                return null;
+                return null!;
 
             return locations.Count(loc => loc.FallbackTransform == fallbackTransform) > 1;
         }
@@ -258,7 +258,7 @@ namespace SCUMQuestEditor
             e.Handled = true;
         }
 
-        private T FindParent<T>(DependencyObject child) where T : DependencyObject
+        private T? FindParent<T>(DependencyObject child) where T : DependencyObject
         {
             var parent = VisualTreeHelper.GetParent(child);
             return parent is null ? null : parent is T ? (T)parent : FindParent<T>(parent);
