@@ -10,6 +10,23 @@ using SCUMQuestEditor.Models;
 
 namespace SCUMQuestEditor
 {
+    public class HasDuplicatesConverter : IValueConverter
+    {
+        public object Convert(object value, System.Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            var locations = value as IEnumerable<InteractionLocation>;
+            if (locations == null)
+                return false;
+
+            return locations.GroupBy(l => l.FallbackTransform).Any(g => g.Count() > 1);
+        }
+
+        public object ConvertBack(object value, System.Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new System.NotImplementedException();
+        }
+    }
+
     public class StringNullOrEmptyToNullConverter : IValueConverter
     {
         public object Convert(object value, System.Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -27,14 +44,40 @@ namespace SCUMQuestEditor
         }
     }
 
+    public class DuplicateHighlightConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, System.Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (values == null || values.Length != 2)
+                return null;
+
+            var fallbackTransform = values[0] as string ?? "";
+            var locations = values[1] as IEnumerable<InteractionLocation>;
+
+            if (locations == null)
+                return null;
+
+            return locations.Count(loc => loc.FallbackTransform == fallbackTransform) > 1;
+        }
+
+        public object[] ConvertBack(object value, System.Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new System.NotImplementedException();
+        }
+    }
+
     public partial class EditInteractionLocationsDialog : Window
     {
         public ObservableCollection<InteractionLocation> Locations { get; set; } = new ObservableCollection<InteractionLocation>();
 
-        public EditInteractionLocationsDialog(List<InteractionLocation> initialLocations)
+        public EditInteractionLocationsDialog(List<InteractionLocation> initialLocations, string errorHighlightColor = "Red")
         {
             InitializeComponent();
             LocationList.SelectionMode = SelectionMode.Extended;
+
+            var color = ColorSettingsDialog.GetColorFromName(errorHighlightColor, "500");
+            var brush = (SolidColorBrush)FindResource("DuplicateHighlightBrush");
+            brush.Color = color;
 
             foreach (var loc in initialLocations)
             {
@@ -48,6 +91,20 @@ namespace SCUMQuestEditor
             }
 
             LocationList.ItemsSource = Locations;
+            UpdateDuplicateVisibility();
+        }
+
+        private void RefreshList()
+        {
+            LocationList.ItemsSource = null;
+            LocationList.ItemsSource = Locations;
+            UpdateDuplicateVisibility();
+        }
+
+        private void UpdateDuplicateVisibility()
+        {
+            var hasDuplicates = Locations.GroupBy(l => l.FallbackTransform).Any(g => g.Count() > 1);
+            BtnDuplicateLabel.Visibility = hasDuplicates ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void ParseMeshInfoInput()
@@ -110,8 +167,7 @@ namespace SCUMQuestEditor
                 }
 
                 // Refresh the UI binding
-                LocationList.ItemsSource = null;
-                LocationList.ItemsSource = Locations;
+                RefreshList();
                 TxtMeshInfoInput.Text = "";
             }
             catch (JsonException ex)
@@ -129,8 +185,7 @@ namespace SCUMQuestEditor
                 Instance = Locations.Count + 1
             };
             Locations.Add(newLocation);
-            LocationList.ItemsSource = null;
-            LocationList.ItemsSource = Locations;
+            RefreshList();
         }
 
         private void BtnEditSelectedLocation_Click(object sender, RoutedEventArgs e)
@@ -174,8 +229,7 @@ namespace SCUMQuestEditor
             }
 
             LocationList.SelectedItems.Clear();
-            LocationList.ItemsSource = null;
-            LocationList.ItemsSource = Locations;
+            RefreshList();
         }
 
         private void LocationList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -231,8 +285,7 @@ namespace SCUMQuestEditor
 
         private void BtnCancelInput_Click(object sender, RoutedEventArgs e)
         {
-            LocationList.ItemsSource = null;
-            LocationList.ItemsSource = Locations;
+            RefreshList();
             TxtMeshInfoInput.Text = "";
         }
 

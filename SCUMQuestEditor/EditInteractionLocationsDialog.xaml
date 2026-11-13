@@ -10,6 +10,24 @@
         Foreground="{DynamicResource MaterialDesignBody}">
     <Window.Resources>
         <local:StringNullOrEmptyToNullConverter x:Key="StringNullOrEmptyToNullConverter"/>
+        <local:HasDuplicatesConverter x:Key="HasDuplicatesConverter"/>
+        <local:DuplicateHighlightConverter x:Key="DuplicateHighlightConverter"/>
+        <SolidColorBrush x:Key="DuplicateHighlightBrush" Color="Red"/>
+        <Style x:Key="DuplicateHighlightItemStyle"
+               TargetType="ListViewItem"
+               BasedOn="{StaticResource {x:Type ListViewItem}}">
+            <Style.Triggers>
+                <DataTrigger Value="true">
+                    <DataTrigger.Binding>
+                        <MultiBinding Converter="{StaticResource DuplicateHighlightConverter}">
+                            <Binding Path="FallbackTransform"/>
+                            <Binding Source="{x:Reference LocationList}" Path="ItemsSource"/>
+                        </MultiBinding>
+                    </DataTrigger.Binding>
+                    <Setter Property="Background" Value="{StaticResource DuplicateHighlightBrush}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
 
     <Border Background="{DynamicResource MaterialDesignPaper}" CornerRadius="12">
@@ -29,6 +47,7 @@
                 <ListView x:Name="LocationList" Margin="4" Style="{StaticResource MaterialDesignListView}"
                           BorderBrush="{DynamicResource MaterialDesignDivider}"
                           SelectionMode="Extended"
+                          ItemContainerStyle="{StaticResource DuplicateHighlightItemStyle}"
                           MouseDoubleClick="LocationList_MouseDoubleClick"
                           PreviewMouseRightButtonDown="LocationList_PreviewMouseRightButtonDown">
                     <ListView.View>
@@ -67,12 +86,20 @@
             </Border>
 
             <!-- Action Buttons -->
-            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="8,8,8,8">
-                <Button x:Name="BtnEdit" Content="Edit Selected" Margin="0,0,6,0" Click="BtnEditSelectedLocation_Click"
-                        Style="{StaticResource PrimaryButton}"/>
-                <Button x:Name="BtnRemove" Content="Remove Selected" Margin="0,0,6,0" Click="BtnRemoveSelectedLocation_Click"
-                        Style="{StaticResource SubtleButton}"/>
-            </StackPanel>
+            <Grid Grid.Row="1" Margin="8,8,8,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <Button x:Name="BtnEdit" Content="Edit Selected" Margin="0,0,6,0" Click="BtnEditSelectedLocation_Click"
+                            Style="{StaticResource PrimaryButton}"/>
+                    <Button x:Name="BtnRemove" Content="Remove Selected" Margin="0,0,6,0" Click="BtnRemoveSelectedLocation_Click"
+                            Style="{StaticResource SubtleButton}"/>
+                </StackPanel>
+                <TextBlock x:Name="BtnDuplicateLabel" Grid.Column="1" Text="Duplicate entries" VerticalAlignment="Center" HorizontalAlignment="Right"
+                           Foreground="{StaticResource DuplicateHighlightBrush}" FontSize="14"/>
+            </Grid>
 
             <!-- Input Section -->
             <Border Grid.Row="2" Style="{StaticResource CardStyle}" Margin="8,8,8,8" Padding="12">

@@ -1624,7 +1624,7 @@ namespace SCUMQuestEditor
         {
             if (LvConditions.SelectedItem is InteractionCondition currentCondition)
             {
-                var dialog = new EditInteractionLocationsDialog(currentCondition.Locations);
+                var dialog = new EditInteractionLocationsDialog(currentCondition.Locations, Settings.ErrorHighlightColor);
                 dialog.Owner = this;
                 if (dialog.ShowDialog() == true)
                 {
