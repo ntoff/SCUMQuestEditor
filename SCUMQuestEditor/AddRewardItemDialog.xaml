@@ -1,0 +1,50 @@
+<Window x:Class="SCUMQuestEditor.AddRewardItemDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="Add Reward Item" Height="700" Width="520"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="{DynamicResource MaterialDesignBackground}"
+        Foreground="{DynamicResource MaterialDesignBody}">
+
+    <Border Background="{DynamicResource MaterialDesignPaper}" CornerRadius="12">
+        <Border.BorderBrush>
+            <SolidColorBrush Color="{DynamicResource MaterialDesignDividerColor}"/>
+        </Border.BorderBrush>
+        <Grid Margin="20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Border Style="{StaticResource CardStyle}" Grid.Row="0" Grid.ColumnSpan="2" Padding="8">
+                <TextBox x:Name="TxtSearch" Margin="0" Padding="8"
+                         Style="{StaticResource MaterialDesignTextBox}"
+                         materialDesign:HintAssist.Hint="Type to search items..."
+                         TextChanged="TxtSearch_TextChanged"/>
+            </Border>
+
+            <Border Style="{StaticResource CardStyle}" Grid.Row="1" Grid.ColumnSpan="2" Padding="0" Margin="0,12,0,0">
+                <ListBox x:Name="LstItems" Margin="4"
+                         Style="{StaticResource MaterialDesignListBox}"
+                         HorizontalContentAlignment="Stretch"/>
+            </Border>
+
+            <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal"
+                        HorizontalAlignment="Right" Margin="0,12,0,0">
+                <Button x:Name="BtnOk" Content="OK"
+                        Margin="0,0,8,0" Click="BtnOk_Click"
+                        Style="{StaticResource PrimaryButton}"/>
+                <Button x:Name="BtnCancel" Content="Cancel"
+                        Margin="0,0,8,0" Click="BtnCancel_Click"
+                        Style="{StaticResource SubtleButton}"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

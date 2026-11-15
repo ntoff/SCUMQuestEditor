@@ -316,6 +316,36 @@
                                         Style="{StaticResource SubtleButton}"/>
                                 </Grid>
                             </TabItem>
+
+                            <TabItem Header="Reward Items" Style="{StaticResource CompactTabItem}">
+                                <Grid Margin="4">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Text="Reward Items" Foreground="{DynamicResource MaterialDesignBody}"
+                                              FontSize="14" FontWeight="Medium" Margin="0,0,0,8"/>
+                                    <Button Grid.Row="1" Content="Add Reward Item" Margin="0,0,0,8" Click="BtnAddRewardItem_Click"
+                                        Style="{StaticResource PrimaryButton}"/>
+                                    <Border Grid.Row="2" Style="{StaticResource CardStyle}" Padding="0" MinWidth="650">
+                                        <ListView x:Name="LvRewardItems" Margin="4"
+                                          FontSize="13"
+                                          BorderThickness="0" Background="Transparent"
+                                          HorizontalContentAlignment="Stretch"
+                                          VerticalAlignment="Stretch">
+                                            <ListView.View>
+                                                <GridView ColumnHeaderContainerStyle="{StaticResource CompactColumnHeader}">
+                                                    <GridViewColumn Header="Item" Width="400"/>
+                                                </GridView>
+                                            </ListView.View>
+                                        </ListView>
+                                        </Border>
+                                    <Button Grid.Row="3" Content="Remove Selected Reward Item" Margin="0,0,0,16" Click="BtnRemoveSelectedRewardItem_Click"
+                                        Style="{StaticResource SubtleButton}"/>
+                                </Grid>
+                            </TabItem>
                         </TabControl>
                     </DockPanel>
                 </TabItem>

@@ -35,6 +35,9 @@ namespace SCUMQuestEditor.Models
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<TradeDealReward>? TradeDeals { get; set; } = null;
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<string>? RewardItems { get; set; } = null;
     }
 
     public class TradeDeal

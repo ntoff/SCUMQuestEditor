@@ -329,7 +329,7 @@ namespace SCUMQuestEditor
 
                 List<string> emptyFields = new();
 
-                bool rewardPoolEmpty = (CurrentTradeDeal.RewardPool == null || CurrentTradeDeal.RewardPool.Count == 0) || CurrentTradeDeal.RewardPool.All(r => r.CurrencyNormal == 0 && r.CurrencyGold == 0 && r.Fame == 0 && r.Skills == null && r.TradeDeals == null);
+                bool rewardPoolEmpty = (CurrentTradeDeal.RewardPool == null || CurrentTradeDeal.RewardPool.Count == 0) || CurrentTradeDeal.RewardPool.All(r => r.CurrencyNormal == 0 && r.CurrencyGold == 0 && r.Fame == 0 && r.Skills == null && r.TradeDeals == null && r.RewardItems == null);
 
                 if (rewardPoolEmpty)
                 {
@@ -460,7 +460,7 @@ namespace SCUMQuestEditor
                 if (CurrentTradeDeal == null) return;
 
                 List<string> emptyFields = new();
-                bool rewardPoolEmpty = (CurrentTradeDeal.RewardPool == null || CurrentTradeDeal.RewardPool.Count == 0) || CurrentTradeDeal.RewardPool.All(r => r.CurrencyNormal == 0 && r.CurrencyGold == 0 && r.Fame == 0 && r.Skills == null && r.TradeDeals == null);
+                bool rewardPoolEmpty = (CurrentTradeDeal.RewardPool == null || CurrentTradeDeal.RewardPool.Count == 0) || CurrentTradeDeal.RewardPool.All(r => r.CurrencyNormal == 0 && r.CurrencyGold == 0 && r.Fame == 0 && r.Skills == null && r.TradeDeals == null && r.RewardItems == null);
                 if (rewardPoolEmpty) emptyFields.Add("Reward Pool");
                 if (CurrentTradeDeal.Conditions == null || CurrentTradeDeal.Conditions.Count == 0) emptyFields.Add("Conditions");
 
@@ -784,6 +784,18 @@ namespace SCUMQuestEditor
                     }
                 }
 
+                if (LvRewardItems != null)
+                {
+                    if (reward.RewardItems != null && reward.RewardItems.Count > 0)
+                    {
+                        LvRewardItems.ItemsSource = reward.RewardItems;
+                    }
+                    else
+                    {
+                        LvRewardItems.ItemsSource = null;
+                    }
+                }
+
                 int totalRewards = CalculateTotalRewards(reward);
                 if (TxtTotalRewards != null) TxtTotalRewards.Text = $"Total Rewards: {totalRewards}/5";
             }
@@ -794,6 +806,7 @@ namespace SCUMQuestEditor
                 if (TxtFameReward != null) TxtFameReward.Text = "0";
                 if (LvSkills != null) LvSkills.ItemsSource = null;
                 if (LvTradeDeals != null) LvTradeDeals.ItemsSource = null;
+                if (LvRewardItems != null) LvRewardItems.ItemsSource = null;
             }
 
             // --- FIX START ---
@@ -959,6 +972,52 @@ namespace SCUMQuestEditor
             }
         }
 
+        private void BtnAddRewardItem_Click(object sender, RoutedEventArgs e)
+        {
+            RewardPool reward = GetOrCreateCurrentReward();
+            if (reward.RewardItems == null) reward.RewardItems = new List<string>();
+
+            int currentTotal = CalculateTotalRewards(reward);
+            int pointsToAdd = 1;
+
+            if (currentTotal + pointsToAdd > 5)
+            {
+                MessageBox.Show("Maximum 5 total reward points allowed.\n(Reminder: Each reward item counts as 1 point.)");
+                return;
+            }
+
+            var dialog = new AddRewardItemDialog();
+            dialog.Owner = this;
+            if (dialog.ShowDialog() == true)
+            {
+                reward.RewardItems.Add(dialog.SelectedItemName);
+                RefreshRewardItemsListView();
+                RefreshTradeDealListView();
+                UpdateJsonPreview();
+            }
+        }
+
+        private void RefreshRewardItemsListView()
+        {
+            RewardPool reward = GetOrCreateCurrentReward();
+            LvRewardItems.ItemsSource = null;
+            LvRewardItems.ItemsSource = reward.RewardItems;
+        }
+
+        private void BtnRemoveSelectedRewardItem_Click(object sender, RoutedEventArgs e)
+        {
+            RewardPool reward = GetOrCreateCurrentReward();
+            if (reward.RewardItems == null) return;
+            if (LvRewardItems.SelectedItem is string selectedRewardItem)
+            {
+                reward.RewardItems.Remove(selectedRewardItem);
+                if (reward.RewardItems.Count == 0) reward.RewardItems = null;
+                RefreshRewardItemsListView();
+                RefreshTradeDealListView();
+                UpdateJsonPreview();
+            }
+        }
+
         private RewardPool GetOrCreateCurrentReward()
         {
             if (CurrentTradeDeal.RewardPool == null) CurrentTradeDeal.RewardPool = new List<RewardPool>();
@@ -978,6 +1037,9 @@ namespace SCUMQuestEditor
             RewardPool reward = GetOrCreateCurrentReward();
             LvTradeDeals.ItemsSource = null;
             LvTradeDeals.ItemsSource = reward.TradeDeals;
+
+            LvRewardItems.ItemsSource = null;
+            LvRewardItems.ItemsSource = reward.RewardItems;
         }
 
         private TradeDeal CurrentTradeDeal { get; set; } = new TradeDeal();
@@ -991,6 +1053,10 @@ namespace SCUMQuestEditor
             {
                 total += 2;
                 if (reward.TradeDeals.Count > 1) total += (reward.TradeDeals.Count - 1);
+            }
+            if (reward.RewardItems != null && reward.RewardItems.Count > 0)
+            {
+                total += reward.RewardItems.Count;
             }
             return total;
         }
@@ -1081,7 +1147,7 @@ namespace SCUMQuestEditor
         {
             var warnings = new List<string>();
 
-            bool rewardPoolEmpty = CurrentTradeDeal.RewardPool == null || CurrentTradeDeal.RewardPool.Count == 0 || CurrentTradeDeal.RewardPool.All(r => r.CurrencyNormal == 0 && r.CurrencyGold == 0 && r.Fame == 0 && r.Skills == null && r.TradeDeals == null);
+            bool rewardPoolEmpty = CurrentTradeDeal.RewardPool == null || CurrentTradeDeal.RewardPool.Count == 0 || CurrentTradeDeal.RewardPool.All(r => r.CurrencyNormal == 0 && r.CurrencyGold == 0 && r.Fame == 0 && r.Skills == null && r.TradeDeals == null && r.RewardItems == null);
             bool conditionsEmpty = CurrentTradeDeal.Conditions == null || CurrentTradeDeal.Conditions.Count == 0;
 
             if (rewardPoolEmpty && conditionsEmpty)
