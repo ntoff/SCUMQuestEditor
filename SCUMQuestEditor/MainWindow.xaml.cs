@@ -542,6 +542,7 @@ namespace SCUMQuestEditor
                 "- EliminationTargets.txt\n" +
                 "- EliminationWeapons.txt\n" +
                 "- FetchItems.txt\n" +
+                "- RewardItems.txt\n" +
                 "- TradeItems.json\n\n" +
                 "Existing files will be overwritten and the editor will reload with the new data.\n\n" +
                 "Do you want to continue?",
@@ -560,6 +561,7 @@ namespace SCUMQuestEditor
                 { "EliminationTargets.txt", "https://raw.githubusercontent.com/ntoff/SCUMQuestEditor/dotnet10/SCUMQuestEditor/_data/EliminationTargets.txt" },
                 { "EliminationWeapons.txt", "https://raw.githubusercontent.com/ntoff/SCUMQuestEditor/dotnet10/SCUMQuestEditor/_data/EliminationWeapons.txt" },
                 { "FetchItems.txt", "https://raw.githubusercontent.com/ntoff/SCUMQuestEditor/dotnet10/SCUMQuestEditor/_data/FetchItems.txt" },
+                { "RewardItems.txt", "https://raw.githubusercontent.com/ntoff/SCUMQuestEditor/dotnet10/SCUMQuestEditor/_data/RewardItems.txt" },
                 { "TradeItems.json", "https://raw.githubusercontent.com/ntoff/SCUMQuestEditor/dotnet10/SCUMQuestEditor/_data/TradeItems.json" }
             };
 
@@ -588,6 +590,7 @@ namespace SCUMQuestEditor
 
             // Reset static caches so updated data is picked up on next dialog open
             AddTradeDealDialog.ResetCache();
+            AddRewardItemDialog.ResetCache();
             EditTargetCharactersDialog.ResetCache();
             EditWeaponDialog.ResetCache();
 
