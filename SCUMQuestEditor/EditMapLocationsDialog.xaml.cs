@@ -38,36 +38,41 @@ namespace SCUMQuestEditor
             TxtZ.Text = "0.0000";
             TxtSizeFactor.Text = "1.00";
 
-            // Validation
+            // Wire up PreviewTextInput for float validation
             TxtX.PreviewTextInput += FloatPreviewTextInput;
             TxtY.PreviewTextInput += FloatPreviewTextInput;
             TxtZ.PreviewTextInput += FloatPreviewTextInput;
             TxtSizeFactor.PreviewTextInput += FloatPreviewTextInput;
+
+            // Also handle paste operations
+            DataObject.AddPastingHandler(TxtX, FloatPasting);
+            DataObject.AddPastingHandler(TxtY, FloatPasting);
+            DataObject.AddPastingHandler(TxtZ, FloatPasting);
+            DataObject.AddPastingHandler(TxtSizeFactor, FloatPasting);
         }
+
+        private static readonly Regex s_floatRegex = new(@"^\d*\.?\d*$", RegexOptions.Compiled);
 
         private void FloatPreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            TextBox textBox = (TextBox)sender;
-
-            // Allow backspace/delete operations
+            // Allow backspace, delete, tab, etc. (empty text means control key)
             if (string.IsNullOrEmpty(e.Text)) return;
 
-            // Simulate the text after insertion at the current caret position
-            string newText = textBox.Text.Insert(textBox.CaretIndex, e.Text);
+            // Validate the typed character against float pattern
+            e.Handled = !s_floatRegex.IsMatch(e.Text);
+        }
 
-            // Prevent multiple decimal points
-            if (newText.Contains(".") && e.Text == ".")
+        private void FloatPasting(object sender, DataObjectPastingEventArgs e)
+        {
+            if (e.DataObject.GetDataPresent(typeof(string)))
+            {
+                string text = (string)e.DataObject.GetData(typeof(string));
+                e.Handled = !s_floatRegex.IsMatch(text);
+            }
+            else
             {
                 e.Handled = true;
-                return;
             }
-
-            // Allow an optional leading minus sign for negative coordinates
-            bool isNegative = newText.StartsWith("-");
-            string checkString = isNegative ? newText.Substring(1) : newText;
-
-            // Validate that the remaining characters are digits and at most one decimal point
-            e.Handled = !Regex.IsMatch(checkString, @"^\d*\.?\d*$");
         }
 
 
